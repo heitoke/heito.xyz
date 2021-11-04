@@ -1,0 +1,23 @@
+{
+  "name": "heito-server",
+  "version": "0.0.1",
+  "description": "Server for site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.24.0",
+    "body-parser": "^1.19.0",
+    "connect-history-api-fallback": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^4.17.1",
+    "http": "0.0.1-security",
+    "request": "^2.88.2",
+    "socket.io": "^4.3.1",
+    "spotify-web-api-node": "^5.0.2",
+    "ws": "^8.2.3"
+  }
+}

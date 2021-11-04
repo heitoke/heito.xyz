@@ -1,0 +1,54 @@
+/* ! Data Title */
+[ui-title]:hover:after {
+    opacity: 1;
+    visibility: visible;
+    z-index: 99999;
+}
+[ui-title]:after {
+    content: attr(ui-title);
+    cursor: default;
+    padding: 2px 4px;
+    height: 18px;
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    color: var(--color) !important;
+    font-size: 12px !important;
+    font-family: 'Open Sans', sans-serif !important;
+    text-align: center;
+    text-transform: none !important;
+    line-height: 18px;
+    white-space: nowrap;
+    border-radius: 3px;
+    background: var(--bg-3);
+    transform: translateX(-50%);
+    transition: .2s;
+    opacity: 0;
+    visibility: hidden;
+    z-index: -1;
+}
+[ui-title] {
+    position: relative;
+}
+/* * Position: Left */
+[ui-title][uit-left]:after {
+    position: absolute;
+    top: 50%;
+    left: auto;
+    right: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+/* * Position: Right */
+[ui-title][uit-right]:after {
+    position: absolute;
+    top: 50%;
+    left: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+/* * Position: Bottom */
+[ui-title][uit-bottom]:after {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}

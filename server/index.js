@@ -3,24 +3,22 @@ const app = express();
 const history = require('connect-history-api-fallback');
 const WebSocket = require('ws');
 const fs = require('fs');
+const { Server } = require('socket.io');
 
 const PORT = {
     express: 4044,
     ws: 4043
 };
 
-const wss = new WebSocket.Server({ port: PORT.ws, path: '/' });
-
 const { services, getAccount, getSpotifyState, getSteamActivity } = require('./config.js')
 const { steam } = require('./cfg.js')
 
-let lastConnect = null; // '2021-11-02T20:49:13.902Z' // new Date()
+let lastConnect = null; // '2021-11-02T20:49:13.902Z'
 
 let activity = []
 let cache = []
 
 const isTime = () => Math.floor((Date.parse(new Date()) - Date.parse(lastConnect)) / 3600000);
-console.log(isTime());
 
 fs.stat('./dist', (err, stats) => {
     if (stats) {
@@ -31,16 +29,19 @@ fs.stat('./dist', (err, stats) => {
     }
 })
 
-wss.on('connection', async ws => {
+const server = app.listen(PORT.express, () => console.log(`heito.xyz [server] - http://localhost:${PORT.express}`))
+
+const io = new Server(server, { cors: { origin: '*' } })
+io.on('connection', async socket => {
 
     console.log('[Main] Connect')
 
     const sendActivity = async () => {
-        if (ws.disconnect) return
+        if (socket.disconnected) return
         activity = []
         activity.push(await getSpotifyState())
         for (let id of steam.ids) activity.push(await getSteamActivity(id))
-        ws.send(JSON.stringify({ type: 'loadActivity', data: activity }))
+        socket.emit('loadActivity', activity);
         setTimeout(() => sendActivity(), 5000)
     }
 
@@ -53,16 +54,13 @@ wss.on('connection', async ws => {
                 }
             } else cache.push({ type: service, data: await getAccount(service) })
         }
-        ws.send(JSON.stringify({ type: 'loadServices', data: cache }));
+        socket.emit('loadServices', cache);
         lastConnect = new Date();
-    } else ws.send(JSON.stringify({ type: 'loadServices', data: cache }));
+    } else socket.emit('loadServices', cache);
 
     sendActivity()
 
-    ws.on('close', () => {
+    socket.on('disconnect', () => {
         console.log('[Main] Disconnect');
-        ws.disconnect = true
     })
-});
-
-app.listen(PORT.express, () => console.log(`heito.xyz [server] - http://localhost:${PORT.express}`))
+})

@@ -23,6 +23,8 @@
 
 <script>
 
+// import io from "socket.io-client";
+
 import { mapActions, mapGetters } from 'vuex'
 
 import ContactCard from '../components/contact.vue'
@@ -70,28 +72,18 @@ export default {
             }
         }
     },
+    sockets: {
+        loadServices(data) {
+            this.setContacts(data)
+        },
+        loadActivity(data) {
+            this.setContactActivity(data)
+        }
+    },
     methods: {
         ...mapActions(['setContacts', 'setContactActivity', 'setConnectWS'])
     },
-    mounted() {
-        this.setConnectWS(new WebSocket('ws://localhost:4043/'))
-
-        this.getWS.onopen = () => {
-            console.log("Successfully connected to the echo websocket server...")
-        }
-
-        this.getWS.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            switch(data.type) {
-                case "loadServices":
-                    this.setContacts(data.data)
-                    break;
-                case "loadActivity":
-                    this.setContactActivity(data.data)
-                    break;
-            }
-        }
-    }
+    mounted() {}
 }
 </script>
 

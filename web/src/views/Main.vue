@@ -74,11 +74,11 @@ export default {
         ...mapActions(['setContacts', 'setContactActivity', 'setConnectWS'])
     },
     mounted() {
-        this.setConnectWS(new WebSocket('ws://localhost:1000/main'))
+        this.setConnectWS(new WebSocket('ws://localhost:4043/'))
 
-        // this.getWS.onopen = () => {
-        //     console.log("Successfully connected to the echo websocket server...")
-        // }
+        this.getWS.onopen = () => {
+            console.log("Successfully connected to the echo websocket server...")
+        }
 
         this.getWS.onmessage = (event) => {
             const data = JSON.parse(event.data);

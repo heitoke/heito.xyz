@@ -18,7 +18,7 @@
                     </ul>
                 </div>
                 <div class="info">
-                    <div class="images">
+                    <div class="images" v-if="me().data.images">
                         <div :style="{ 'background-image': `url('${me().data.images.big}')` }"></div>
                         <i v-if="me().data.images.icon" :class="me().data.images.icon"></i>
                     </div>
@@ -44,20 +44,14 @@ export default {
     },
     computed: mapGetters(['getActivity']),
     data() {
-        return {
-            linkContact: {
-                spotify: x => x
-            }
-        }
+        return {}
     },
     methods: {
         me() {
             return this.getActivity.find(f => f.id === this.user.id)
         }
     },
-    monted() {
-        console.log(1, this.name, this.user);
-    }
+    monted() {}
 }
 
 </script>

@@ -31,6 +31,12 @@ createApp(App).mixin({
         },
         redirect(link, target = '_blank') {
             return window.open(link, target);
+        },
+        otf(num, one, two, five) {
+            if (`${ num }`.split('').reverse()[ 1 ] === '1') return five;
+            if (`${ num }`.split('').reverse()[ 0 ] === '1') return one;
+            if (+(`${ num }`.split('').reverse()[ 0 ]) >= 2 && +(`${ num }`.split('').reverse()[ 0 ]) <= 4) return two;
+            return five;
         }
     }
 }).use(socket).use(store).use(router).mount('#app')

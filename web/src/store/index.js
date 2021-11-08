@@ -9,6 +9,10 @@ import paint from './modules/paint.js'
 export default createStore({
     state: {},
     mutations: {},
-    actions: {},
+    actions: {
+        close() {
+            return window.close()
+        }
+    },
     modules: { theme, contacts, connect, paint }
 })

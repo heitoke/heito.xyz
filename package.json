@@ -1,16 +1,12 @@
 {
   "name": "heito-xyz",
-  "version": "0.0.1",
-  "description": "Site",
-  "main": "index.js",
+  "version": "0.0.2",
+  "description": "heito.xyz",
   "scripts": {
     "server": "cd server && node .",
     "web": "cd web && npm run serve"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "body-parser": "^1.19.0",
-    "connect-history-api-fallback": "^1.6.0"
-  }
+  "dependencies": {}
 }

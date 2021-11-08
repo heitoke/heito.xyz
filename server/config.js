@@ -9,22 +9,56 @@ const spotifyApi = new SpotifyWebApi({
     redirectUri: `http://localhost:1000/spotify/callback`
 });
 
-spotifyApi.setAccessToken(spotify.tokens.access)
+// spotifyApi.setAccessToken(spotify.tokens.access)
 
-const getTokenSpotify = async ({ access, refresh }) => {
+const getTokenSpotify = async (refresh) => {
     spotifyApi.setRefreshToken(refresh);
 
     try {
         const { body } = await spotifyApi.refreshAccessToken()
-        spotify.tokens = { access: body.access_token, refresh: refresh }
+        // spotify.tokens = { access: body.access_token, refresh }
         spotifyApi.setAccessToken(body.access_token);
-        setInterval(() => getTokenSpotify(refresh), (body.expires_in * 1000) - 20000)
+        setInterval(() => getTokenSpotify(), (body.expires_in * 1000) - 50000)
         return body;
     } catch (err) {
         return err;
     }
 }
-module.exports.getSpotifyState = async () => {
+
+module.exports.getAccountInfo = async ({ type, params }) => {
+    let _data;
+
+    switch(type) {
+        case "spotify":
+            await getTokenSpotify(params.refresh)
+            let { body } = await spotifyApi.getMe()
+            _data = { username: body.display_name, id: body.id, url: body.external_urls.spotify, avatar: body.images[0].url };
+            break;
+        case "steam":
+            await axios({ url: `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${params.id}` })
+            .then(({ data }) => {
+                data = data.response.players.find(f => f.steamid === params.id);
+                _data = { username: data.personaname, id: params.id, url: data.profileurl, avatar: data.avatarfull };
+            })
+            break;
+        case "github":
+            await axios({ url: `https://api.github.com/users/${params.login}` })
+            .then(({ data }) => {
+                _data = { username: data.login, id: data.id, url: data.html_url, avatar: data.avatar_url };
+            })
+            break;
+        case "minecraft":
+            await axios({ url: `https://sessionserver.mojang.com/session/minecraft/profile/${params.uuid}` })
+            .then(({ data }) => {
+                _data = { username: data.name, url: `https://ru.namemc.com/profile/${data.name}.1`, avatar: `https://crafatar.com/avatars/${params.uuid}?overlay=true` }
+            })
+            break;
+    }
+
+    return _data;
+}
+
+const getSpotifyActivity = async ({ access }) => {
     let data = {}
     const { body } = await spotifyApi.getMyCurrentPlaybackState()
     const me = await (await spotifyApi.getMe()).body
@@ -54,12 +88,26 @@ module.exports.getSpotifyState = async () => {
     return data
 }
 
-module.exports.getSteamActivity = async (id) => {
+const getGitHubInfo = async login => {
+    return await axios(`https://api.github.com/users/${login}`)
+    .then(({ data }) => {
+        return {
+            type: 'github',
+            id: data.id,
+            data: {
+                action: 'Информация',
+                name: data.name,
+                state: `Репозиториев: ${data.public_repos}`
+            }
+        }
+    })
+}
+
+const getSteamActivity = async id => {
     return await axios(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${id}`)
     .then(async ({ data }) => {
         let user = data.response.players[0];
         if (user.gameid) {
-            console.log(user);
             return {
                 type: 'steam', id,
                 data: {
@@ -80,39 +128,25 @@ module.exports.getSteamActivity = async (id) => {
     })
 }
 
-module.exports.getAccount = async (service, id) => {
+module.exports.getAccountActivity = async ({ type, params }) => {
     let _data;
 
-    switch(service) {
-        case "discord":
-            break;
+    switch(type) {
         case "spotify":
-            await getTokenSpotify(spotify.tokens)
-            let { body } = await spotifyApi.getMe()
-            _data = { username: body.display_name, id: body.id, url: body.external_urls.spotify, avatar: body.images[0].url };
-            break;
-        case "steam":
-            await axios({ url: `http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${id}` })
-            .then(({ data }) => {
-                data = data.response.players.find(f => f.steamid === id);
-                _data = { username: data.personaname, id, url: data.profileurl, avatar: data.avatarfull };
-            })
+            _data = await getSpotifyActivity(params)
             break;
         case "github":
-            await axios({ url: `https://api.github.com/user`, headers: { 'User-Agent': 'request', Authorization: `token ${tokens.github}` } })
-            .then(({ data }) => {
-                _data = { username: data.name, url: data.html_url, avatar: data.avatar_url };
-            })
+            _data = await getGitHubInfo(params.login)
             break;
-        case "minecraft":
-            await axios({ url: `https://sessionserver.mojang.com/session/minecraft/profile/${minecraft.uuid}` })
-            .then(({ data }) => {
-                _data = { username: data.name, url: `https://ru.namemc.com/profile/${data.name}.1`, avatar: `https://crafatar.com/avatars/${minecraft.uuid}?overlay=true` }
-            })
+        case "steam":
+            _data = await getSteamActivity(params.id)
+            break;
+        default:
+            _data = false
             break;
     }
 
-    return _data;
+    return _data
 }
 
 module.exports.services = [

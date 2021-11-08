@@ -45,6 +45,7 @@ export default {
                 open: false,
                 buttons: [
                     { title: 'Home', path: '/', text: 'Привет :O' },
+                    { title: 'Projects', path: '/projects' },
                     // { title: 'Stats', path: '/stats' },
                     { title: 'Chat', path: 'https://chat.akiracommunity.ru', a: true, text: 'Мини хобби :D' }
                 ]

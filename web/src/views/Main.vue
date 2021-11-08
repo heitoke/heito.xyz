@@ -69,27 +69,37 @@ export default {
                 steam: '<i class="fab fa-steam"></i>',
                 github: '<i class="fab fa-github"></i>',
                 minecraft: '<img src="https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/favicon-32x32.png" alt="Icon Minecraft">'
-            }
+            },
+            timer: null
         }
     },
     sockets: {
         loadServices(data) {
             this.setContacts(data)
+            this.setActivity()
         },
         loadActivity(data) {
             this.setContactActivity(data)
         }
     },
     methods: {
-        ...mapActions(['setContacts', 'setContactActivity', 'setConnectWS'])
+        ...mapActions(['setContacts', 'setContactActivity', 'setConnectWS']),
+        setActivity() {
+            this.$socket.emit('getActivity')
+            clearTimeout(this.timer)
+            this.timer = setTimeout(() => this.setActivity(), 5000)
+        }
     },
-    mounted() {}
+    mounted() {
+        this.$socket.emit('getServices')
+    }
 }
 </script>
 
 <style lang="scss">
 
 .page.main {
+    height: 100vh;
     overflow: hidden;
 
     .contacts {

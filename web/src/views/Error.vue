@@ -7,6 +7,7 @@
         </main>
         <div class="animate a1"></div>
         <div class="animate a2"></div>
+        <div class="game">{{ pets[Math.floor(Math.random() * pets.length)] }}</div>
     </div>
 </template>
 
@@ -34,7 +35,8 @@ export default {
                 "To the main page",
                 "Home",
                 "To return"
-            ]
+            ],
+            pets: ["🐢", "🦦", "🐈", "🦨", "🐕", "🐸", "🐤", "🐧", "🐼", "🐌", "🐐", "🐏"]
         }
     },
     methods: {},
@@ -67,6 +69,7 @@ export default {
         .text {
             font-size: 12px;
             font-weight: 600;
+            text-align: center;
             text-transform: uppercase;
         }
 
@@ -155,6 +158,22 @@ export default {
             from {
                 transform: scale(.7);
             }
+        }
+    }
+    
+    .game {
+        cursor: pointer;
+        position: absolute;
+        left: 50%;
+        bottom: 8px;
+        font-size: 10px;
+        transform: translateX(-50%);
+        transition: .2s;
+        user-select: none;
+
+        &:hover {
+            padding: 0 0 4px 0;
+            border-bottom: 1px solid var(--color);
         }
     }
 

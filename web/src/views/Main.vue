@@ -68,6 +68,7 @@ export default {
                 spotify: '<i class="fab fa-spotify"></i>',
                 steam: '<i class="fab fa-steam"></i>',
                 github: '<i class="fab fa-github"></i>',
+                osu: '<img src="https://osu.ppy.sh/favicon-32x32.png" alt="Icon OSU">',
                 minecraft: '<img src="https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/favicon-32x32.png" alt="Icon Minecraft">'
             },
             timer: null
@@ -75,11 +76,11 @@ export default {
     },
     sockets: {
         loadServices(data) {
-            this.setContacts(data)
-            this.setActivity()
+            this.setContacts(data);
+            this.setActivity();
         },
         loadActivity(data) {
-            this.setContactActivity(data)
+            this.setContactActivity(data);
         }
     },
     methods: {

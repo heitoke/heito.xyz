@@ -2,6 +2,8 @@
 
     --m-color: #dadada;
 
+    --C1: #7579ff;
+    --C1-alt: #7579ff20;
     --C2: #00d38f;
     --C2-alt: #00d38f25;
     --C3: #ffde5a;
@@ -35,9 +37,6 @@ html[theme="dark"]:root {
     --dimming-3: #ffffff45;
     --dimming-4: #ffffff75;
 
-    --C1: #7579ff;
-    --C1-alt: #7579ff20;
-
 }
 html[theme="light"]:root {
 
@@ -54,8 +53,5 @@ html[theme="light"]:root {
     --dimming-2: #00000025;
     --dimming-3: #00000045;
     --dimming-4: #00000075;
-
-    --C1: #f64072;
-    --C1-alt: #f6407235;
 
 }

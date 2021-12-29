@@ -110,29 +110,7 @@ export default {
     data() {
         return {
             open: false,
-            list: [
-                {
-                    type: 'joint',
-                    title: 'Mirai',
-                    text: 'Lorem ipsum dolor sit amet consectetur adipisicing elit. Nostrum, mollitia.',
-                    image: 'https://github.com/webgtx/wxplorer/raw/main/.media/preview.gif',
-                    checkboxs: [
-                        { name: 'Chat' },
-                        { name: 'Open-Source' }
-                    ],
-                    links: [
-                        { label: 'Перейти', url: 'https://chat.akiracommunity.ru', icon: 'uil uil-link' },
-                        { label: 'Открыть', url: '/chat', icon: 'uil uil-bookmark' }
-                    ],
-                    users: [
-                        { name: 'dxv1d', img: 'https://avatars.githubusercontent.com/u/62614322?v=4', url: 'https://github.com/webgtx' }
-                    ]
-                },
-                { type: 'personal' },
-                { type: 'joint' },
-                { type: 'joint' },
-                { type: 'joint' },
-            ]
+            list: []
         }
     },
     sockets: {

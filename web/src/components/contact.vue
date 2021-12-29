@@ -23,8 +23,8 @@
                         <i v-if="me().data.images.icon" :class="me().data.images.icon"></i>
                     </div>
                     <div class="text">
-                        <div>{{ me().data.name }}</div>
-                        <div>{{ me().data.state }}</div>
+                        <div class="name" v-if="me().data.name" v-html="me().data.name"></div>
+                        <div v-html="me().data.state"></div>
                     </div>
                 </div>
             </li>
@@ -175,18 +175,48 @@ export default {
                     }
                 }
 
+                .bar {
+                    margin: 4px 0 0 0;
+                    width: 100%;
+                    
+                    .line {
+                        width: 100%;
+                        height: 4px;
+                        position: relative;
+                        border-radius: 5px;
+                        background: var(--bg);
+                        overflow: hidden;
+
+                        div {
+                            height: 100%;
+                            position: absolute;
+                            top: 0;
+                            left: 0;
+                            background: var(--C5);
+                        }
+                    }
+
+                    .text {
+                        display: flex;
+                        margin: 2px 0 0 0;
+                        font-size: 10px;
+                        align-items: center;
+                        justify-content: space-between;
+                    }
+                }
+
                 .text {
+                    width: 100%;
                     white-space: nowrap;
                     text-overflow: ellipsis;
                     overflow: hidden;
                     
-                    div:nth-child(1) {
+                    .name {
                         font-size: 13px;
                         font-weight: 600;
                     }
 
-                    div:nth-child(2),
-                    div:nth-child(3) {
+                    div {
                         font-size: 12px;
                     }
                 }

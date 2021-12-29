@@ -1,10 +1,20 @@
 <template>
     <div class="pages">
         <ul class="list">
-            <PageProjects :_page=options.projects :name="`projects`" :open="open === 'projects'"
+            <!-- <PageProjects :_page=options.projects :name="`projects`" :open="open === 'projects'"
                 v-on:openSetting="openSetting"
-            />
+            /> -->
+            <li class="block-page" v-for="(page, name) in options" :key="(page, name)">
+                <div class="header">
+                    <div class="font-5">{{ name }}</div>
+                    <label class="checkbox">
+                        <input type="checkbox" v-model="page.on">
+                        <span></span>
+                    </label>
+                </div>
+            </li>
         </ul>
+        <div class="save">Сохранить</div>
     </div>
 </template>
 
@@ -12,13 +22,13 @@
 
 import { mapGetters } from 'vuex'
 
-import PageProjects from './pages/projects.vue'
+// import PageProjects from './pages/projects.vue'
 
 export default {
     name: 'BlockMenuPages',
     props: {},
     computed: mapGetters(['']),
-    components: { PageProjects },
+    components: {  },
     data() {
         return {
             open: 'projects',
@@ -97,6 +107,21 @@ export default {
                 grid-template-columns: 1fr 1fr 1fr 1fr;
                 border-top: 1px solid var(--color-3);
             }
+        }
+    }
+
+    .save {
+        cursor: pointer;
+        margin: 8px 0 0 0;
+        padding: 12px 24px;
+        width: 96px;
+        color: var(--bg);
+        text-align: center;
+        background: var(--color);
+        user-select: none;
+
+        &:active {
+            transform: scale(.9);
         }
     }
 }

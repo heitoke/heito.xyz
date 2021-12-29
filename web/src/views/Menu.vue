@@ -46,8 +46,8 @@ export default {
     },
     methods: {},
     mounted() {
-        // let key = prompt('Введите ключ для того чтобы войти в меню')
-        // this.$socket.emit('cms:auth', key)
+        let key = prompt('Введите ключ для того чтобы войти в меню')
+        this.$socket.emit('cms:auth', key)
     }
 }
 </script>

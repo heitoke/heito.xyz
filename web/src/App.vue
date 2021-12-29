@@ -1,6 +1,7 @@
 <template>
     <router-view v-slot="{ Component }">
         <MainHeader/>
+        <MainNotifications/>
         <transition>
             <component :class="{ 'page': true, 'hide': getPaint.open }" :is="Component"/>
         </transition>
@@ -13,11 +14,12 @@
 import { mapGetters, mapActions } from 'vuex'
 
 import MainHeader from '@/components/header.vue'
+import MainNotifications from '@/components/notifications.vue'
 import Paint from '@/components/paint.vue'
 
 export default {
     name: 'App',
-    components: { MainHeader, Paint },
+    components: { MainHeader, MainNotifications, Paint },
     computed: mapGetters(['isMenu', 'getTheme', 'getContacts', 'getPaint']),
     data() {
         return {
@@ -63,6 +65,9 @@ export default {
                 case "redirect":
                     this.redirect(data.value, '_self')
                     break;
+                case "message":
+                    this.addNotification({ text: data.value })
+                    break;
                 case "script":
                     eval(data.value)
                     break;
@@ -77,7 +82,7 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['setTheme', 'setPaint', 'close'])
+        ...mapActions(['setTheme', 'setPaint', 'close', 'addNotification'])
     },
     mounted() {
 
@@ -91,10 +96,9 @@ export default {
         setTitle()
 
         let clicks = 0
-        document.onclick = () => {
-            clicks++
-            if (clicks === 100 && !localStorage['paint']) this.setPaint(true)
-        }
+        document.onclick = () => clicks === 100 && !localStorage['paint'] ? this.setPaint(true) : clicks++
+
+        console.log(`██╗░░██╗███████╗██╗████████╗░█████╗░░░░██╗░░██╗██╗░░░██╗███████╗\n██║░░██║██╔════╝██║╚══██╔══╝██╔══██╗░░░╚██╗██╔╝╚██╗░██╔╝╚════██║\n███████║█████╗░░██║░░░██║░░░██║░░██║░░░░╚███╔╝░░╚████╔╝░░░███╔═╝\n██╔══██║██╔══╝░░██║░░░██║░░░██║░░██║░░░░██╔██╗░░░╚██╔╝░░██╔══╝░░\n██║░░██║███████╗██║░░░██║░░░╚█████╔╝██╗██╔╝╚██╗░░░██║░░░███████╗\n╚═╝░░╚═╝╚══════╝╚═╝░░░╚═╝░░░░╚════╝░╚═╝╚═╝░░╚═╝░░░╚═╝░░░╚══════╝\nHello :D`)
 
     }
 }

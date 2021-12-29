@@ -13,15 +13,12 @@ import './assets/css/fonts.css'
 
 const socket = new VueSocketIO({
     debug: false,
-    connection: SocketIO('http://localhost:4044'),
+    connection: SocketIO(location.hostname === 'localhost' ? 'http://localhost:4044' : 'https://heito.xyz'),//SocketIO('https://heito.xyz').connected ? SocketIO('https://heito.xyz') : SocketIO('http://localhost:4044'),
     vuex: {
         store,
         actionPrefix: 'SOCKET_',
         mutationPrefix: 'SOCKET_'
-    },
-    // options: {
-    //     path: "/my-app/"
-    // }
+    }
 })
 
 createApp(App).mixin({
@@ -33,9 +30,10 @@ createApp(App).mixin({
             return window.open(link, target);
         },
         otf(num, one, two, five) {
-            if (`${ num }`.split('').reverse()[ 1 ] === '1') return five;
-            if (`${ num }`.split('').reverse()[ 0 ] === '1') return one;
-            if (+(`${ num }`.split('').reverse()[ 0 ]) >= 2 && +(`${ num }`.split('').reverse()[ 0 ]) <= 4) return two;
+            num = `${num}`.split('').reverse();
+            if (num[1] === '1') return five;
+            if (num[0] === '1') return one;
+            if (+(num[0]) >= 2 && +(num[0]) <= 4) return two;
             return five;
         }
     }

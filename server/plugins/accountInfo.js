@@ -1,30 +1,24 @@
 const
     axios = require('axios').default,
     speakeasy = require('speakeasy'),
-    { accounts, Authenticator, spotify, steam, OSU } = require('../accounts.js'),
-    SpotifyWebApi = require('spotify-web-api-node'),
-    osu = require('node-osu');
+    { Authenticator, spotify, steam, OSU } = require('../json/config.json'),
+    accounts = require('../json/accounts.json')
+    fs = require('fs');
 
 module.exports = class AccountInfo {
     constructor() {
-
-        this.spotifyApi = new SpotifyWebApi({
-            clientId: spotify.id,
-            clientSecret: spotify.secret,
-            redirectUri: `http://localhost:1000/spotify/callback`
-        });
-
-        this.osuApi = new osu.Api(OSU.token, { notFoundAsError: true, completeScores: false, parseNumeric: false });
+        this.spotifyToken = null;
         
         this.speakeasy = speakeasy;
 
         this.time = null;
         this.intervals = {};
 
-
         this.catchAccounts = [];
         this.catchActivity = null;
     }
+
+    // ? Get Time
 
     getHours(time) {
         return new Date(Date.now() - time).getUTCHours();
@@ -38,19 +32,27 @@ module.exports = class AccountInfo {
         return new Date(Date.now() - time).getUTCSeconds();
     }
 
-    async getTokenSpotify(refresh) {
-        this.spotifyApi.setRefreshToken(refresh);
-    
-        try {
-            const { body } = await this.spotifyApi.refreshAccessToken()
-            // spotify.tokens = { access: body.access_token, refresh }
-            this.spotifyApi.setAccessToken(body.access_token);
-            setInterval(() => this.getTokenSpotify(), (body.expires_in * 1000) - 50000)
-            return body;
-        } catch (err) {
-            return err;
-        }
+    // ? Get and Update Config
+
+    getConfig() {
+        return JSON.parse(fs.readFileSync(`${__dirname}/json/config.json`, { encoding: 'utf-8' }));
     }
+
+    updateConfig(data) {
+        fs.writeFile(`${__dirname}/json/config.json`, JSON.stringify(data), { encoding: 'utf-8' });
+    }
+
+    // ? Get and Update Accounts
+
+    getAccounts() {
+        return JSON.parse(fs.readFileSync(`${__dirname}/json/accounts.json`, { encoding: 'utf-8' }));
+    }
+
+    updateAccounts(data) {
+        fs.writeFile(`${__dirname}/json/accounts.json`, JSON.stringify(data), { encoding: 'utf-8' });
+    }
+
+    // ? Get Accounts
 
     async getAccountInfo() {
         let data;
@@ -63,14 +65,19 @@ module.exports = class AccountInfo {
         for (let { type, params } of accounts.filter(item => !item?.off)) {
             switch(type) {
                 case "spotify":
-                    await this.getTokenSpotify(params.refresh);
-                    let { body } = await this.spotifyApi.getMe();
+                    let { display_name, id, external_urls, images } = await this.getSpotifyRequest(params.refresh)
                     this.catchAccounts = [ ...this.catchAccounts, { 
-                        type, data: { username: body.display_name, id: body.id, url: body.external_urls.spotify, avatar: body.images[0].url }
+                        type, data: { username: display_name, id, url: external_urls.spotify, avatar: images[0].url }
+                    } ];
+                    break;
+                case "discord":
+                    data = await (await axios.get(`https://japi.rest/discord/v1/user/${params.id}`)).data.data;
+                    this.catchAccounts = [ ...this.catchAccounts, {
+                        type, data: { username: data.tag, id: data.id, url: `https://discord.com/users/${data.id}`, avatar: data.avatarURL }
                     } ];
                     break;
                 case "steam":
-                    data = await (await axios.get(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${params.id}`)).data;
+                    data = await (await axios.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${params.id}`)).data;
                     data = data.response.players.find(item => item.steamid === params.id);
                     this.catchAccounts = [ ...this.catchAccounts, {
                         type, data: { username: data.personaname, id: params.id, url: data.profileurl, avatar: data.avatarfull }
@@ -83,9 +90,9 @@ module.exports = class AccountInfo {
                     } ];
                     break;
                 case "osu":
-                    let user = await this.osuApi.getUser({ u: params.u });
+                    let { username, user_id } = await this.getUserOSU(params.u);
                     this.catchAccounts = [ ...this.catchAccounts, {
-                        type, data: { username: user.name, id: user.id, url: `https://osu.ppy.sh/users/${user.id}`, avatar: `https://a.ppy.sh/${user.id}` }
+                        type, data: { username, id: user_id, url: `https://osu.ppy.sh/users/${user_id}`, avatar: `https://a.ppy.sh/${user_id}` }
                     } ];
                     break;
                 case "minecraft":
@@ -100,33 +107,72 @@ module.exports = class AccountInfo {
         return this.catchAccounts;
     }
 
-    async getAccountActivity() {
-        if (this.catchActivity === null) this.catchActivity = [];
+    // ? Get Activity Accounts
 
-        for (let i = 0; i < accounts.length; i++) {
-            let { type, params, interval } = accounts[i];
-            let account = this.catchActivity.find((item, idx) => item.type === type && idx === i),
-                activity = this[`${type}Activity`] ? this[`${type}Activity`](params) : false;
+    async getAccountActivity() {
+        this.catchActivity = [];
+
+        for (let _account of accounts) {
+            let { type, params, interval, off } = _account,
+                activity = this[`${type}Activity`] || false;
 
             if (activity) {
+                let a;
+                switch(type) {
+                    case "spotify": a = await this.spotifyActivity(params); break;
+                    case "steam": a = await this.steamActivity(params); break;
+                    case "osu": a = await this.osuActivity(params); break;
+                }
                 if (interval) {
                     if (this.intervals[type] && this.getSeconds(this.intervals[type]) < interval) {
                         null
                     } else {
                         this.intervals[type] = Date.now();
-                        account ? account = await activity : this.catchActivity = [ ...this.catchActivity, await activity ];
+                        this.catchActivity = [ ...this.catchActivity, a ];
                     }
-                } else account ? account = await activity : this.catchActivity = [ ...this.catchActivity, await activity ];
+                } else this.catchActivity = [ ...this.catchActivity, a ];
             }
         }
 
         return this.catchActivity;
     }
 
+    // ? Spotify
+
+    async getTokenSpotify(refresh) {
+        try {
+            let { data } = await axios({
+                url: `https://accounts.spotify.com/api/token?grant_type=refresh_token&refresh_token=${refresh}`,
+                headers: { 
+                    'Authorization': `Basic ${new Buffer(`${spotify.id}:${spotify.secret}`).toString('base64')}`,
+                    'Content-Type': 'application/x-www-form-urlencoded'
+                },
+                method: 'POST'
+            });
+            this.spotifyToken = data.access_token;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
+    async getSpotifyRequest(refresh, path = '') {
+        if (!this.spotifyToken || !this.time || this.getHours(this.time) > 0) await this.getTokenSpotify(refresh);
+        try {
+            let { data } = await axios({
+                url: `https://api.spotify.com/v1/me${path}`,
+                headers: { 'Authorization': `Bearer ${this.spotifyToken}` },
+                method: 'GET'
+            });
+            return data;
+        } catch (err) {
+            console.log(err);
+        }
+    }
+
     async spotifyActivity({ refresh }) {
-        // if (this.getHours(this.time) > 0) await this.getTokenSpotify(refresh);
-        const { body: { id } } = await this.spotifyApi.getMe();
-        const { body } = await this.spotifyApi.getMyCurrentPlaybackState();
+        if (!this.spotifyToken || !this.time || this.getHours(this.time) > 0) await this.getTokenSpotify(refresh);
+        const { id } = await this.getSpotifyRequest(refresh);
+        const body = await this.getSpotifyRequest(refresh, '/player');
         let device = {
             Smartphone: 'uil uil-mobile-android',
             Computer: 'uil uil-desktop',
@@ -148,6 +194,8 @@ module.exports = class AccountInfo {
             } : false
         }
     }
+
+    // ? GitHub
     
     async githubActivity({ login }) {
         console.log(1);
@@ -161,13 +209,15 @@ module.exports = class AccountInfo {
             }
         }
     }
+
+    // ? Steam
     
     async steamActivity({ id }) {
-        let { data } = await axios(`http://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${id}`);
+        let { data } = await axios.get(`https://api.steampowered.com/ISteamUser/GetPlayerSummaries/v0002/?key=${steam.key}&steamids=${id}`);
         let user = data.response.players[0];
         return {
             type: 'steam', id,
-            data: user.gameid ? {
+            data: user?.gameid ? {
                 mode: 'mini',
                 action: 'Играет в',
                 name: user.gameextrainfo,
@@ -183,18 +233,29 @@ module.exports = class AccountInfo {
         }
     }
     
+    // ? OSU
+
+    async getUserOSU(username) {
+        let { data } = await axios.get(`https://osu.ppy.sh/api/get_user?k=${OSU.token}&u=${username}`);
+        console.log(data[0].user_id);
+        return data[0];
+    }
+
     async osuActivity({ u }) {
-        let user = await this.osuApi.getUser({ u });
-        let levelBar = Math.floor((Number(user.level) - Math.floor(user.level)) * 100)
+        let { user_id, level, pp_raw, pp_rank, pp_country_rank } = await this.getUserOSU(u),
+            levelBar = Math.floor((Number(level) - Math.floor(level)) * 100);
+            console.log(user_id, u);
         return {
             type: 'osu',
-            id: user.id,
+            id: user_id,
             data: {
                 action: 'Информация',
-                state: `pp: <b>${Math.floor(user.pp.raw)}</b><br>Ретинг: <b><span ui-title="По миру" uit-bottom>${user.pp.rank}</span><span ui-title="По стране" uit-bottom> [${user.pp.countryRank}]</span></b><br><b>Уровень</b><br><div class="bar"><div class="line"><div style="width: ${levelBar}%;"></div></div><div class="text"><span>${Math.floor(user.level)}</span><span>${levelBar}%</span><span>${Math.floor(user.level) + 1}</span></div></div>`
+                state: `pp: <b>${Math.floor(pp_raw)}</b><br>Ретинг: <b><span ui-title="По миру" uit-bottom>${pp_rank}</span><span ui-title="По стране" uit-bottom> [${pp_country_rank}]</span></b><br><b>Уровень</b><br><div class="bar"><div class="line"><div style="width: ${levelBar}%;"></div></div><div class="text"><span>${Math.floor(level)}</span><span>${levelBar}%</span><span>${Math.floor(level) + 1}</span></div></div>`
             }
         }
     }
+
+    // ? Authenticator
 
     getAuth(token) {
         return this.speakeasy.totp.verify({ ...Authenticator, token });

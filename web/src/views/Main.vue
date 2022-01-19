@@ -66,6 +66,7 @@ export default {
             ],
             iconContacts: {
                 spotify: '<i class="fab fa-spotify"></i>',
+                discord: '<i class="fab fa-discord"></i>',
                 steam: '<i class="fab fa-steam"></i>',
                 github: '<i class="fab fa-github"></i>',
                 osu: '<img src="https://osu.ppy.sh/favicon-32x32.png" alt="Icon OSU">',
@@ -74,25 +75,17 @@ export default {
             timer: null
         }
     },
-    sockets: {
-        loadServices(data) {
-            this.setContacts(data);
-            this.setActivity();
-        },
-        loadActivity(data) {
-            this.setContactActivity(data);
-        }
-    },
     methods: {
         ...mapActions(['setContacts', 'setContactActivity', 'setConnectWS']),
-        setActivity() {
-            this.$socket.emit('getActivity')
-            clearTimeout(this.timer)
-            this.timer = setTimeout(() => this.setActivity(), 5000)
+        async setActivity() {
+            this.setContactActivity(await this.postFetch('/activity'));
+            clearTimeout(this.timer);
+            this.timer = setTimeout(() => this.setActivity(), 5000);
         }
     },
-    mounted() {
-        this.$socket.emit('getServices')
+    async mounted() {
+        this.setContacts(await this.postFetch('/accounts'));
+        this.setActivity();
     }
 }
 </script>

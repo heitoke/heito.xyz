@@ -113,18 +113,13 @@ export default {
             list: []
         }
     },
-    sockets: {
-        'projects:load' (data) {
-            this.list = data;
-        }
-    },
     methods: {
         saveProjects() {
-            this.$socket.emit('projects:save', this.list)
+            this.postFetch('/projects', this.list);
         }
     },
-    mounted() {
-        this.$socket.emit('projects:get')
+    async mounted() {
+        this.list = await this.postFetch('/projects');
     }
 }
 

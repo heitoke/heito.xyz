@@ -3,7 +3,7 @@
         <main>
             <div :class="`code font-${Math.floor(Math.random() * (25 - 1 + 1)) + 1}`">404</div>
             <div class="text">{{ texts[Math.floor(Math.random() * texts.length)] }}</div>
-            <div class="back font-5" @click="router('/')">{{ btn[Math.floor(Math.random() * btn.length)] }}</div>
+            <Button :text="btn[Math.floor(Math.random() * btn.length)]" @click="router('/')"/>
         </main>
         <div class="animate a1"></div>
         <div class="animate a2"></div>
@@ -13,9 +13,11 @@
 
 <script>
 
+import Button from '../components/fields/button.vue'
+
 export default {
     name: 'ErrorPage',
-    components: {},
+    components: { Button },
     computed: {},
     data() {
         return {
@@ -71,38 +73,6 @@ export default {
             font-weight: 600;
             text-align: center;
             text-transform: uppercase;
-        }
-
-        .back {
-            cursor: pointer;
-            margin: 8px 0 0 0;
-            padding: 8px 16px;
-            position: relative;
-            transition: .3s;
-            overflow: hidden;
-
-            &::after {
-                content: "";
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                top: 100%;
-                left: 0;
-                background: var(--color);
-                transform: scale(.7);
-                transition: .2s;
-                z-index: -1;
-            }
-
-            &:hover {
-                color: var(--color-r);
-                text-decoration: underline;
-
-                &::after {
-                    top: 0;
-                    transform: scale(1);
-                }
-            }
         }
     }
 

@@ -39,15 +39,10 @@ export default {
             }
         }
     },
-    sockets: {
-        'cms:login' (data) {
-            eval(data)
-        }
-    },
     methods: {},
-    mounted() {
-        let key = prompt('Введите ключ для того чтобы войти в меню')
-        this.$socket.emit('cms:auth', key)
+    async mounted() {
+        let key = prompt('Введите ключ для того чтобы войти в меню');
+        await this.postFetch('/auth', key) ? this.open = true : this.router('/');
     }
 }
 </script>

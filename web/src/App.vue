@@ -53,34 +53,6 @@ export default {
             connection: null
         }
     },
-    sockets: {
-        connect: () => {
-            console.log('socket connected');
-        },
-        'load:script' (data) {
-            switch(data.type) {
-                case "path":
-                    this.router(data.value)
-                    break;
-                case "redirect":
-                    this.redirect(data.value, '_self')
-                    break;
-                case "message":
-                    this.addNotification({ text: data.value })
-                    break;
-                case "script":
-                    eval(data.value)
-                    break;
-                case "kick":
-                    window.close()
-                    setInterval(() => {
-                        let a = document.querySelectorAll('div')
-                        a[Math.floor(Math.random() * a.length)].remove()
-                    }, 1000)
-                    break;
-            }
-        }
-    },
     methods: {
         ...mapActions(['setTheme', 'setPaint', 'close', 'addNotification'])
     },

@@ -64,14 +64,9 @@ export default {
             ]
         }
     },
-    sockets: {
-        'projects:load' (data) {
-            this.list = data;
-        }
-    },
     methods: {},
-    mounted() {
-        this.$socket.emit('projects:get')
+    async mounted() {
+        this.list = await this.postFetch('/projects');
     }
 }
 </script>

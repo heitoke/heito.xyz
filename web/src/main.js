@@ -2,24 +2,12 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import store from './store'
-import VueSocketIO from 'vue-3-socket.io'
-import SocketIO from 'socket.io-client'
 
 // * CSS
 import './assets/css/root.css'
 import './assets/css/theme.css'
 import './assets/css/ui-title.css'
 import './assets/css/fonts.css'
-
-const socket = new VueSocketIO({
-    debug: false,
-    connection: SocketIO(location.hostname === 'localhost' ? 'http://localhost:4044' : 'https://heito.xyz'),//SocketIO('https://heito.xyz').connected ? SocketIO('https://heito.xyz') : SocketIO('http://localhost:4044'),
-    vuex: {
-        store,
-        actionPrefix: 'SOCKET_',
-        mutationPrefix: 'SOCKET_'
-    }
-})
 
 createApp(App).mixin({
     methods: {
@@ -35,6 +23,16 @@ createApp(App).mixin({
             if (num[0] === '1') return one;
             if (+(num[0]) >= 2 && +(num[0]) <= 4) return two;
             return five;
+        },
+        async postFetch(path = '', data = {}) {
+            let res = await fetch(`${location.hostname === 'localhost' ? 'http://localhost:4044' : 'https://heito.xyz'}${path}`, {
+                body: JSON.stringify(data),
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                method: 'POST'
+            });
+            return await res.json();
         }
     }
-}).use(socket).use(store).use(router).mount('#app')
+}).use(store).use(router).mount('#app')

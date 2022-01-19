@@ -66,18 +66,12 @@ export default {
             }
         }
     },
-    sockets: {
-        'cms:loadUsers' (data) {
-            this.users = data
-        }
-    },
     methods: {
-        sendUser(id, type, value) {
-            this.$socket.emit('cms:send', { id, data: { type, value: value || this.text[type] } })
-        }
+        // sendUser(id, type, value) {
+        //     this.$socket.emit('cms:send', { id, data: { type, value: value || this.text[type] } })
+        // }
     },
     mounted() {
-        this.$socket.emit('cms:getUsers')
     }
 }
 

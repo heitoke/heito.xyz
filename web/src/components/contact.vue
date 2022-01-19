@@ -6,7 +6,7 @@
                 <img :src="user.avatar" alt="Avatar">
                 <span>{{ user.username }}</span>
             </li>
-            <li :class="`activity ${me().data.mode || ''}`" v-if="me() && me().data">
+            <li :class="`activity ${me().data.mode || ''}`" v-if="me()?.data">
                 <div class="action">
                     <div>{{ me().data.action }}</div>
                     <ul v-if="me().data.buttons">
@@ -48,7 +48,7 @@ export default {
     },
     methods: {
         me() {
-            return this.getActivity.find(f => f.id === this.user.id)
+            return this.getActivity.filter(item => item !== null).find(item => item.id === this.user.id)
         }
     },
     monted() {}

@@ -3,15 +3,13 @@ const
     // * Web
     express = require('express'),
     history = require('connect-history-api-fallback'),
-    { Server } = require('socket.io'),
+    cors = require('cors'),
+    bodyParser = require('body-parser'),
     // * Other Modules
     fs = require('fs'),
     path = require('path'),
     // * Plugins
-    AccountInfo = new (require('./plugins/accountInfo.js'))(),
-    // * JSON Files
-    projects = require('./json/projects.json'),
-    pages = require('./json/pages.json');
+    AccountInfo = new (require('./plugins/accountInfo.js'))();
 
 class Main {
     constructor() {
@@ -19,6 +17,7 @@ class Main {
         this.app = this.express();
 
         this.fs = fs;
+        this.path = path;
 
         // ? Plugins
         this.AccountInfo = AccountInfo;
@@ -28,6 +27,19 @@ class Main {
 
         this.catchService = [];
         this.catchActivity = [];
+    }
+
+    loadHeaders() {
+        this.app.use(bodyParser.json());
+        this.app.use(bodyParser.urlencoded({ extended: true }));
+
+        this.app.use(cors());
+
+        this.app.use((req, res, next) => {
+            res.header("Access-Control-Allow-Origin", "*");
+            res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            next();
+        })
     }
 
     loadDist() {
@@ -42,95 +54,49 @@ class Main {
         });
     }
 
-    getHours(time) {
-        return new Date(Date.now() - time).getUTCHours();
-    }
-
-    getMinutes(time) {
-        return new Date(Date.now() - time).getUTCMinutes();
-    }
-
-    loadSocketUsers() {
-        let users = []
-        this.io.sockets.sockets.forEach((e) => {
-            let headers = e.handshake.headers;
-            return users.push({ id: e.id, ip: headers['cf-connecting-ip'] || 'none', browser: headers['user-agent'], platform: this.getPlatform(headers['user-agent']) });
+    loadRouters() {
+        this.fs.readdir('./routers', (err, files) => {
+            for (let file of files.filter(item => item.includes('.js'))) {
+                let router = new (require(`./routers/${file}`))();
+                this.app.use(`/${file.split('.')[0]}`, router.router);
+            }
         })
-        return users;
     }
 
-    getPlatform(pf) {
-        if (/Windows/.test(pf)) return 'Windows'
-        if (/Android/.test(pf)) return 'Android'
-        if (/iPhone/.test(pf)) return 'iPhone'
-        if (/Linux/.test(pf)) return 'Linux'
-    }
+    loadRequests() {
+        this.app.post('/accounts', async (req, res) => {
+            res.send(await this.AccountInfo.getAccountInfo());
+        });
 
-    startSocket() {
-        this.io = new Server(this.server, { cors: { origin: '*' } });
-        this.io.on('connection', socket => {
+        this.app.post('/activity', async (req, res) => {
+            res.send(await this.AccountInfo.getAccountActivity());
+        });
 
-            console.log('[Main] Connect', socket.id)
-            this.io.emit('cms:loadUsers', this.loadSocketUsers())
-
-            socket.on('getServices', async () => {
-                socket.emit('loadServices', await this.AccountInfo.getAccountInfo());
-            });
-
-            socket.on('getActivity', async () => {
-                // this.catchActivity = []
-                // for (let account of accounts) {
-                //     if (account.interval) {
-                //         if (!this.intervals[account.type]) {
-                //             this.intervals[account.type] = true;
-                //             let data = await this.getAccountActivity(account)
-                //             activity.push(data)
-                //             saveActivity.push(data)
-                //             setTimeout(() => intervals[account.type] = false, account.interval * 1000)
-                //         } else this.catchActivity.push(saveActivity.find(f => f.type === account.type))
-                //     } else this.catchActivity.push(await this.getAccountActivity(account))
-                // } 
-                socket.emit('loadActivity', await this.AccountInfo.getAccountActivity());
-            })
-
-            socket.on('disconnect', () => {
-                this.io.emit('cms:loadUsers', this.loadSocketUsers())
-                console.log('[Main] Disconnect');
-            })
-
-            // * Event [projects]
-            socket.on('projects:get', () => {
-                socket.emit('projects:load', projects)
-            })
-
-            socket.on('projects:save', projects => {
-                this.fs.writeFile(__dirname + '/json/projects.json', JSON.stringify(projects), { encoding: 'utf-8' }, () => {
-                    console.log('Updated file projects.json');
-                })
-            })
-
-
-            // * Event [cms]
-            socket.on('cms:auth', token => {
-                socket.emit('cms:login', this.AccountInfo.getAuth(token) ? `this.open = true` : `this.router('/')`);
-            })
-
-            socket.on('cms:getUsers', () => {
-                socket.emit('cms:loadUsers', this.loadSocketUsers())
-            })
-
-            socket.on('cms:send', data => {
-                this.io.to(data.id).emit('load:script', data.data)
-            })
-
+        this.app.post('/auth', (req, res) => {
+            res.send(this.AccountInfo.getAuth(req.body));
         });
     }
 
     start() {
+        // * Headers
+        this.loadHeaders();
+
+        // * Dist
         this.loadDist();
 
+        // * Main Requests
+        this.loadRequests();
+
+        // * Routers
+        this.loadRouters();
+
+        // * Images
+        let pathImages = `${__dirname}/images`;
+        this.fs.access(pathImages, err => err ? this.fs.mkdirSync(pathImages) : null);
+        this.app.use('/images', this.express.static(pathImages));
+
+        // * Server
         this.server = this.app.listen(PORT, () => {
-            this.startSocket();
             console.log(`heito.xyz [server] - http://localhost:${PORT}`);
         });
     }

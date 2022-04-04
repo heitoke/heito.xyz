@@ -2,7 +2,7 @@
     <div class="projects">
         <div class="block">
             <div class="bar">
-                <Button text="Add new project" color="green" style="font-size: 12px;" @click="add()"/>
+                <Button text="Add new project" color="green" style="font-size: 12px;" @click="add()" v-if="getRole"/>
                 <Text text="Search projects"/>
             </div>
             <ul class="tags">

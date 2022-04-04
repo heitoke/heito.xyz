@@ -15,7 +15,7 @@
 
                 <!-- ContextMenu -->
 
-                <ContextMenu :name="`project:${project.id}:tag:${tag}`">
+                <ContextMenu :name="`project:${project.id}:tag:${tag}`" v-if="getRole">
                     <ul>
                         <li @click="project.tags = project.tags.filter(item => item !== tag)">
                             <i class="uil uil-trash" style="color: var(--C5);"></i>
@@ -36,7 +36,7 @@
     
          <!-- ContextMenu -->
 
-        <ContextMenu :name="`project:${project.id}`">
+        <ContextMenu :name="`project:${project.id}`" v-if="getRole">
             <ul>
                 <li @click="setMenu(['SettingsEditMenu', { title: 'Image', value: project?.image, save: val => project['image'] = val }])">
                     <i :class="`uil uil-${project?.image ? 'image-edit' : 'image-plus'}`" style="color: var(--C7);"></i>
@@ -67,7 +67,7 @@
                 </li>
             </ul>
         </ContextMenu>
-        <ContextMenu :name="`project:${project.id}:links`">
+        <ContextMenu :name="`project:${project.id}:links`" v-if="getRole">
             <ul>
                 <li @click="setMenu(['SettingsAddLinkMenu', { title: 'Add Link', save: val => project['links'] = [ ...project['links'] || [], val ] }])">
                     <i class="uil uil-link-add" style="color: var(--C2);"></i>
@@ -87,8 +87,7 @@ export default {
     components: { Links },
     computed: {},
     props: {
-        data: { type: String },
-        pos: { type: String }
+        data: { type: String }
     },
     data() {
         return {
@@ -111,7 +110,7 @@ export default {
         },
         async deleteProject() {
             let { status } = await this.fetch(`/projects/${this.project.id}/remove?token=${this.getLocal?.token}`);
-            if (status === 200) this.closeMenu(this.pos);
+            if (status === 200) this.$emit('close');
         }
     },
     async mounted() {

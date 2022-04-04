@@ -2,7 +2,7 @@
     <transition-group>
         <div class="main-menu" v-for="(menu, idx) of getMenu" :key="(menu, idx)" :name="menu.name">
             <div class="bg" @click="closeMenu(idx)"></div>
-            <component class="block" :data="menu.data" :pos="idx" :is="menu.name"></component>
+            <component class="block" @close="closeMenu(idx)" :data="menu.data" :pos="idx" :is="menu.name"></component>
         </div>
     </transition-group>
 </template>

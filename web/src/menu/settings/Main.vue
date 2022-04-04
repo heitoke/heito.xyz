@@ -52,15 +52,7 @@ export default {
             return new Array(count).fill(1).map(() => create());
         }
     },
-    mounted() {
-        if (this.getLocal?.profile && this.getLogin) {
-            this.images = [
-                this.getUser?.avatar ? { label: 'User Avatar', url: this.getImage(this.getUser?.avatar) } : undefined,
-                this.getUser?.banner ? { label: 'User Banner', url: this.getImage(this.getUser?.banner) } : undefined,
-                ...this.images
-            ];
-        }
-    }
+    mounted() {}
 }
 </script>
 

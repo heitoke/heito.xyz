@@ -8,7 +8,7 @@
         <div v-if="type">
             <div class="text">{{ services.find(item => item[2] === type)[3] }}</div>
             <Text @onEvent="value = $event"/>
-            <Button text="Add service" style="margin: 12px 0 0 0;" @click="closeMenu(pos); data.save(type, value);"/>
+            <Button text="Add service" style="margin: 12px 0 0 0;" @click="$emit('close'); data.save(type, value);"/>
         </div>
     </div>
 </template>
@@ -19,8 +19,7 @@ export default {
     components: {},
     computed: {},
     props: {
-        data: { type: Object },
-        pos: Number
+        data: { type: Object }
     },
     data() {
         return {

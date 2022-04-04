@@ -7,7 +7,7 @@
                     <span>Services</span>
                 </div>
 
-                <ContextMenu name="services:settings">
+                <ContextMenu name="services:settings" v-if="getRole">
                     <ul>
                         <li @click="setMenu(['ServicesListMenu'])">
                             <i class="uil uil-user-square" style="color: var(--C1);"></i>

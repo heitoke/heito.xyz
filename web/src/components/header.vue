@@ -5,11 +5,22 @@
             <li @click="setMenu(['SettingsMenu'])">
                 <i class="uil uil-setting"></i>
             </li>
-            <div class="profile" v-if="getLocal?.profile" @click="setMenu(['LoginMenu'])">
-                <i v-if="!getLogin" class="uil uil-user"></i>
-                <!-- <img v-else :src=""> -->
+            <div class="login" v-if="getLocal?.profile && !getLogin" @click="setMenu(['LoginMenu'])">
+                <i class="uil uil-user"></i>
+            </div>
+            <div class="profile" v-if="getLocal?.profile && getLogin" @click="openContextMenu([$event, 'profile', 'left fixed'])">
+                <img :src="getUser?.avatar">
             </div>
         </ul>
+
+        <ContextMenu name="profile">
+            <ul>
+                <li @click="exit()">
+                    <i class="uil uil-signout" style="color: var(--C5);"></i>
+                    <span>Log out</span>
+                </li>
+            </ul>
+        </ContextMenu>
     </div>
 </template>
 
@@ -29,16 +40,21 @@ export default {
         }
     },
     methods: {
-        ...mapActions(['setTheme'])
+        ...mapActions(['setTheme']),
+        exit() {
+            this.setLocal(['token', false]);
+            this.setUser(null);
+            this.setLogin(false);
+        }
     },
     async mounted() {
-        // if (!this.getLocal?.profile || !this.getLocal?.token) return;
-        // let user = await this.fetch('/users', { token: this.getLocal?.token }, 'POST');
-        // if (user.status === 404 || user.status === 401) return this.setLocal(['token', false]);
-        // else if (user.username) {
-        //     this.setUser(user);
-        //     this.setLogin(true);
-        // }
+        if (!this.getLocal?.profile || !this.getLocal?.token) return;
+        let user = await this.fetch(`/users/auth?token=${this.getLocal?.token}`);
+        if (user?.status === 404 || user?.status === 401) return this.setLocal(['token', false]);
+        else if (user?.status === 200) {
+            this.setUser(user);
+            this.setLogin(true);
+        }
     }
 }
 
@@ -90,7 +106,7 @@ export default {
             }
         }
 
-        div.profile {
+        div.login {
             cursor: pointer;
             margin: 0 0 0 12px;
             width: 32px;
@@ -102,6 +118,17 @@ export default {
             &:hover {
                 border-radius: 5px;
                 background: var(--dimming);
+            }
+        }
+
+        div.profile {
+            cursor: pointer;
+            margin: 0 0 0 12px;
+
+            img {
+                width: 28px;
+                height: 28px;
+                border-radius: 50%;
             }
         }
     }

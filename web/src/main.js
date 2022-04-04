@@ -32,6 +32,9 @@ createApp(App).mixin({
         getMobile() {
             let agent = navigator.userAgent.toLowerCase();
             return window.innerWidth <= 620 || agent.includes('iphone') || agent.includes('android') || agent.includes('blackberry') || agent.includes('webos');
+        },
+        getRole() {
+            return this.getLocal?.profile && this.getLocal?.token && this.getLogin;
         }
     },
     data() {

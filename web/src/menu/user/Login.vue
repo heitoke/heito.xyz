@@ -6,14 +6,10 @@
             <Button text="Sign Up" @click="type = 'register'"/>
         </ul> -->
         <div v-if="type === 'login'">
-            <div class="subtitle">Username</div>
-            <Text @onEvent="username = $event"/>
+            <div class="subtitle">EMail</div>
+            <Text @onEvent="email = $event"/>
             <div class="subtitle">Password</div>
             <Text type="password" @onEvent="password = $event"/>
-            <label class="group" style="margin: 12px 0 0 0;">
-                <Check type="square" @onEvent="re_me = $event"/>
-                <span>Remember me</span>
-            </label>
             <Button text="Back to basics" style="margin: 12px 0 0 0;" @click="auth()"/>
         </div>
         <!-- <div v-if="type === 'register'">
@@ -38,8 +34,7 @@ export default {
     components: {},
     computed: {},
     props: {
-        data: { type: Object, default() { return { login: true } } },
-        id: { type: Number }
+        data: { type: Object, default() { return { login: true } } }
     },
     data() {
         return {
@@ -54,31 +49,13 @@ export default {
     },
     methods: {
         async auth() {
-            let types = {
-                'login': `username=${this.username}&password=${this.password}`,
-                'register': `username=${this.username}&email=${this.email}&password=${this.password}`,
-                'token': `token=${this.token}`
-            }[this.type];
-            if (this.type === 'register' && this.password !== this.re_password) return;
-            let { status, token } = await this.fetch(`/auth?type=${this.type}&${types}`);
-            if (status === 200) {
-                if (this.type === 'register') return this.type = 'login';
-                if (this?.data?.login) {
-                    this.setUser(await this.fetch(`/users`, { token }, 'POST'));
-                    this.setLogin(true);
-                    this.setLocal(['token', token]);
-                }
-                if (this.re_me && !this.getLocal?.accounts?.find(item => item?.token === token)) {
-                    let newAccount = { token, joinedAt: Date.now() };
-                    if (this.getLocal?.accounts) this.setLocal(['accounts', [ ...this.getLocal?.accounts, newAccount ]]);
-                        else this.setLocal(['accounts', [ newAccount ]]);
-                }
-                this?.data?.click ? this?.data?.click() : null;
-                this.closeMenu(this.id);
-            } else {
-                this.setUser(null);
-                this.setLogin(false);
-            }
+            let user = await this.fetch(`/users/auth?email=${this.email}&password=${this.password}`);
+            if (user?.status !== 200) return;
+            console.log(user);
+            this.setUser(user);
+            this.setLogin(true);
+            this.setLocal(['token', user?.token]);
+            this.$emit('close');
         }
     },
     mounted() {}

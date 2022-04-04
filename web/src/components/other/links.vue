@@ -9,7 +9,7 @@
 
             <!-- ContextMenu -->
 
-            <ContextMenu :name="`link:edit:${idx}`">
+            <ContextMenu :name="`link:edit:${idx}`" v-if="getRole">
                 <ul>
                     <li @click="setMenu(['SettingsAddLinkMenu', { title: 'Edit Link', button: 'Edit', ...link, save: val => $emit('onEvent', edit(val, link, idx)) } ])">
                         <i class="uil uil-pen" style="color: var(--C2);"></i>

@@ -7,7 +7,7 @@
             </div>
             <ul class="tags">
                 <ul class="tags" v-if="tags.length > 0">
-                    <li v-for="tag of new Array(10).fill('test')" :key="tag"
+                    <li v-for="tag of tags" :key="tag"
                         :class="{ active: type === tag }"
                         @click="type = type === tag ? '' : tag"
                     >
@@ -33,10 +33,7 @@ export default {
     computed: {},
     data() {
         return {
-            tags: [
-                'test',
-                'test1'
-            ],
+            tags: [],
             projects: null
         }
     },
@@ -77,6 +74,27 @@ export default {
         display: grid;
         grid-template-columns: 1fr 1fr;
         gap: 16px;
+    }
+}
+
+@media (max-width: 540px) {
+    .page.projects .block {
+        .list {
+            grid-template-columns: 1fr;
+        }
+    }
+}
+
+@media (max-width: 360px) {
+    .page.projects .block {
+        .bar {
+            flex-direction: column;
+
+            .field-button {
+                margin: 0 0 12px 0;
+                width: 90%;
+            }
+        }
     }
 }
 

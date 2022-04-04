@@ -49,7 +49,8 @@ export default {
         async getList(type, page) {
             this.loadMore = false;
             let data = await this.fetch(`/list/anime/689045/${type}/${page}`);
-            if (data?.content) {
+            if (data?.status === 404) return this.$emit('onError');
+            else if (data?.content) {
                 if (data?.content?.length > 0) {
                     this.list = data?.content;
                     this.loadMore = true;

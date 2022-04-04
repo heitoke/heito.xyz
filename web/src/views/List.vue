@@ -5,7 +5,7 @@
                 <Select style="margin: 0 0 12px 0;" :items="[
                     { label: 'Manga', icon: 'uil uil-notebooks', value: 'manga', color: 'var(--C6)' },
                     { label: 'Anime', icon: 'uil uil-image', value: 'anime', color: 'var(--C1)' }
-                ]" :value="$route.query?.type" @onEvent="router(`/list?type=${$event.value}`)"/>
+                ]" :value="$route.query?.type || 'manga'" @onEvent="router(`/list?type=${$event.value}`)"/>
                 <ul class="categories" v-if="service?.categories && service?.categories.length > 0">
                     <li v-for="(btn, idx) of service?.categories" :key="(btn, idx)"
                         :class="{ 'active': service?.value === btn.id }"
@@ -45,8 +45,11 @@
                     <Text text="Search" @onEvent="text = $event"/>
                 </ul>
                 <div :class="`list-block ${cardType ? 'list' : 'card'}`">
-                    <BlockManga :text="text.trim() !== '' ? text : ''" :sort="sortType" @onEvent="service = $event" v-if="$route.query.type === 'manga'"/>
-                    <BlockAnime :text="text.trim() !== '' ? text : ''" :sort="sortType" @onEvent="service = $event" v-if="$route.query.type === 'anime'"/>
+                    <BlockManga :text="text.trim() !== '' ? text : ''" :sort="sortType" @onError="error = true" @onEvent="service = $event" v-if="$route.query.type === 'manga'"/>
+                    <BlockAnime :text="text.trim() !== '' ? text : ''" :sort="sortType" @onError="error = true" @onEvent="service = $event" v-if="$route.query.type === 'anime'"/>
+                    <div class="error" v-if="error">
+                        Something went wrong :O
+                    </div>
                 </div>
             </main>
 
@@ -85,7 +88,8 @@ export default {
             buttons: [
                 { label: 'Manga', name: 'manga' },
                 { label: 'Anime', name: 'anime' }
-            ]
+            ],
+            error: false
         }
     },
     methods: {
@@ -283,6 +287,14 @@ export default {
                     }
                 }
             }
+
+            .error {
+                padding: 64px;
+                font-weight: 700;
+                text-align: center;
+                border-radius: 5px;
+                background: var(--dimming);
+            }
         }
     }
 
@@ -315,6 +327,89 @@ export default {
 
             div {
                 height: 40px;
+            }
+        }
+    }
+}
+
+@media (max-width: 1400px) {
+    .page.list .block {
+        main {
+            .list-block {
+                &.card ul {
+                    columns: 5;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 1240px) {
+    .page.list .block {
+        main {
+            .list-block {
+                &.card ul {
+                    columns: 4;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 960px) {
+    .page.list .block {
+        max-width: 95%;
+        main {
+            .list-block {
+                &.list ul {
+                    grid-template-columns: 1fr;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 720px) {
+    .page.list .block {
+        main {
+            .list-block {
+                &.card ul {
+                    columns: 3;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .page.list .block {
+        main {
+            .list-block {
+                &.card ul {
+                    columns: 2;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 540px) {
+    .page.list .block {
+        display: block;
+
+        main {
+            margin: 12px 0 0 0;
+        }
+    }
+}
+
+@media (max-width: 240px) {
+    .page.list .block {
+        main {
+            .list-block {
+                &.card ul {
+                    columns: 1;
+                }
             }
         }
     }

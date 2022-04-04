@@ -35,11 +35,11 @@
                 イ <br>
                 ト
             </div> -->
-            <div class="info">
+            <div class="info" :style="`border-right: ${!getMobile && getLocal?.models ? '1px solid var(--dimming)' : 'none'};`">
                 <h1 class="glitch font-3" data-glitch="heito.xyz">heito.xyz</h1>
                 <div class="text">I live, die and live again...<br>And what do you do?</div>
             </div>
-            <div class="model">
+            <div class="model" v-if="!getMobile && getLocal?.models">
                 <Renderer ref="renderer" width="540" height="540" :orbit-ctrl="{ autoRotate: true, enableDamping: true, dampingFactor: 0.05 }">
                     <Camera :position="randomModel.camera" />
                     <Scene background="#34333a">
@@ -56,7 +56,7 @@
             </div>
         </div>
         <div class="bottom">
-            Press the <div class="key" @click="setSuper('auto')">Tab</div> key
+            Press the <div class="key" @click="isSuper ? null : setSuper('auto')">Tab</div> key
         </div>
     </div>
 </template>
@@ -434,6 +434,27 @@ export default {
 
         .key {
             margin: 0 8px;
+        }
+    }
+}
+
+@media (max-width: 760px) {
+    .page.main {
+        .content {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+
+            .info {
+                min-width: 540px;
+                text-align: center;
+                border-right: none;
+            }
+
+            .model {
+                display: none;
+            }
         }
     }
 }

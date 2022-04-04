@@ -4,7 +4,7 @@
         <Menu v-if="getMenu.length > 0"/>
         <div :class="['basic-page', { super: isSuper }]">
             <transition enter-active-class="page-show" leave-active-class="page-hide">
-                <component :class="['page']" :is="Component"/>
+                <component :class="['page']" :is="Component" @click="isSuper ? setSuper('auto') : null"/>
             </transition>
             <transition enter-active-class="list-pages-show" leave-active-class="list-pages-hide">
                 <ul class="list-pages" v-if="isSuper">
@@ -174,6 +174,64 @@ export default {
 
                 i {
                     color: var(--C1);
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 640px) {
+    .basic-page {
+        &.super {
+            flex-direction: column;
+
+            .page {
+                max-height: 50%;
+            }
+        }
+
+        .list-pages {
+            margin: 32px 0 0 0;
+            padding: 0 8px;
+            width: 100%;
+            min-width: 256px;
+            max-height: 100%;
+            transition: all .2s;
+            overflow-x: hidden;
+
+            div {
+                margin: 0 0 8px 0;
+                color: var(--color-2);
+                font-weight: 700;
+                text-transform: uppercase;
+            }
+
+            li {
+                cursor: pointer;
+                display: flex;
+                margin: 0 0 8px 0;
+                padding: 12px 16px;
+                color: var(--color-2);
+                border-radius: 5px;
+                align-items: center;
+                transition: .2s;
+
+                &:last-child {
+                    margin: 0;
+                }
+
+                i {
+                    margin: 0 8px 0 0;
+                    font-size: 20px;
+                }
+
+                &.active {
+                    color: var(--color);
+                    background: var(--dimming);
+
+                    i {
+                        color: var(--C1);
+                    }
                 }
             }
         }

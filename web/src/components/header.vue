@@ -2,6 +2,9 @@
     <div class="main-header">
         <div class="logo font-3" @click="router(`/`)">heito.xyz</div>
         <ul class="menu">
+            <li @click="setSuper('auto')">
+                <i class="uil uil-clapper-board"></i>
+            </li>
             <li @click="setMenu(['SettingsMenu'])">
                 <i class="uil uil-setting"></i>
             </li>

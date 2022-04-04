@@ -49,7 +49,8 @@ export default {
     methods: {
         async getList(type) {
             let data = await this.fetch(`/list/manga?type=${type}`);
-            if (data?.content?.length > 0) {
+            if (data?.status === 404) return this.$emit('onError');
+            else if (data?.content?.length > 0) {
                 this.$emit(`onEvent`, {
                     service: {
                         name: 'ReManga',

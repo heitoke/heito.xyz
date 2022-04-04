@@ -5,6 +5,7 @@ const
     // ! Web
     express = require('express'),
     bodyParser = require('body-parser'),
+    history = require('connect-history-api-fallback'),
     { PORT = 8081 } = process.env,
     // ! FileSystem
     fs = require('fs'),
@@ -63,6 +64,18 @@ class MainServer {
         })
     }
 
+    loadDist() {
+        let dir = path.join(__dirname, '../web/dist');
+        console.log(dir);
+        this.fs.access(dir, err => {
+            if (err) return console.log('No dist directory :(');
+            const staticFileMiddleware = this.express.static(dir);
+            this.app.use(staticFileMiddleware);
+            this.app.use(history({ disableDotRule: true, verbose: true }));
+            this.app.use(staticFileMiddleware);
+        });
+    }
+
     loadRouters(path, name = '') {
         this.fs.readdir(path, (err, files) => {
             for (let file of files.filter(item => !item.includes('.off') && item.includes('.js'))) {
@@ -99,7 +112,7 @@ class MainServer {
         this.loadRouters('./routers');
 
         // * Load Dist
-        // this.app.use('/', this.express.static(`${__dirname}/public`));
+        this.loadDist();
 
         // * Load Images
         this.app.use('/images', this.express.static(`${__dirname}/images`));

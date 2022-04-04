@@ -1,0 +1,11 @@
+Model Information:
+* title:	Magic Portal
+* source:	https://sketchfab.com/3d-models/magic-portal-dc447f04768a4bfe8932d976bd2b1677
+* author:	Nick Broad (https://sketchfab.com/nickbroad)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Magic Portal" (https://sketchfab.com/3d-models/magic-portal-dc447f04768a4bfe8932d976bd2b1677) by Nick Broad (https://sketchfab.com/nickbroad) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

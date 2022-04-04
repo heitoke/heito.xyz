@@ -1,0 +1,56 @@
+:root {
+
+    --C1: #e4bbd0;
+    --C1-alt: #e4bbd035;
+    --C2: #00d38f;
+    --C2-alt: #00d38f25;
+    --C3: #ffde5a;
+    --C3-alt: #ffde5a35;
+    --C4: #ff4e33;
+    --C4-alt: #ff4e3335;
+    --C5: #f64072;
+    --C5-alt: #f6407235;
+    --C6: #ffb433;
+    --C6-alt: #ffb43335;
+    --C7: #0292E0;
+    --C7-alt: #0292E035;
+    --C8: #CC66FF;
+    --C8-alt: #CC66FF35;
+
+    --T: transparent;
+
+}
+
+html[theme="dark"]:root {
+    --bg: #34333a;
+    --bg-2: #2b2a30;
+    --bg-2-alt: #4a4950;
+    --bg-3: #222227;
+    --bg-4: #03010c;
+    --color: #e8e8e8;
+    --color-r: #06070d;
+    --color-2: #969696;
+    --color-3: #636363;
+    --dimming: #3d3c45;
+    --dimming-2: #ffffff25;
+    --dimming-3: #ffffff45;
+    --dimming-4: #ffffff75;
+
+}
+html[theme="light"]:root {
+
+    --bg: #ffffff;
+    --bg-2: #e6e6e6;
+    --bg-2-alt: #f0f0f0;
+    --bg-3: #c4c4c4;
+    --bg-4: #e6e6e6;
+    --color: #06070d;
+    --color-r: #e8e8e8;
+    --color-2: #333333;
+    --color-3: #afafaf;
+    --dimming: #edebeb;
+    --dimming-2: #00000025;
+    --dimming-3: #00000045;
+    --dimming-4: #00000075;
+
+}

@@ -56,7 +56,7 @@
                     <i class="uil uil-text-fields"></i>
                     <span>Edit description</span>
                 </li>
-                <li @click="setMenu(['SettingsEditMenu', { title: 'New Tag', save: val => project['tags'] = [ ...project['tags'], val ] }])">
+                <li @click="setMenu(['SettingsEditMenu', { title: 'New Tag', save: val => project['tags'] = project['tags'] ? [ ...project['tags'], val ] : [val] }])">
                     <i class="uil uil-tag" style="color: var(--main-color);"></i>
                     <span>Add tag</span>
                 </li>

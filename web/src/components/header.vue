@@ -1,6 +1,11 @@
 <template>
     <div class="main-header">
-        <div class="logo font-3" @click="router(`/`)">heito.xyz</div>
+        <div class="logo" @click="router(`/`)">
+            <span class="font-3">heito.xyz</span>
+            <div class="save" v-if="getContentEdited" @click="updateContent(getContent)">
+                <i class="uil uil-check"></i>
+            </div>
+        </div>
         <ul class="menu">
             <li @click="setSuper('auto')">
                 <i class="uil uil-clapper-board"></i>
@@ -80,6 +85,22 @@ export default {
     .logo {
         display: flex;
         align-items: center;
+
+        .save {
+            cursor: pointer;
+            margin: 0 0 0 12px;
+            width: 28px;
+            height: 28px;
+            text-align: center;
+            line-height: 28px;
+            border-radius: 5px;
+            background: var(--C2-alt);
+            transition: .2s;
+            
+            &:active {
+                transform: scale(.5);
+            }
+        }
     }
 
     .menu {

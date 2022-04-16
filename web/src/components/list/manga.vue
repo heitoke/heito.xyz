@@ -60,7 +60,21 @@ export default {
                     categories: data.props.bookmark_types.map(item => {
                         return { ...item, name: this.names[item.id], click: () => this.getList(item.id) }
                     }),
-                    value: type
+                    value: type,
+                    // buttons: [
+                    //     {
+                    //         component: 'Select',
+                    //         items: [
+                    //             { label: 'Name (A - Z)', icon: 'uil uil-letter-japanese-a', value: 'name' },
+                    //             { label: 'Likes', icon: 'uil uil-heart-alt', value: 'likes', color: 'var(--C5)' },
+                    //             { label: 'Chapters read', icon: 'uil uil-book-open', value: 'read', color: 'var(--C1)' }
+                    //         ],
+                    //         value: 'name',
+                    //         on: () => {
+                    //             console.log(1);
+                    //         }
+                    //     }
+                    // ]
                 });
                 this.list = data.content;
             }

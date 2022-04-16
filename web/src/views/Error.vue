@@ -1,23 +1,11 @@
 <template>
     <div class="error" @keydown.space="router('/')">
         <div class="content">
-            <!-- <div class="table">
-                ヘ <br>
-                イ <br>
-                ト
-            </div> -->
             <div class="info">
                 <h1 class="glitch font-3" data-glitch="404">404</h1>
                 <div class="text">Are you lost?</div>
-                <div class="key">space</div>
+                <div class="key" @click="router('/')">space</div>
             </div>
-            <Renderer ref="renderer" width="540" height="740" :orbit-ctrl="{ autoRotate: true, enableDamping: true, dampingFactor: 0.05 }">
-                <Camera :position="{ z: 1000 }" />
-                <Scene background="#34333a">
-                    <AmbientLight></AmbientLight>
-                    <GltfModel src="/models/mushy_buddy/scene.gltf"/>
-                </Scene>
-            </Renderer>
         </div>
     </div>
 </template>
@@ -47,9 +35,7 @@ export default {
 
         .info {
             display: flex;
-            min-width: 540px;
             text-align: center;
-            border-right: 1px solid var(--dimming);
             align-items: center;
             flex-direction: column;
 

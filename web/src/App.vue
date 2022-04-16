@@ -38,7 +38,11 @@ export default {
         return {}
     },
     methods: {
-        ...mapActions(['setTheme', 'setColor'])
+        ...mapActions(['setTheme', 'setColor']),
+        async loadContent() {
+            let content = await this.fetch('/content');
+            this.setContent(content);
+        }
     },
     mounted() {
 
@@ -61,6 +65,8 @@ export default {
         window.addEventListener('contextmenu', e => {
             e.preventDefault();
         });
+
+        this.loadContent();
 
     }
 }
@@ -186,6 +192,7 @@ export default {
             flex-direction: column;
 
             .page {
+                min-height: 50%;
                 max-height: 50%;
             }
         }

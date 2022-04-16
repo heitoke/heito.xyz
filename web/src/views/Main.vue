@@ -29,31 +29,42 @@
                 </transition>
             </li>
         </ul>
-        <div class="content">
+        <div class="content" @click.right="openContextMenu([$event, 'main:content'])">
             <!-- <div class="table">
                 ヘ <br>
                 イ <br>
                 ト
             </div> -->
-            <div class="info" :style="`border-right: ${!getMobile && getLocal?.models ? '1px solid var(--dimming)' : 'none'};`">
-                <h1 class="glitch font-3" data-glitch="heito.xyz">heito.xyz</h1>
-                <div class="text">I live, die and live again...<br>And what do you do?</div>
+            <div class="info" :style="`border-right: ${!getMobile && getLocal?.models ? '0px solid var(--dimming)' : 'none'};`">
+                <h1 class="glitch font-3" :data-glitch="getContent?.title">{{ getContent?.title }}</h1>
+                <div class="text" v-html="getContent?.description"></div>
             </div>
-            <div class="model" v-if="!getMobile && getLocal?.models">
-                <Renderer ref="renderer" width="540" height="540" :orbit-ctrl="{ autoRotate: true, enableDamping: true, dampingFactor: 0.05 }">
-                    <Camera :position="randomModel.camera" />
-                    <Scene background="#34333a">
-                        <AmbientLight></AmbientLight>
-                        <GltfModel
-                            :position="randomModel.position"
-                            :src="`/models/${randomModel.name}/scene.gltf`"
-                            :rotation="randomModel.rotation"
-                            :scale="randomModel.scale"
-                        />
-                    </Scene>
-                </Renderer>
-                <div class="status" v-if="randomModel.status">{{ randomModel.status() }}</div>
+            <div class="activity" v-if="getContent?.activity">
+                <div :class="`status ${mainActivity?.userOnline}`">
+                    <span>{{ statusNames[mainActivity?.userOnline] || mainActivity?.userOnline }}</span>
+                    <div @mouseenter="openContextMenu([$event, `toolpic:status`, 'top center-x fixed'])" @mouseleave="closeContextMenu()"></div>
+                </div>
+                <ContextMenu name="toolpic:status" class="toolpic"><p>Status</p></ContextMenu>
+                <ServiceActivity :data="mainActivity?.activity" v-if="mainActivity?.activity"/>
             </div>
+
+            <ContextMenu name="main:content" v-if="getRole">
+                <ul>
+                    <li @click="setMenu(['SettingsEditMenu', { title: 'Edit title', value: getContent?.title, save: val => setContentKey(['title', val]) }])">
+                        <i class="uil uil-text"></i>
+                        <span>Edit title</span>
+                    </li>
+                    <li @click="setMenu(['SettingsEditMenu', { title: 'Edit description', value: getContent?.description, save: val => setContentKey(['description', val]) }])">
+                        <i class="uil uil-subject"></i>
+                        <span>Edit description</span>
+                    </li>
+                    <div class="line"></div>
+                    <li @click="setContentKey(['activity', !getContent['activity']])">
+                        <i class="uil uil-rocket" style="color: var(--C1);"></i>
+                        <span>{{ getContent?.activity ? 'Disable activity' : 'Enable activity' }}</span>
+                    </li>
+                </ul>
+            </ContextMenu>
         </div>
         <div class="bottom">
             Press the <div class="key" @click="isSuper ? null : setSuper('auto')">Tab</div> key
@@ -86,52 +97,15 @@ export default {
                 osu: 'OSU',
                 minecraft: 'Minecraft'
             },
+            statusNames: {
+                dnd: 'Do not disturb'
+            },
             services: false,
             serviceHover: '',
             accounts: {},
             activity: {},
             listServices: null,
-            models: [
-                {
-                    name: 'pine_tree',
-                    camera: { y: 10, z: 20 },
-                    status: () => {
-                        return `🌲 10.213.232`;
-                    }
-                },
-                {
-                    name: 'sky',
-                    camera: { y: 200, z: 410 }
-                },
-                {
-                    name: 'redstone_lamp',
-                    camera: { z: 150 },
-                    position: { y: -25 }
-                },
-                {
-                    name: 'mimi',
-                    camera: { z: 4 }
-                },
-                {
-                    name: 'pickaxe',
-                    camera: { z: 50 },
-                    rotation: { x: 190 },
-                },
-                {
-                    name: 'glass',
-                    camera: { z: 5 },
-                    position: { y: -1 }
-                },
-                {
-                    name: 'wheatley_core_from_portal_2',
-                    camera: { z: 1.5 }
-                },
-                {
-                    name: 'magic_portal',
-                    camera: { z: 5 },
-                    position: { y: -1.2 }
-                },
-            ]
+            mainActivity: null
         }
     },
     methods: {
@@ -180,10 +154,18 @@ export default {
         },
         blurService(service) {
             setTimeout(() => this.serviceHover[0] === service && this.serviceHover[1] !== 'block' ? this.serviceHover = '' : null, 200)
+        },
+        async loadActivity() {
+            let activity = await this.fetch('/activity');
+            this.mainActivity = activity;
+            if (!this.getContent?.activity) return;
+            setTimeout(() => this.loadActivity(), 5000);
         }
     },
     async mounted() {
         this.loadServices();
+
+        this.loadActivity();
     }
 }
 </script>
@@ -395,7 +377,7 @@ export default {
         .info {
             min-width: 540px;
             text-align: center;
-            border-right: 1px solid var(--dimming);
+            // border-right: 1px solid var(--dimming);
 
             h1 {
                 margin: 0 0 4px 0;
@@ -407,16 +389,110 @@ export default {
             }
         }
 
-        .model {
-            display: flex;
-            align-items: center;
-            flex-direction: column;
+        .activity {
+            min-width: 376px;
 
             .status {
-                padding: 4px 8px;
-                text-align: center;
-                border-radius: 5px;
-                background: var(--dimming);
+                display: flex;
+                margin: 0 0 12px 0;
+                font-size: 12px;
+                font-weight: 700;
+                text-transform: uppercase;
+                align-items: center;
+                justify-content: flex-end;
+
+                div {
+                    margin: 0 12px;
+                    width: 12px;
+                    height: 12px;
+                    border-radius: 3px;
+                    // border: 5px solid var(--dimming);
+                    transform: rotate(45deg);
+                    transition: .2s;
+                }
+
+                &.online {
+                    div {
+                        box-shadow: 0 0 0 5px var(--C2-alt);
+                        background: var(--C2);
+                        animation: AnimationStatusOnline 2s ease-in-out infinite;
+                    }
+                }
+
+                &.idle {
+                    color: var(--C3);
+
+                    div {
+                        box-shadow: 0 0 0 5px var(--C3-alt);
+                        background: var(--C3);
+                        animation: AnimationStatusIdle 2s ease-in-out infinite;
+                    }
+                }
+
+                &.dnd {
+                    text-decoration: var(--bg) line-through;
+
+                    div {
+                        box-shadow: 0 0 0 5px var(--C5-alt);
+                        background: var(--C5);
+                        animation: AnimationStatusDnd 2s ease-in-out infinite;
+                    }
+                }
+
+                &.offline {
+                    color: var(--color-3);
+
+                    div {
+                        box-shadow: 0 0 0 5px var(--bg-2);
+                        background: var(--dimming);
+                        animation: AnimationStatusOffline 2s ease-in-out infinite;
+                    }
+                }
+
+                @keyframes AnimationStatusOnline {
+                    from, to {
+                        box-shadow: 0 0 0 0px var(--T);
+                    }
+                    50% {
+                        border-radius: 50%;
+                        box-shadow: 0 0 0 5px var(--C2-alt);
+                        transform: rotate(-45deg);
+                    }
+                }
+
+                @keyframes AnimationStatusDnd {
+                    from, to {
+                        box-shadow: 0 0 0 0px var(--T);
+                        transform: scale(.7);
+                    }
+                    50% {
+                        border-radius: 0px;
+                        box-shadow: 0 0 0 5px var(--C5-alt);
+                        transform: rotate(-135deg) scale(1.1);
+                    }
+                }
+
+                @keyframes AnimationStatusIdle {
+                    from, to {
+                        border-radius: 50%;
+                        box-shadow: 0 0 0 0px var(--T);
+                        transform: scale(.5);
+                    }
+                    50% {
+                        border-radius: 5px;
+                        box-shadow: 0 0 0 5px var(--C3-alt);
+                        transform: scale(1);
+                    }
+                }
+
+                @keyframes AnimationStatusOffline {
+                    from, to {
+                        box-shadow: 0 0 0 0px var(--bg-3);
+                    }
+                    50% {
+                        box-shadow: 0 0 0 5px var(--bg-2);
+                    }
+                }
             }
         }
     }
@@ -445,6 +521,7 @@ export default {
             height: 100%;
             align-items: center;
             justify-content: center;
+            flex-direction: column;
 
             .info {
                 min-width: 540px;
@@ -452,8 +529,9 @@ export default {
                 border-right: none;
             }
 
-            .model {
-                display: none;
+            .activity {
+                margin: 16px 0 0 0;
+                min-width: 90%;
             }
         }
     }

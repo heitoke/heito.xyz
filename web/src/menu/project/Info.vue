@@ -52,7 +52,7 @@
                     <i class="uil uil-font" style="color: var(--C3);"></i>
                     <span>Edit title</span>
                 </li>
-                <li @click="setMenu(['SettingsEditMenu', { title: 'Description', value: project?.category, save: val => project['category'] = val }])">
+                <li @click="setMenu(['SettingsEditMenu', { title: 'Description', value: project?.description, save: val => project['description'] = val }])">
                     <i class="uil uil-text-fields"></i>
                     <span>Edit description</span>
                 </li>

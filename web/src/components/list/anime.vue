@@ -65,21 +65,6 @@ export default {
                     },
                     categories: [ 'Waching', 'In plans', 'Watched', 'Postroned', 'Dropped'].map((item, i) => { return { name: item, id: i + 1, click: () => this.getList(i + 1, 0) } }),
                     value: type
-                    // buttons: [
-                    //     {
-                    //         component: 'Select',
-                    //         items: [
-                    //             { label: 'Name (A - Z)', icon: 'uil uil-letter-japanese-a', value: 'name' },
-                    //             { label: 'Date of addition', icon: 'uil uil-plus', value: 'add' },
-                    //             { label: 'Update date', icon: 'uil uil-redo', value: 'update' },
-                    //             { label: 'Date of reading', icon: 'uil uil-book-open', value: 'read' }
-                    //         ],
-                    //         value: 'name',
-                    //         on: () => {
-                    //             console.log(1);
-                    //         }
-                    //     }
-                    // ]
                 })
             }
         },

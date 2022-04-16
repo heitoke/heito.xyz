@@ -3,7 +3,7 @@
         <div class="block">
             <div class="bar">
                 <Button text="Add new project" color="green" style="font-size: 12px;" @click="add()" v-if="getRole"/>
-                <Text text="Search projects"/>
+                <Text text="Search projects" @onEvent="text = $event"/>
             </div>
             <ul class="tags">
                 <ul class="tags" v-if="tags.length > 0">
@@ -16,8 +16,8 @@
                     </li>
                 </ul>
             </ul>
-            <ul class="list">
-                <ProjectCard v-for="project of projects" :key="project" :data="project"/>
+            <ul class="list" v-if="projects">
+                <ProjectCard v-for="project of projects?.filter(item => new RegExp(text, 'i').test(item.title))" :key="project" :data="project"/>
             </ul>
         </div>
     </div>
@@ -33,6 +33,7 @@ export default {
     computed: {},
     data() {
         return {
+            text: '',
             tags: [],
             projects: null
         }

@@ -12,7 +12,7 @@
             </div>
         </div>
         <div class="bar" v-if="data.bar">
-            <div class="line"><div :style="{ width: `${data.bar.value}%`, background: data.bar?.color || 'var(--C1)' }"></div></div>
+            <div class="line"><div :style="{ width: `${data.bar?.value}%`, background: data.bar?.color || 'var(--C1)' }"></div></div>
             <div class="text">
                 <span>{{ data.bar?.minText || data.bar.min }}</span>
                 <span>{{ data.bar?.valueText }}</span>

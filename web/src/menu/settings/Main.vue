@@ -14,13 +14,13 @@
                 </div>
                 <Check :value="getLocal?.profile" @onEvent="setLocal(['profile', $event])"/>
             </div>
-            <div class="block">
+            <!-- <div class="block">
                 <div h>
                     <div class="title">Models</div>
                     <div class="description">Do you want to see 3D models on the site? <br> (Loads the system much more)</div>
                 </div>
                 <Check :value="getLocal?.models" @onEvent="setLocal(['models', $event])"/>
-            </div>
+            </div> -->
         </section>
     </div>
 </template>

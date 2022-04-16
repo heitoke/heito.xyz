@@ -70,7 +70,7 @@ table {
 
 ::-webkit-scrollbar-button {
     background-repeat: no-repeat;
-    width: 9px;
+    width: 4px;
     height: 0px;
 }
     
@@ -95,7 +95,8 @@ table {
 }
     
 ::-webkit-scrollbar {
-    width: 9px;
+    width: 4px;
+    border-radius: 5px;
     background: var(--T);
 }
 

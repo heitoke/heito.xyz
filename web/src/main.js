@@ -1,6 +1,5 @@
 import { createApp } from 'vue'
 import { mapActions, mapGetters } from 'vuex';
-import { TroisJSVuePlugin } from 'troisjs';
 import App from './App.vue'
 import store from './store'
 import router from './router'
@@ -27,8 +26,8 @@ import Functions from './functions'
 createApp(App).mixin({
     components: { ...Components, ...Fields },
     computed: {
-        ...mapGetters(['isSuper', 'getMenu', 'getLocal', 'getContextMenu', 'getUser', 'getLogin',]),
-        getDomain: () => location.hostname === 'localhost' ? 'http://localhost:8081' : 'https://heito.xyz',
+        ...mapGetters(['isSuper', 'getMenu', 'getLocal', 'getContextMenu', 'getUser', 'getLogin', 'getContent', 'getContentEdited']),
+        getDomain: () => location.hostname === 'localhost' ? 'http://localhost:8081' : location.origin,
         getMobile() {
             let agent = navigator.userAgent.toLowerCase();
             return window.innerWidth <= 620 || agent.includes('iphone') || agent.includes('android') || agent.includes('blackberry') || agent.includes('webos');
@@ -52,7 +51,7 @@ createApp(App).mixin({
         }
     },
     methods: {
-        ...mapActions(['setSuper', 'setMenu', 'closeMenu', 'setLocal', 'openContextMenu', 'closeContextMenu', 'setUser', 'setLogin']),
+        ...mapActions(['setSuper', 'setMenu', 'closeMenu', 'setLocal', 'openContextMenu', 'closeContextMenu', 'setUser', 'setLogin', 'setContent', 'setContentKey', 'setContentEdited']),
         ...Functions,
         generate(length = 32) {
             return new Array(length).fill(`0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`).map(x => x[Math.floor(Math.random() * x.length)]).join('');
@@ -76,9 +75,12 @@ createApp(App).mixin({
                 method
             });
             return await res.json();
+        },
+        async updateContent(content) {
+            let data = await this.fetch('/content/update', { token: this.getLocal?.token, data: content });
+            if (data?.status === 200) return this.setContentEdited(false);
         }
     }
 }).use(router).use(store)
-.use(TroisJSVuePlugin)
 .component('fa', FontAwesomeIcon)
 .mount('body');

@@ -102,7 +102,8 @@ class MainServer {
         this.isFiles([
             ['projects.json', '[]'],
             ['services.json', '[]'],
-            ['users.json', '[]']
+            ['users.json', '[]'],
+            ['content.json', '{}']
         ]);
 
         // * Headers

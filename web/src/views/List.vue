@@ -208,7 +208,7 @@ export default {
 
                     .bg {
                         margin: 0 16px 0 0;
-                        width: 96px;
+                        min-width: 96px;
                         min-height: 128px;
 
                         .progress { display: none; }

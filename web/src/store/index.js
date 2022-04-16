@@ -7,11 +7,12 @@ import ls from './modules/ls.js'
 import user from './modules/user.js'
 import contextMenu from './modules/contextMenu.js'
 import theme from './modules/theme.js'
+import content from './modules/content.js'
 
 export default createStore({
     state: {},
     mutations: {},
     actions: {},
     getters: {},
-    modules: { Super, menu, ls, user, contextMenu, theme }
+    modules: { Super, menu, ls, user, contextMenu, theme, content }
 })

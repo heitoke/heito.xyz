@@ -194,6 +194,7 @@ export default {
 
             .page {
                 min-width: 100%;
+                min-height: 50%;
                 max-height: 50%;
             }
         }

@@ -6,6 +6,10 @@ module.exports = class Router extends Main {
 
         this.router = this.express.Router();
 
+        this.cache = {
+            github: {}
+        }
+
         this.routers();
     }
 
@@ -22,6 +26,21 @@ module.exports = class Router extends Main {
             if (!this.db.authClient(token)) return res.send({ status: 401 });
             this.db.get('projects').add(data);
             res.send({ status: 200 });
+        });
+
+        this.router.post('/repos', async (req, res) => {
+            let { login, page = 1 } = req.query;
+            if (!login) return res.send({ status: 401 });
+            this.cache.github[login] ? null : this.cache.github[login] = {};
+            if (!this.cache.github[login][page] || this.getHours(this.cache.github[login][page]?.date) >= 1 || this.cache.github[login][page]?.error) {
+                try {
+                    let { data } = await this.axios.get(`https://api.github.com/users/${login}/repos?page=${page}&per_page=100`);
+                    this.cache.github[login][page] = { last: Date.now(), data }
+                } catch (err) {
+                    this.cache.github[login][page] = { last: Date.now(), data: err.response.data, error: true }   
+                }
+            }
+            res.send(this.cache.github[login][page].data);
         });
 
         this.router.post('/:projectId', (req, res) => {

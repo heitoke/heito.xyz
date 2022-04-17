@@ -116,7 +116,7 @@ export default {
         box-sizing: border-box;
         transition: .2s;
         overflow-x: hidden;
-        z-index: 1000;
+        z-index: 1000000000;
 
         li {
             display: flex;

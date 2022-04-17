@@ -96,6 +96,7 @@ export default {
 
         .page {
             padding: 24px;
+            min-width: calc(100% - 256px);
             border: 4px solid var(--dimming);
             border-radius: 25px !important;
             background: var(--bg);
@@ -192,9 +193,13 @@ export default {
             flex-direction: column;
 
             .page {
-                min-height: 50%;
+                min-width: 100%;
                 max-height: 50%;
             }
+        }
+
+        .page {
+            min-width: 100%;
         }
 
         .list-pages {

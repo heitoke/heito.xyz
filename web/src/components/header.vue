@@ -1,7 +1,12 @@
 <template>
     <div class="main-header">
         <div class="logo" @click="router(`/`)">
-            <span class="font-3">heito.xyz</span>
+            <span class="font-3" data-glitch="heito.xyz" ref="logo"
+                @mouseenter="$refs.logo.classList.add('glitch')"
+                @mouseleave="$refs.logo.classList.remove('glitch')"
+            >
+                heito.xyz
+            </span>
             <div class="save" v-if="getContentEdited" @click="updateContent(getContent)">
                 <i class="uil uil-check"></i>
             </div>
@@ -85,6 +90,16 @@ export default {
     .logo {
         display: flex;
         align-items: center;
+
+        span {
+            cursor: pointer;
+            letter-spacing: 0;
+            transition: .2s;
+
+            &:hover {
+                transform: scale(1.2) rotate(-5deg);
+            }
+        }
 
         .save {
             cursor: pointer;

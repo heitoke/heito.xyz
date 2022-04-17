@@ -18,14 +18,12 @@
                 </li>
                 <li class="lang" v-if="data?.language"
                     @mouseenter="openContextMenu([$event, `toolpic:repo:${data?.name}:lang`, 'top center-x fixed hover'])"
-                    @mouseleave="closeContextMenu()"
                 >
                     <img :src="`https://img.shields.io/badge/-34333a.svg?style=flat-square&logo=${getLang(data?.language)}`" @error="imgError = true">
                     <ContextMenu :name="`toolpic:repo:${data?.name}:lang`" class="toolpic"><p>{{ data?.language }}</p></ContextMenu>
                 </li>
                 <li v-if="data?.homepage"
                     @mouseenter="openContextMenu([$event, `toolpic:repo:${data?.name}:homepage`, 'top center-x fixed hover'])"
-                    @mouseleave="closeContextMenu()"
                     @click="redirect(data?.homepage, true, true)"
                     style="cursor: pointer;"
                 >
@@ -47,7 +45,6 @@
             <div v-for="(stat, idx) of createFooter()" :key="(stat, idx)"
                 :style="stat?.click ? `cursor: pointer;` : null"
                 @mouseenter="openContextMenu([$event, `toolpic:repo:footer:${idx}:${stat.title}`, 'top center-x fixed hover'])"
-                @mouseleave="closeContextMenu()"
                 @click="stat?.click ? stat.click() : null"
             >
                 <i :class="stat.icon"></i>

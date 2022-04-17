@@ -51,7 +51,8 @@ export default {
                 steam: 'Steam',
                 discord: 'Discord',
                 osu: 'OSU',
-                minecraft: 'Minecraft'
+                minecraft: 'Minecraft',
+                email: 'E-Mail'
             }
         }
     },

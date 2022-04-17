@@ -78,6 +78,12 @@ export default {
 
 <style lang="scss">
 
+.projects-show, .projects-hide {
+    transition: 2s;
+    
+        opacity: 0;
+}
+
 .page.projects .block {
     margin: 16px auto 0 auto;
     max-width: 940px;

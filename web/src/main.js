@@ -46,7 +46,8 @@ createApp(App).mixin({
                 steam: ['fab', 'steam'],
                 discord: ['fab', 'discord'],
                 osu: 'https://osu.ppy.sh/favicon-32x32.png',
-                minecraft: 'https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/apple-icon-180x180.png'
+                minecraft: 'https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/apple-icon-180x180.png',
+                email: 'uil uil-at'
             }
         }
     },

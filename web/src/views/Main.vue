@@ -40,9 +40,9 @@
                 <div class="text" v-html="getContent?.description"></div>
             </div>
             <div class="activity" v-if="getContent?.activity">
-                <div :class="`status ${mainActivity?.userOnline}`">
+                <div :class="`status ${mainActivity?.userOnline}`" v-if="mainActivity?.userOnline !== 'none'">
                     <span>{{ statusNames[mainActivity?.userOnline] || mainActivity?.userOnline }}</span>
-                    <div @mouseenter="openContextMenu([$event, `toolpic:status`, 'top center-x fixed'])" @mouseleave="closeContextMenu()"></div>
+                    <div @mouseenter="openContextMenu([$event, `toolpic:status`, 'top center-x fixed hover'])"></div>
                 </div>
                 <ContextMenu name="toolpic:status" class="toolpic"><p>Status</p></ContextMenu>
                 <ServiceActivity :data="mainActivity?.activity" v-if="mainActivity?.activity"/>
@@ -137,6 +137,9 @@ export default {
                     break;
                 case "minecraft":
                     account = { ...data, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: data.url }]};
+                    break;
+                case "email":
+                    account = { avatar: null, username: data.username, buttons: [{ label: 'Send an email', icon: 'uil uil-envelope-upload', url: `mailto:${data.username}` }]};
                     break;
             }
             this.accounts[`${type}:${id}`] = account;

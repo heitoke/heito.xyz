@@ -2,8 +2,14 @@
     <div class="service-activity">
         <div :class="`info ${data.type || ''}`" v-if="data.largeImage || data.largeImage || data.name || data.state || data.details">
             <div class="image" v-if="data.largeImage">
-                <img v-if="data.largeImage" :src="data.largeImage.value">
-                <img v-if="data.smallImage" :src="data.smallImage.value">
+                <img v-if="data.largeImage" :src="data.largeImage.value"
+                    @mouseenter="openContextMenu([$event, `toolpic:${id}:activity:image:large:text`, 'top center-x fixed hover'])"
+                >
+                <img v-if="data.smallImage" :src="data.smallImage.value"
+                    @mouseenter="openContextMenu([$event, `toolpic:${id}:activity:image:small:text`, 'top center-x fixed hover'])"
+                >
+                <ContextMenu :name="`toolpic:${id}:activity:image:large:text`" class="toolpic"><p>{{ data.largeImage.text }}</p></ContextMenu>
+                <ContextMenu :name="`toolpic:${id}:activity:image:small:text`" class="toolpic"><p>{{ data.smallImage.text }}</p></ContextMenu>
             </div>
             <div>
                 <div class="name" v-if="data.name" v-html="data.name"></div>
@@ -21,13 +27,12 @@
         </div>
         <ul class="buttons" v-if="data.buttons && data.buttons.length > 0">
             <li v-for="(button, idx) of data.buttons.slice(0, 3)" :key="(button, idx)"
-                @mouseenter="openContextMenu([$event, `toolpic:${idx}`, 'top center-x fixed hover'])"
-                @mouseleave="closeContextMenu()"
+                @mouseenter="openContextMenu([$event, `toolpic:${id}:${idx}`, 'top center-x fixed hover'])"
                 @click="redirect(button.url, true, true)"
             >
                 <icon :data="button.icon"/>
 
-                <ContextMenu :name="`toolpic:${idx}`" class="toolpic">
+                <ContextMenu :name="`toolpic:${id}:${idx}`" class="toolpic">
                     <p>{{ button.label }}</p>
                 </ContextMenu>
             </li>
@@ -120,14 +125,15 @@ export default {
                 width: 16px;
                 height: 16px;
                 position: absolute;
-                right: -15px;
-                bottom: -8px;
-                border: 5px solid var(--bg-2);
+                right: -10px;
+                bottom: -6px;
                 border-radius: 50%;
+                border: 4px solid var(--bg-2);
+                background: var(--bg-2);
             }
         }
 
-        div {
+        .image + div {
             color: var(--color-2);
             font-size: 14px;
             overflow: hidden;

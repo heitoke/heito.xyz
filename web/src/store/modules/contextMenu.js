@@ -51,12 +51,19 @@ export default {
                 state.y = pos[1];
                 state.type = type;
                 state.event = event;
-                if (!type.includes('hover')) setTimeout(() => {
-                    window.addEventListener('click', () => {
+                if (!type.includes('hover')) {
+                    setTimeout(() => {
+                        window.addEventListener('click', () => {
+                            state.isActive = false;
+                            state.event = null;
+                        }, { once: true });
+                    }, 10)
+                } else {
+                    event.target.addEventListener('mouseleave', () => {
                         state.isActive = false;
                         state.event = null;
                     }, { once: true });
-                }, 10)
+                }
             });
         },
         'contextmenu:close': (state) => {

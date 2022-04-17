@@ -6,15 +6,7 @@ module.exports = class Router extends Main {
 
         this.router = this.express.Router();
 
-        this.cache = {
-            spotify: {},
-            github: {},
-            telegram: {},
-            discord: {},
-            steam: {},
-            osu: {},
-            minecraft: {}
-        }
+        this.cache = {}
 
         this.spotifyUserTokens = {};
 
@@ -23,6 +15,7 @@ module.exports = class Router extends Main {
 
     async getAccount(type, key) {
         let data;
+        if (!this.cache[type]) this.cache[type] = {}
         switch(type) {
             case "spotify":
                 if (!this.envs.SPOTIFY_ID || !this.envs.SPOTIFY_SECRET) return;
@@ -43,16 +36,7 @@ module.exports = class Router extends Main {
             case "telegram":
                 if (!this.envs.TELEGRAM_TOKEN) return;
                 if (!this.cache.telegram[key] || this.getHours(this.cache.telegram[key]?.date) >= 1 || this.cache.telegram[key]?.error) {
-                    try {
-                        let { data } = await this.axios.get(`https://api.telegram.org/bot${this.envs.TELEGRAM_TOKEN}/getChat?chat_id=${key}`);
-                        await (await this.axios.get(`https://api.telegram.org/file/bot${this.envs.TELEGRAM_TOKEN}/photos/file_1.jpg`, {
-                            responseType: 'stream'
-                        })).data.pipe(this.fs.createWriteStream(`./images/${data?.result.id}.jpg`));
-                        this.cache.telegram[key] = { last: Date.now(), data: { ...data?.result, avatar: `${data?.result.id}.jpg` } }
-                    } catch (error) {
-                        console.log(error);
-                        this.cache.telegram[key] = { last: Date.now(), data: error.response.data, error: true }   
-                    }
+                    await this.telegramAccount(key);
                 }
                 break;
             case "discord":
@@ -105,6 +89,9 @@ module.exports = class Router extends Main {
                         this.cache.minecraft[key] = { last: Date.now(), data: error?.response?.data, error: true }   
                     }
                 }
+                break;
+            case "email":
+                this.cache.email[key] = { data: { username: key } }
                 break;
             default:
                 return { status: 404 }
@@ -225,6 +212,22 @@ module.exports = class Router extends Main {
             return user.id;
         } catch (err) {
 
+        }
+    }
+
+    async telegramAccount(userId) {
+        let url = file => `https://api.telegram.org/${file ? 'file/' : ''}bot${this.envs.TELEGRAM_TOKEN}`;
+        try {
+            let user = await (await this.axios.get(`${url()}/getChat?chat_id=${userId}`)).data.result,
+                photos = await (await this.axios.get(`${url()}/getUserProfilePhotos?user_id=${user.id}`)).data.result,
+                file = await (await this.axios.get(`${url()}/getFile?file_id=${photos.photos[0][2].file_id}`)).data.result;
+            await (await this.axios.get(`${url(true)}/${file.file_path}`, {
+                responseType: 'stream'
+            })).data.pipe(this.fs.createWriteStream(`./images/${user.id}.jpg`));
+            this.cache.telegram[user.id] = { last: Date.now(), data: { ...user, avatar: `${user.id}.jpg` } }
+        } catch (error) {
+            console.log(error);
+            this.cache.telegram[userId] = { last: Date.now(), data: error.response.data, error: true }   
         }
     }
 

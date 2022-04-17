@@ -5,7 +5,6 @@
             <div class="banner" :style="{ 'background-image': `url('${getImage(user.banner)}')`, height: user.banner ? null : '96px !important' }">
                 <!-- <div class="level"
                     @mouseenter="openContextMenu([$event, `toolpic:user:level`, 'bottom center-x fixed'])"
-                    @mouseleave="closeContextMenu()"
                 >
                     <div class="bar">
                         <div class="line" :style="{ width: '32%' }"></div>
@@ -18,8 +17,7 @@
                 </div> -->
                 <ul class="role">
                     <UserRole v-for="role of user?.role" :key="role" :role="role"
-                        @mouseenter="openContextMenu([$event, `toolpic:user:role:${role}`, 'top center-x fixed'])"
-                        @mouseleave="closeContextMenu()"
+                        @mouseenter="openContextMenu([$event, `toolpic:user:role:${role}`, 'top center-x fixed hover'])"
                     />
                     <ContextMenu v-for="role of user?.role" :key="role" :name="`toolpic:user:role:${role}`">
                         <span>{{ listRole[role] }}</span>

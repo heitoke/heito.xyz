@@ -42,9 +42,12 @@ export default {
         async loadContent() {
             let content = await this.fetch('/content');
             this.setContent(content);
+            document.querySelector('body').classList.remove('loading');
         }
     },
     mounted() {
+
+        document.querySelector('body').classList.add('loading');
 
         this.setTheme(localStorage["theme"] || "dark");
         this.setColor(this.getLocal?.mainColor || 'var(--C1)');
@@ -73,6 +76,15 @@ export default {
 </script>
 
 <style lang="scss">
+
+body {
+    transition: .2s;
+
+    &.loading {
+        transform: scale(.5);
+        opacity: 0;
+    }
+}
 
 .basic-page {
     display: flex;

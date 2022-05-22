@@ -52,7 +52,8 @@ export default {
                 discord: 'Discord',
                 osu: 'OSU',
                 minecraft: 'Minecraft',
-                email: 'E-Mail'
+                email: 'E-Mail',
+                genkan: 'Genkan'
             }
         }
     },

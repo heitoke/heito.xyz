@@ -1,6 +1,6 @@
 <template>
     <div class="anime">
-        <ul v-if="list">
+        <transition-group tag="ul" enter-active-class="card-show" leave-active-class="card-hide" v-if="list">
             <li v-for="block of list.filter(item => item?.title_original?.toLowerCase().includes(text.toLowerCase())).sort((a, b) => sort ? a?.title_original < b?.title_original : a?.title_original > b?.title_original)" :key="block"
                 @click="redirect(`https://anixart.tv/release/${block?.id}`)"
             >
@@ -22,7 +22,7 @@
                     </div>
                 </div>
             </li>
-        </ul>
+        </transition-group>
         <Button text="Load more" style="margin: 16px 0;" @click="loadList()" v-if="loadMore"/>
     </div>
 </template>

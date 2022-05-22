@@ -158,6 +158,12 @@ export default {
         .list-block {
             margin: 12px 0 0 0;
 
+            .card-show, .card-hide {
+                transform: scale(.9);
+                transition: .2s;
+                opacity: 0;
+            }
+
             ul {
                 li {
                     cursor: pointer;

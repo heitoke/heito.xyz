@@ -6,10 +6,13 @@ const
     express = require('express'),
     bodyParser = require('body-parser'),
     history = require('connect-history-api-fallback'),
+    multer = require('multer'),
     { PORT = 8081 } = process.env,
     // ! FileSystem
     fs = require('fs'),
-    path = require('path');
+    path = require('path'),
+    // ! Firebase
+    FCM = require('fcm-node');
 
 class MainServer {
     constructor() {
@@ -17,12 +20,22 @@ class MainServer {
         this.express = express;
         this.app = this.express();
         this.envs = process.env;
+        this.storage = multer.diskStorage({
+            destination: (req, file, cb) => {
+                cb(null, './images/');
+            },
+            filename: (req, file, cb) => {
+                cb(null, new Date().toISOString() + file.originalname);
+            }
+        }) // dest: 'images/', storage: this.storage
+        this.upload = multer({  });
 
         // * FileSystem
         this.fs = fs;
 
         // * Plugins
         this.db = new (require('./plugins/FileSystem.js'))();
+        this.spotify = new (require('./plugins/Spotify.js'))();
 
         // * NPM Modules
         this.path = path;
@@ -35,12 +48,6 @@ class MainServer {
 
     getHours(time) {
         return Math.floor(((Date.now() - time) % 86400000) / 3600000);
-    }
-
-    msInMin(ms) {
-        let min = Math.floor((ms / 1000 / 60) << 0),
-            sec = Math.floor((ms / 1000) % 60);
-        return `${min}:${`${sec}`.length < 2 ? `0${sec}` : sec}`;
     }
 
     loadHeaders() {
@@ -103,7 +110,8 @@ class MainServer {
             ['projects.json', '[]'],
             ['services.json', '[]'],
             ['users.json', '[]'],
-            ['content.json', '{}']
+            ['content.json', '{}'],
+            ['blogs.json', '[]']
         ]);
 
         // * Headers
@@ -115,8 +123,26 @@ class MainServer {
         // * Load Dist
         this.loadDist();
 
-        // * Load Images
-        this.app.use('/images', this.express.static(`${__dirname}/images`));
+        this.app.get('/fcm', async (req, res, next) => {
+            try {
+                let fcm = new FCM("AAAA-R6n1k8:APA91bFngsuhJ_vpq-pZsJucaGuaEGq1xKwIqd6hHqXWwA-lN0B3JzHO_j_jH711lMMojahlqk0X1YUu08p7OzZza7a_R-fp-J9DAJkjVjwK_PuBBTy-Jj7ee7RbPA5ke9f-UCxKozfh");
+
+                let message = {
+                    to: 'com.heito.heito',
+                    notification: {
+                        title: '123',
+                        body: '123321'
+                    }
+                }
+
+                fcm.send(message, (err, responce) => {
+                    if (err) next(err);
+                    else res.json(responce);
+                })
+            } catch (err) {
+                console.log(err);
+            }
+        });
         
         this.app.listen(PORT, () => {
             console.log(`[heito.xyz]: http://localhost:${PORT}`);

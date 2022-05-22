@@ -8,8 +8,6 @@ module.exports = class Router extends Main {
 
         this.cache = {}
 
-        this.spotifyUserTokens = {};
-
         this.routers();
     }
 
@@ -20,7 +18,7 @@ module.exports = class Router extends Main {
             case "spotify":
                 if (!this.envs.SPOTIFY_ID || !this.envs.SPOTIFY_SECRET) return;
                 if (!this.cache.spotify[key] || this.getHours(this.cache.spotify[key]?.date) >= 1 || this.cache.spotify[key]?.error) {
-                    this.spotifyAccount(this.spotifyUserTokens[key]?.token);
+                    this.cache.spotify[key] = { last: Date.now(), data: await this.spotify.getAccount(key) }
                 }
                 break;
             case "github":
@@ -93,6 +91,14 @@ module.exports = class Router extends Main {
             case "email":
                 this.cache.email[key] = { data: { username: key } }
                 break;
+            case "genkan":
+                try {
+                    let { data } = await this.axios.get(`https://api.dsx.ninja/users/${key}`);
+                    this.cache.genkan[key] = { last: Date.now(), data: data }
+                } catch (error) {
+                    this.cache.genkan[key] = { last: Date.now(), data: error.response.data, error: true }   
+                }
+                break;
             default:
                 return { status: 404 }
                 break;
@@ -104,35 +110,7 @@ module.exports = class Router extends Main {
         switch(type) {
             case "spotify":
                 if (!this.envs.SPOTIFY_ID || !this.envs.SPOTIFY_SECRET) return;
-                try {
-                    let { data } = await this.axios.get(`https://api.spotify.com/v1/me/player`, {
-                        headers: {
-                            Accept: 'application/json',
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${this.spotifyUserTokens[key]?.token}`
-                        }
-                    });
-                    if (!data?.is_playing) return { activity: false }
-                    return {
-                        name: data.item.name,
-                        state: data.item.artists.map(x => x.name).join(', '),
-                        largeImage: {
-                            value: data.item.album.images[0].url
-                        },
-                        bar: {
-                            min: this.msInMin(data.progress_ms),
-                            value: Math.floor(100 * (data.progress_ms / data.item.duration_ms)),
-                            max: this.msInMin(data.item.duration_ms),
-                            color: '#1DB954',
-                        },
-                        buttons: [
-                            { label: 'Open a song', icon: 'uil uil-music-note', url: data.item.external_urls.spotify, }
-                        ]
-                    }
-                } catch (err) {
-                    console.log(err);
-                    return { error: true }
-                }
+                return this.spotify.getActivity(key);
                 break;
             case "steam":
                 if (!this.envs.STEAM_KEY) return;
@@ -179,42 +157,6 @@ module.exports = class Router extends Main {
         }
     }
 
-    async spotifyAccount(token) {
-        try {
-            let { data } = await this.axios.get('https://api.spotify.com/v1/me', {
-                headers: {
-                    Accept: 'application/json',
-                    'Content-Type': 'application/json',
-                    Authorization: `Bearer ${token}`
-                }
-            });
-            this.cache.spotify[data.id] = { last: Date.now(), data }
-            return this.cache.spotify[data.id].data;
-        } catch (err) {
-            console.log(err);
-        }
-    }
-
-    async refreshSpotify(token) {
-        try {
-            let { data } = await this.axios({
-                url: `https://accounts.spotify.com/api/token?grant_type=refresh_token&refresh_token=${token}`,
-                headers: { 
-                    'Authorization': `Basic ${new Buffer(`${this.envs.SPOTIFY_ID}:${this.envs.SPOTIFY_SECRET}`).toString('base64')}`,
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                method: 'POST'
-            }),
-                user = await this.spotifyAccount(data.access_token);
-
-            this.spotifyUserTokens[token] = this.spotifyUserTokens[user.id] = { date: Date.now(), userId: user.id, token: data.access_token };
-
-            return user.id;
-        } catch (err) {
-
-        }
-    }
-
     async telegramAccount(userId) {
         let url = file => `https://api.telegram.org/${file ? 'file/' : ''}bot${this.envs.TELEGRAM_TOKEN}`;
         try {
@@ -223,8 +165,8 @@ module.exports = class Router extends Main {
                 file = await (await this.axios.get(`${url()}/getFile?file_id=${photos.photos[0][2].file_id}`)).data.result;
             await (await this.axios.get(`${url(true)}/${file.file_path}`, {
                 responseType: 'stream'
-            })).data.pipe(this.fs.createWriteStream(`./images/${user.id}.jpg`));
-            this.cache.telegram[user.id] = { last: Date.now(), data: { ...user, avatar: `${user.id}.jpg` } }
+            })).data.pipe(this.fs.createWriteStream(`./images/telegram_${user.id}.jpg`));
+            this.cache.telegram[user.id] = { last: Date.now(), data: { ...user, avatar: `telegram_${user.id}.jpg` } }
         } catch (error) {
             console.log(error);
             this.cache.telegram[userId] = { last: Date.now(), data: error.response.data, error: true }   
@@ -243,11 +185,12 @@ module.exports = class Router extends Main {
             let { token } = req.query,
                 list = this.db.get('services').list;
             try {
-                if (!this.db.authClient(token)) {
+                if (!token || !this.db.authClient(token)) {
                     for (let item of list.filter(item => item.isActive)) {
-                        if (item.type === 'spotify' && (!this.spotifyUserTokens[item.key] || this.getHours(this.spotifyUserTokens[item.key]?.date) >= 1)) {
-                            item.key = await this.refreshSpotify(item.key);
-                        } else if (item.type === 'spotify' && this.spotifyUserTokens[item.key]) item.key = this.spotifyUserTokens[item.key].userId;
+                        let user = this.spotify.spotifyUserTokens[item.key];
+                        if (item.type === 'spotify' && (!user || this.getHours(user?.date) >= 1)) {
+                            item.key = await this.spotify.refreshToken(item.key);
+                        } else if (item.type === 'spotify' && user) item.key = user.userId;
                     }
                     res.send(list.filter(item => item.isActive));
                 } else res.send(list);

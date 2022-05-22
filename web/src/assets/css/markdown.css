@@ -1,0 +1,22 @@
+
+
+.markdown-content .warning,
+.markdown-content .error {
+    margin: 12px 0;
+    padding: 16px;
+    border-radius: 7px;
+    border-left: 5px solid var(--T);
+    transition: .2s;
+    box-sizing: border-box;
+}
+
+.markdown-content .warning {
+    color: var(--C6);
+    border-left-color: var(--C6);
+    background: var(--C6-alt);
+}
+.markdown-content .error {
+    color: var(--C5);
+    border-left-color: var(--C5);
+    background: var(--C5-alt);
+}

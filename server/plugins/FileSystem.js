@@ -44,4 +44,25 @@ module.exports = class FileSystem {
     authClient(token) {
         return this.get('users').list.find(item => item.token === `${token}`);
     }
+
+    /**
+     * 
+     * @param { Object | String } image
+     * @param { "file" | "url" } type
+     * 
+    */
+    uploadImage(image, type = 'file', imageId = this.generate(24)) {
+        let types = {
+            'image/gif': 'gif',
+            'image/jpeg': 'jpg',
+            'image/png': 'png',
+            'image/svg+xml': 'svg'
+        }[image.mimetype];
+
+        if (!types) return { message: 'The file type does not fit :)' };
+
+        fs.writeFileSync(`./images/${imageId}.${types}`, image.buffer, { encoding: 'binary' });
+
+        return { imageId, type: types };
+    }
 }

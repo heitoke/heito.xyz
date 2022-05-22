@@ -1,6 +1,6 @@
 <template>
     <div class="manga">
-        <ul v-if="list">
+        <transition-group tag="ul" enter-active-class="card-show" leave-active-class="card-hide" v-if="list">
             <li v-for="block of list.filter(item => item.title.en_name.toLowerCase().includes(text.toLowerCase())).sort((a, b) => sort ? a.title.en_name < b.title.en_name : a.title.en_name > b.title.en_name)" :key="block"
                 @click="redirect(`https://remanga.org/manga/${block.title.dir}`)"
             >
@@ -18,7 +18,7 @@
                     </div>
                 </div>
             </li>
-        </ul>
+        </transition-group>
     </div>
 </template>
 

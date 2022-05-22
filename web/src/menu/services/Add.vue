@@ -28,6 +28,7 @@ export default {
             services: [
                 ['Spotify', ['fab', 'spotify'], 'spotify', 'Refresh Token'],
                 ['Telegram', 'uil uil-telegram', 'telegram', 'User ID'],
+                ['Genkan', null, 'genkan', 'Username, User ID', 'https://api.dsx.ninja/images/9PFoEKmopyj4r9FNx2F8EFbk'],
                 ['GitHub', ['fab', 'github'], 'github', 'Login'],
                 ['Steam', ['fab', 'steam'], 'steam', 'User ID'],
                 ['Discord', ['fab', 'discord'], 'discord', 'User ID'],

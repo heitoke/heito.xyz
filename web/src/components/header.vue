@@ -42,7 +42,7 @@
 import { mapActions, mapGetters } from 'vuex';
 
 export default {
-    name: 'MainSidebar',
+    name: 'MainHeader',
     computed: {
         ...mapGetters(['getTheme'])
     },

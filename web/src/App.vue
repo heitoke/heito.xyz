@@ -4,14 +4,15 @@
         <Menu v-if="getMenu.length > 0"/>
         <div :class="['basic-page', { super: isSuper }]">
             <transition enter-active-class="page-show" leave-active-class="page-hide">
-                <component :class="['page']" :is="Component" @click="isSuper ? setSuper('auto') : null"/>
+                <component :class="['page']" :is="!getRole && getContent['ignorePages']?.includes($route.name) ? router('/no-page') : Component" @click="isSuper ? setSuper('auto') : null"/>
             </transition>
             <transition enter-active-class="list-pages-show" leave-active-class="list-pages-hide">
                 <ul class="list-pages" v-if="isSuper">
                     <div>Pages</div>
-                    <li v-for="r of listRouters" :key="r"
-                        :class="{ active: $route.path === r.path }"
+                    <li v-for="r of getRole ? listRouters : listRouters.filter(item => !getContent['ignorePages']?.includes(item.name))" :key="r"
+                        :class="{ active: $route.path === r.path, disable: getContent['ignorePages']?.includes(r.name) }"
                         @click="router(r.path)"
+                        @click.right="selRouter = r.name; openContextMenu([$event, `page:edit:${r.name}`])"
                     >
                         <i :class="r.meta.icon"></i>
                         <span>{{ r.meta.label }}</span>
@@ -19,6 +20,16 @@
                 </ul>
             </transition>
         </div>
+
+
+        <ContextMenu :name="`page:edit:${selRouter}`" v-if="getRole">
+            <ul>
+                <li @click="setContentKey(['ignorePages', getContent['ignorePages']?.includes(selRouter) ? getContent['ignorePages'].filter(item => item !== selRouter) : [ ...getContent['ignorePages'] || [], selRouter ]])">
+                    <i class="uil uil-window"></i>
+                    <span>{{ getContent['ignorePages']?.includes(selRouter) ? 'Enable' : 'Disable' }} page</span>
+                </li>
+            </ul>
+        </ContextMenu>
     </router-view>
 </template>
 
@@ -35,7 +46,9 @@ export default {
         ...mapGetters(['getMenu'])
     },
     data() {
-        return {}
+        return {
+            selRouter: ''
+        }
     },
     methods: {
         ...mapActions(['setTheme', 'setColor']),
@@ -134,7 +147,6 @@ body {
         padding-top: 48px;
         width: 100%;
         position: relative;
-        border: 4px solid var(--T);
         box-sizing: border-box;
         transition: all .2s;
         overflow-x: hidden;
@@ -194,6 +206,10 @@ body {
                 i {
                     color: var(--C1);
                 }
+            }
+
+            &.disable {
+                opacity: .5 !important;
             }
         }
     }

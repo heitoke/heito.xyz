@@ -22,6 +22,9 @@ body {
     transition: .2s;
     overflow: hidden;
 }
+textarea {
+    font-family: "Raleway", sans-serif;
+}
 
 ul, li {
     list-style-type: none;

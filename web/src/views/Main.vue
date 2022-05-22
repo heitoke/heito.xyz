@@ -1,73 +1,91 @@
 <template>
     <div class="main">
-        <ul :class="['services', { open: services }]" v-if="listServices">
-            <li class="service">
-                <div class="button" @click="services = !services" @click.right="openContextMenu([$event, 'services:settings'])">
-                    <i class="uil uil-apps"></i>
-                    <span>Services</span>
-                </div>
+        <div class="block">
+            <ul :class="['services', { open: services }]" v-if="listServices">
+                <li class="service">
+                    <div class="button" @click="services = !services" @click.right="openContextMenu([$event, 'services:settings'])">
+                        <i class="uil uil-apps"></i>
+                        <span>Services</span>
+                    </div>
 
-                <ContextMenu name="services:settings" v-if="getRole">
+                    <ContextMenu name="services:settings" v-if="getRole">
+                        <ul>
+                            <li @click="setMenu(['ServicesListMenu'])">
+                                <i class="uil uil-user-square" style="color: var(--C1);"></i>
+                                <span>Services settings</span>
+                            </li>
+                        </ul>
+                    </ContextMenu>
+                </li>
+                <li class="service" v-for="(service, idx) of listServices" :key="(service, idx)">
+                    <div class="button" @mouseenter="focusService(idx); serviceAccount(service.type, service.id, service.key)" @mouseleave="blurService(idx)">
+                        <icon :data="serviceTypes[service.type]"/>
+                        <span>{{ names[service.type] }}</span>
+                    </div>
+                    <transition enter-active-class="show" leave-active-class="hide">
+                        <div class="block" v-if="services || serviceHover[0] === idx" @mouseenter="focusService(idx, true)" @mouseleave="serviceHover = []">
+                            <ServiceAccount :data="accounts[`${service.type}:${service.id}`]" v-if="accounts[`${service.type}:${service.id}`]"/>
+                            <ServiceActivity v-if="activity[`${service.type}:${service.id}`]" :data="activity[`${service.type}:${service.id}`]"/>
+                        </div>
+                    </transition>
+                </li>
+            </ul>
+            <div class="content" @click.right="openContextMenu([$event, 'main:content'])">
+                <!-- <div class="table">
+                    ヘ <br>
+                    イ <br>
+                    ト
+                </div> -->
+                <div class="info" :style="`border-right: ${!getMobile && getLocal?.models ? '0px solid var(--dimming)' : 'none'};`">
+                    <h1 class="glitch font-3" :data-glitch="getContent?.title">
+                        <div :class="`status ${isTypeStatus ? mainActivity?.userOnline?.type : (mainActivity?.userOnline || 'offline')}`">
+                            <!-- <span>{{ statusNames[mainActivity?.userOnline] || mainActivity?.userOnline }}</span> -->
+                            <div @mouseenter="openContextMenu([$event, `toolpic:status`, 'right center-y fixed hover'])"></div>
+                        </div>
+                        {{ getContent?.title }}
+                    </h1>
+                    <div class="text" v-html="getContent?.description"></div>
+                </div>
+                <video class="video" v-if="getContent?.image" :src="require(`../assets/images/${images[Math.floor(Math.random() * images.length)]}.webp`)" autoplay muted loop></video>
+                <div class="activity" v-if="getContent?.activity">
+                    <ServiceActivity :data="mainActivity?.activity"/>
+                </div>
+                
+                <ContextMenu name="toolpic:status" class="toolpic">
+                    <p>
+                        Status 
+                        <b style="text-transform: uppercase;" v-if="mainActivity?.userOnline">
+                            {{ isTypeStatus ? (mainActivity?.userOnline?.value || mainActivity?.userOnline?.type) : (statusNames[mainActivity?.userOnline] || mainActivity?.userOnline) }}
+                        </b>
+                    </p>
+                </ContextMenu>
+
+                <ContextMenu name="main:content" v-if="getRole">
                     <ul>
-                        <li @click="setMenu(['ServicesListMenu'])">
-                            <i class="uil uil-user-square" style="color: var(--C1);"></i>
-                            <span>Services settings</span>
+                        <li @click="setMenu(['SettingsEditMenu', { title: 'Edit title', value: getContent?.title, save: val => setContentKey(['title', val]) }])">
+                            <i class="uil uil-text"></i>
+                            <span>Edit title</span>
+                        </li>
+                        <li @click="setMenu(['SettingsEditMenu', { title: 'Edit description', value: getContent?.description, save: val => setContentKey(['description', val]) }])">
+                            <i class="uil uil-subject"></i>
+                            <span>Edit description</span>
+                        </li>
+                        <div class="line"></div>
+                        <li @click="setContentKey(['image', !getContent['image']])">
+                            <i class="uil uil-image" style="color: var(--C7);"></i>
+                            <span>{{ getContent?.image ? 'Disable' : 'Enable' }} image</span>
+                        </li>
+                        <div class="line"></div>
+                        <li @click="setContentKey(['activity', !getContent['activity']])">
+                            <i class="uil uil-rocket" style="color: var(--C1);"></i>
+                            <span>{{ getContent?.activity ? 'Disable' : 'Enable' }} activity</span>
                         </li>
                     </ul>
                 </ContextMenu>
-            </li>
-            <li class="service" v-for="(service, idx) of listServices" :key="(service, idx)">
-                <div class="button" @mouseenter="focusService(idx); serviceAccount(service.type, service.id, service.key)" @mouseleave="blurService(idx)">
-                    <icon :data="serviceTypes[service.type]"/>
-                    <span>{{ names[service.type] }}</span>
-                </div>
-                <transition enter-active-class="show" leave-active-class="hide">
-                    <div class="block" v-if="services || serviceHover[0] === idx" @mouseenter="focusService(idx, true)" @mouseleave="serviceHover = []">
-                        <ServiceAccount :data="accounts[`${service.type}:${service.id}`]" v-if="accounts[`${service.type}:${service.id}`]"/>
-                        <ServiceActivity v-if="activity[`${service.type}:${service.id}`]" :data="activity[`${service.type}:${service.id}`]"/>
-                    </div>
-                </transition>
-            </li>
-        </ul>
-        <div class="content" @click.right="openContextMenu([$event, 'main:content'])">
-            <!-- <div class="table">
-                ヘ <br>
-                イ <br>
-                ト
-            </div> -->
-            <div class="info" :style="`border-right: ${!getMobile && getLocal?.models ? '0px solid var(--dimming)' : 'none'};`">
-                <h1 class="glitch font-3" :data-glitch="getContent?.title">{{ getContent?.title }}</h1>
-                <div class="text" v-html="getContent?.description"></div>
             </div>
-            <div class="activity" v-if="getContent?.activity">
-                <div :class="`status ${mainActivity?.userOnline}`" v-if="mainActivity?.userOnline !== 'none'">
-                    <span>{{ statusNames[mainActivity?.userOnline] || mainActivity?.userOnline }}</span>
-                    <div @mouseenter="openContextMenu([$event, `toolpic:status`, 'top center-x fixed hover'])"></div>
-                </div>
-                <ContextMenu name="toolpic:status" class="toolpic"><p>Status</p></ContextMenu>
-                <ServiceActivity :data="mainActivity?.activity" v-if="mainActivity?.activity"/>
+            <div class="bottom">
+                Press the <div class="key" @click="isSuper ? null : setSuper('auto')">Tab</div> key
             </div>
-
-            <ContextMenu name="main:content" v-if="getRole">
-                <ul>
-                    <li @click="setMenu(['SettingsEditMenu', { title: 'Edit title', value: getContent?.title, save: val => setContentKey(['title', val]) }])">
-                        <i class="uil uil-text"></i>
-                        <span>Edit title</span>
-                    </li>
-                    <li @click="setMenu(['SettingsEditMenu', { title: 'Edit description', value: getContent?.description, save: val => setContentKey(['description', val]) }])">
-                        <i class="uil uil-subject"></i>
-                        <span>Edit description</span>
-                    </li>
-                    <div class="line"></div>
-                    <li @click="setContentKey(['activity', !getContent['activity']])">
-                        <i class="uil uil-rocket" style="color: var(--C1);"></i>
-                        <span>{{ getContent?.activity ? 'Disable activity' : 'Enable activity' }}</span>
-                    </li>
-                </ul>
-            </ContextMenu>
-        </div>
-        <div class="bottom">
-            Press the <div class="key" @click="isSuper ? null : setSuper('auto')">Tab</div> key
         </div>
     </div>
 </template>
@@ -83,6 +101,9 @@ export default {
     computed: {
         randomModel() {
             return this.models[Math.floor(Math.random() * this.models.length)];
+        },
+        isTypeStatus() {
+            return this.mainActivity?.userOnline && typeof(this.mainActivity?.userOnline) === 'object';
         }
     },
     data() {
@@ -105,7 +126,12 @@ export default {
             accounts: {},
             activity: {},
             listServices: null,
-            mainActivity: null
+            mainActivity: null,
+            images: [
+                'kotikinu',
+                'utya3d',
+                'twerking'
+            ]
         }
     },
     methods: {
@@ -140,6 +166,9 @@ export default {
                     break;
                 case "email":
                     account = { avatar: null, username: data.username, buttons: [{ label: 'Send an email', icon: 'uil uil-envelope-upload', url: `mailto:${data.username}` }]};
+                    break;
+                case "genkan":
+                    account = { avatar: `https://api.dsx.ninja/images/${data.avatar.image.id}`, username: data.nickname, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://dev.dsx.ninja/users/${data.username}` }] }
                     break;
             }
             this.accounts[`${type}:${id}`] = account;
@@ -190,7 +219,9 @@ export default {
     user-select: none;
 }
 
-.page.main {
+.page.main .block {
+    height: 100%;
+    
     .services {
         position: absolute;
         left: 16px;
@@ -378,13 +409,20 @@ export default {
         justify-content: center;
 
         .info {
-            min-width: 540px;
+            // min-width: 540px;
             text-align: center;
             // border-right: 1px solid var(--dimming);
 
             h1 {
                 margin: 0 0 4px 0;
+                position: relative;
                 font-size: 64px;
+
+                .status {
+                    position: absolute;
+                    top: 8px;
+                    left: -32px;
+                }
             }
 
             .text {
@@ -392,10 +430,34 @@ export default {
             }
         }
 
-        .activity {
-            min-width: 376px;
+        .video {
+            margin: 0 0 0 64px;
+            width: 320px;
+        }
 
-            .status {
+        .activity {
+            margin: 0 0 0 64px;
+            min-width: 376px;
+        }
+    }
+
+    .bottom {
+        display: flex;
+        position: absolute;
+        left: 50%;
+        bottom: 16px;
+        color: var(--color-2);
+        font-size: 14px;
+        align-items: center;
+        transform: translateX(-50%);
+        z-index: 10;
+
+        .key {
+            margin: 0 8px;
+        }
+    }
+
+    .status {
                 display: flex;
                 margin: 0 0 12px 0;
                 font-size: 12px;
@@ -497,24 +559,6 @@ export default {
                     }
                 }
             }
-        }
-    }
-
-    .bottom {
-        display: flex;
-        position: absolute;
-        left: 50%;
-        bottom: 16px;
-        color: var(--color-2);
-        font-size: 14px;
-        align-items: center;
-        transform: translateX(-50%);
-        z-index: 10;
-
-        .key {
-            margin: 0 8px;
-        }
-    }
 }
 
 @media (max-width: 760px) {
@@ -527,13 +571,11 @@ export default {
             flex-direction: column;
 
             .info {
-                min-width: 540px;
                 text-align: center;
-                border-right: none;
             }
 
             .activity {
-                margin: 16px 0 0 0;
+                margin: 16px 0 0 0 !important;
                 min-width: 90%;
             }
         }

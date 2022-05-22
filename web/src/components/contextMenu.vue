@@ -106,7 +106,7 @@ export default {
                 top: 50%;
                 left: 50%;
                 border-radius: 50%;
-                background: var(--dimming);
+                background: var(--dimming) !important;
                 transform: translate(-50%, -50%) scale(0);
                 transition: .4s;
                 z-index: -1;

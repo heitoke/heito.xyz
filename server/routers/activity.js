@@ -22,7 +22,7 @@ module.exports = class Router extends Main {
             let { token, data } = req.body;
             if (!this.db.authClient(token)) return res.send({ status: 401 });
             this.activity = data?.activity || this.activity;
-            this.userOnline = data?.userOnline || this.userOnline;
+            this.userOnline = data?.userOnline || 'offline';
             res.send({ status: 200 });
         });
 

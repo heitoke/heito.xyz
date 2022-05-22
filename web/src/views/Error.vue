@@ -16,6 +16,7 @@ export default {
     name: 'ErrorPage',
     components: {},
     computed: {},
+    props: {},
     data() {
         return {}
     },

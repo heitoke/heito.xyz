@@ -1,6 +1,6 @@
 <template>
     <div class="field-select">
-        <div @click="open()">
+        <div class="header" @click="open()">
             <icon :data="getItem?.icon" :style="`color: ${getItem?.color};`"/>
             <span>{{ select ? getItem?.label : text }}</span>
         </div>

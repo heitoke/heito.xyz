@@ -9,6 +9,8 @@ const getPosition = (event, type, el) => {
         y = Math.floor(fixed.y + (fixed.height / 2));
     }
 
+    if (!el) return [0, 0];
+
     if (type.split(' ').find(item => item === 'center')) return [x - (el.clientWidth / 2), y - (el.clientHeight / 2)];
 
     else if (inc('top')) {
@@ -46,7 +48,7 @@ export default {
                 state.name = name;
                 res('end');
             }).then(async () => {
-                let pos = await getPosition(event, type, document.querySelector('.context-menu'));
+                let pos = getPosition(event, type, document.querySelector('.context-menu'));
                 state.x = pos[0];
                 state.y = pos[1];
                 state.type = type;

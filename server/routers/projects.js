@@ -24,7 +24,7 @@ module.exports = class Router extends Main {
         this.router.post('/add', (req, res) => {
             let { token, data } = req.body;
             if (!this.db.authClient(token)) return res.send({ status: 401 });
-            this.db.get('projects').add(data);
+            this.db.get('projects').add({ ...data, createAt: Date.now() });
             res.send({ status: 200 });
         });
 

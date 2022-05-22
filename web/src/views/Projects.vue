@@ -17,12 +17,12 @@
                     </li>
                 </ul>
             </ul>
-            <ul class="list" v-if="list && type === 'projects'">
+            <transition-group tag="ul" class="list" v-if="list && type === 'projects'" enter-active-class="card-show" leave-active-class="card-hide">
                 <ProjectCard v-for="project of list?.filter(item => new RegExp(text, 'i').test(item.title))" :key="project" :data="project"/>
-            </ul>
-            <ul class="list" v-if="list && type === 'repos'">
+            </transition-group>
+            <transition-group tag="ul" class="list" v-if="list && type === 'repos'" enter-active-class="card-show" leave-active-class="card-hide">
                 <ProjectRepo v-for="repo of list?.filter(item => new RegExp(text, 'i').test(item.name))" :key="repo" :data="repo"/>
-            </ul>
+            </transition-group>
             <Button text="Load more" @click="load(type, page + 1)" style="margin: 16px 0;" v-if="type === 'repos' && list?.length === (page * 100)"/>
         </div>
     </div>
@@ -65,7 +65,7 @@ export default {
         async add() {
             let { status } = await this.fetch('/projects/add', { token: this.getLocal?.token, data: { title: 'New Project' } });
             if (status !== 200) return;
-            this.load();
+            this.load('projects');
         }
     },
     mounted() {
@@ -76,12 +76,12 @@ export default {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
-.projects-show, .projects-hide {
-    transition: 2s;
-    
-        opacity: 0;
+.card-show, .card-hide {
+    transform: scale(.9);
+    transition: .2s;
+    opacity: 0;
 }
 
 .page.projects .block {

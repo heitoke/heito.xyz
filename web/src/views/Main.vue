@@ -3,7 +3,7 @@
         <div class="block">
             <ul :class="['services', { open: services }]" v-if="listServices">
                 <li class="service">
-                    <div class="button" @click="services = !services" @click.right="openContextMenu([$event, 'services:settings'])">
+                    <div class="button" @click="services = !services" @contextmenu="openContextMenu([$event, 'services:settings'])">
                         <i class="uil uil-apps"></i>
                         <span>Services</span>
                     </div>
@@ -30,7 +30,7 @@
                     </transition>
                 </li>
             </ul>
-            <div class="content" @click.right="openContextMenu([$event, 'main:content'])">
+            <div class="content" @contextmenu="openContextMenu([$event, 'main:content'])">
                 <!-- <div class="table">
                     ヘ <br>
                     イ <br>
@@ -92,12 +92,14 @@
 
 <script>
 
-import ServiceAccount from '../components/services/account.vue'
-import ServiceActivity from '../components/services/activity.vue'
+import { defineAsyncComponent } from 'vue';
 
 export default {
     name: 'MainPage',
-    components: { ServiceAccount, ServiceActivity },
+    components: {
+        ServiceAccount: defineAsyncComponent(() => import('../components/services/account.vue')),
+        ServiceActivity: defineAsyncComponent(() => import('../components/services/activity.vue'))        
+    },
     computed: {
         randomModel() {
             return this.models[Math.floor(Math.random() * this.models.length)];
@@ -116,7 +118,8 @@ export default {
                 steam: 'Steam',
                 discord: 'Discord',
                 osu: 'OSU',
-                minecraft: 'Minecraft'
+                minecraft: 'Minecraft',
+                genkan: 'Genkan'
             },
             statusNames: {
                 dnd: 'Do not disturb'
@@ -168,7 +171,7 @@ export default {
                     account = { avatar: null, username: data.username, buttons: [{ label: 'Send an email', icon: 'uil uil-envelope-upload', url: `mailto:${data.username}` }]};
                     break;
                 case "genkan":
-                    account = { avatar: `https://api.dsx.ninja/images/${data.avatar.image.id}`, username: data.nickname, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://dev.dsx.ninja/users/${data.username}` }] }
+                    account = { avatar: `https://api.genkan.xyz/images/${data.avatar.image.id}?full=true`, username: data.nickname, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://genkan.xyz/users/${data.username}` }] }
                     break;
             }
             this.accounts[`${type}:${id}`] = account;
@@ -577,6 +580,10 @@ export default {
             .activity {
                 margin: 16px 0 0 0 !important;
                 min-width: 90%;
+            }
+
+            .video {
+                margin: 0px !important;
             }
         }
     }

@@ -93,7 +93,7 @@ module.exports = class Router extends Main {
                 break;
             case "genkan":
                 try {
-                    let { data } = await this.axios.get(`https://api.dsx.ninja/users/${key}`);
+                    let { data } = await this.axios.get(`https://api.genkan.xyz/users/${key}`);
                     this.cache.genkan[key] = { last: Date.now(), data: data }
                 } catch (error) {
                     this.cache.genkan[key] = { last: Date.now(), data: error.response.data, error: true }   

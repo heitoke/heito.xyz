@@ -24,11 +24,13 @@
 
 <script>
 
-import BlogPage from '../components/blog/card.vue'
+import { defineAsyncComponent } from 'vue';
 
 export default {
     name: 'BlogsPage',
-    components: { BlogPage },
+    components: {
+        BlogPage: defineAsyncComponent(() => import('../components/blog/card.vue'))
+    },
     computed: {},
     data() {
         return {

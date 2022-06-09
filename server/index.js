@@ -7,6 +7,7 @@ const
     bodyParser = require('body-parser'),
     history = require('connect-history-api-fallback'),
     multer = require('multer'),
+    compression = require('compression'),
     { PORT = 8081 } = process.env,
     // ! FileSystem
     fs = require('fs'),
@@ -53,12 +54,14 @@ class MainServer {
     loadHeaders() {
         this.app.use(bodyParser.json());
         this.app.use(bodyParser.urlencoded({ extended: true }));
+        this.app.use(compression());
 
         this.app.use((req, res, next) => {
             let user = (req.headers['x-forwarded-for'] || req.socket.remoteAddress).replace(/::ffff:/g, '');
 			if (this.banUsers[user]) return res.send({ status: 429, blocked: true, message: `You are blocked for 5 minutes :#` });
             res.header("Access-Control-Allow-Origin", "*");
             res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+            res.header("Accept-Encoding", "gzip, compress, br");
             if (this.usersList[user] >= 50) {
                 this.banUsers[user] = true;
                 console.log(`Ban ${user}`);

@@ -44,13 +44,14 @@
 
 <script>
 
-import SongTrackCard from '../components/song/cardTrack.vue'
-import SongArtistCard from '../components/song/cardArtist.vue'
-import SongPlaylistCard from '../components/song/cardPlaylist.vue'
+import { defineAsyncComponent } from 'vue';
 
 export default {
     name: 'SongsPage',
-    components: { SongTrackCard, SongArtistCard, SongPlaylistCard },
+    components: {
+            SongTrackCard: defineAsyncComponent(() => import('../components/song/cardTrack.vue')),
+        SongArtistCard: defineAsyncComponent(() => import('../components/song/cardArtist.vue')),
+        SongPlaylistCard: defineAsyncComponent(() => import('../components/song/cardPlaylist.vue')) },
     computed: {},
     data() {
         return {

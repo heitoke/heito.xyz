@@ -67,12 +67,13 @@
 
 <script>
 
-import BlockManga from '../components/list/manga.vue'
-import BlockAnime from '../components/list/anime.vue'
+import { defineAsyncComponent } from 'vue';
 
 export default {
     name: 'ListPage',
-    components: { BlockManga, BlockAnime },
+    components: {
+            BlockManga: defineAsyncComponent(() => import('../components/list/manga.vue')),
+        BlockAnime: defineAsyncComponent(() => import('../components/list/anime.vue')) },
     computed: {},
     data() {
         return {

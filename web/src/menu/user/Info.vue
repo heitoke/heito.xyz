@@ -1,6 +1,6 @@
 <template>
     <div class="user-info" v-if="user">
-        <main @click.right="openContextMenu([$event, `user:edit:${user.id}`])">
+        <main @contextmenu="openContextMenu([$event, `user:edit:${user.id}`])">
             <Button text="Save changes" color="green" class="save" v-if="JSON.stringify(user) !== oldUser" @click="save"/>
             <div class="banner" :style="{ 'background-image': `url('${getImage(user.banner)}')`, height: user.banner ? null : '96px !important' }">
                 <!-- <div class="level"
@@ -32,7 +32,7 @@
                 <div class="description">{{ user.description }}</div>
                 <ul class="nav-bar">
                     <li :class="{ active: block === 'links' }" @click="block = 'links'"
-                        @click.right="openContextMenu([$event, `user-edit:${user.id}:links`])"
+                        @contextmenu="openContextMenu([$event, `user-edit:${user.id}:links`])"
                     >Links</li>
                     <li v-if="page" :class="{ active: block === 'projects' }" @click="block = 'projects'">Projects</li>
                     <li v-if="page" :class="{ active: block === 'collections' }" @click="block = 'collections'">Сollections</li>
@@ -124,12 +124,14 @@
 
 <script>
 
-import ProjectCard from '../../components/project/card.vue'
-import Links from '../../components/other/links.vue'
+import { defineAsyncComponent } from 'vue';
 
 export default {
     name: 'UserInfoMenu',
-    components: { ProjectCard, Links },
+    components: {
+        ProjectCard: defineAsyncComponent(() => import('../../components/other/links.vue')),
+        Links: defineAsyncComponent(() => import('../../components/other/links.vue'))
+    },
     computed: {
         getRole() {
             return this.getLogin && (this.getUser?.role.includes('uw') || this.user.id === this.getUser?.id);

@@ -1,17 +1,25 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import { h, resolveComponent, defineAsyncComponent } from 'vue';
+import { createRouter, createWebHistory } from 'vue-router';
 
-// * Pages
-import MainPage from '../views/Main.vue'
-import ProjectsPage from '../views/Projects.vue'
-import ListPage from '../views/List.vue'
-import SongsPage from '../views/Songs.vue'
+const
+    // * Pages
+    MainPage = defineAsyncComponent(() => import('../views/Main.vue')),
+    ProjectsPage = defineAsyncComponent(() => import('../views/Projects.vue')),
+    ListPage = defineAsyncComponent(() => import('../views/List.vue')),
+    SongsPage = defineAsyncComponent(() => import('../views/Songs.vue')),
+    // * Blogs
+    BlogsPage = defineAsyncComponent(() => import('../views/Blogs.vue')),
+    BlogPage = () => import('../views/Blog.vue'),
+    // * Other
+    ErrorPage = defineAsyncComponent(() => import('../views/Error.vue'));
 
-// * Blogs
-import BlogsPage from '../views/Blogs.vue'
-import BlogPage from '../views/Blog.vue'
-
-// * Other
-import ErrorPage from '../views/Error.vue'
+const createVoidSpace = () => {
+    return {
+        render() {
+            return h(resolveComponent('router-view'))
+        }
+    }
+}
 
 const router = createRouter({
     history: createWebHistory(process.env.BASE_URL),
@@ -43,7 +51,7 @@ const router = createRouter({
         {
             path: '/blogs',
             name: 'BlogsPage',
-            component: () => import('../views/Void.vue'),
+            component: () => createVoidSpace(),
             meta: { label: 'Blogs', icon: 'uil uil-document-layout-left', description: '' },
             children: [
                 {

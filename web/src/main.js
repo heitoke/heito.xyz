@@ -49,7 +49,7 @@ createApp(App).mixin({
                 osu: 'https://osu.ppy.sh/favicon-32x32.png',
                 minecraft: 'https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/apple-icon-180x180.png',
                 email: 'uil uil-at',
-                genkan: 'https://api.dsx.ninja/images/9PFoEKmopyj4r9FNx2F8EFbk'
+                genkan: 'https://genkan.xyz/favicon.ico'
             }
         }
     },

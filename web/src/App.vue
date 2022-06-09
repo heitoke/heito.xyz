@@ -12,7 +12,7 @@
                     <li v-for="r of getRole ? listRouters : listRouters.filter(item => !getContent['ignorePages']?.includes(item.name))" :key="r"
                         :class="{ active: $route.path === r.path, disable: getContent['ignorePages']?.includes(r.name) }"
                         @click="router(r.path)"
-                        @click.right="selRouter = r.name; openContextMenu([$event, `page:edit:${r.name}`])"
+                        @contextmenu="selRouter = r.name; openContextMenu([$event, `page:edit:${r.name}`])"
                     >
                         <i :class="r.meta.icon"></i>
                         <span>{{ r.meta.label }}</span>
@@ -35,13 +35,14 @@
 
 <script>
 
-import { mapGetters, mapActions } from 'vuex'
-
-import MainHeader from './components/header.vue'
+import { defineAsyncComponent } from 'vue';
+import { mapGetters, mapActions } from 'vuex';
 
 export default {
     name: 'App',
-    components: { MainHeader },
+    components: {
+        MainHeader: defineAsyncComponent(() => import('./components/header.vue'))
+    },
     computed: {
         ...mapGetters(['getMenu'])
     },

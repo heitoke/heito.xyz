@@ -30,12 +30,13 @@
 
 <script>
 
-import ProjectCard from '../components/project/card.vue'
-import ProjectRepo from '../components/project/repo.vue'
+import { defineAsyncComponent } from 'vue';
 
 export default {
     name: 'ProjectsPage',
-    components: { ProjectCard, ProjectRepo },
+    components: {
+            ProjectCard: defineAsyncComponent(() => import('../components/project/card.vue')),
+        ProjectRepo: defineAsyncComponent(() => import('../components/project/repo.vue')) },
     computed: {},
     data() {
         return {

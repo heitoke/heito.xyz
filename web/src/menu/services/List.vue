@@ -3,7 +3,7 @@
         <ul class="list">
             <li v-for="(service, idx) of services" :key="(service, idx)"
                 :class="['service', { off: !service.isActive, deleted: service['deleted'] }]"
-                @click.right="openContextMenu([$event, `service:setting:${idx}`])"
+                @contextmenu="openContextMenu([$event, `service:setting:${idx}`])"
             >
                 <div class="name">{{ names[service.type] }}</div>
                 <div class="service-key">{{ service.key }}</div>

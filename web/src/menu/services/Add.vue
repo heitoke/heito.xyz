@@ -34,6 +34,7 @@ export default {
                 ['Discord', ['fab', 'discord'], 'discord', 'User ID'],
                 ['OSU', null, 'osu', 'Username', 'https://osu.ppy.sh/favicon-32x32.png'],
                 ['Minecraft', null, 'minecraft', 'UUID', 'https://www.minecraft.net/etc.clientlibs/minecraft/clientlibs/main/resources/apple-icon-180x180.png'],
+                ['TETR.IO', null, 'tetr', 'Username', 'https://tetr.io/favicon.ico'],
                 ['E-Mail', 'uil uil-at', 'email', 'E-Mail address']
             ]
         }

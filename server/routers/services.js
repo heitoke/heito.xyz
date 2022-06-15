@@ -99,6 +99,14 @@ module.exports = class Router extends Main {
                     this.cache.genkan[key] = { last: Date.now(), data: error.response.data, error: true }   
                 }
                 break;
+            case "tetr":
+                try {
+                    let { data } = await this.axios.get(`https://ch.tetr.io/api/users/${key}`);
+                    this.cache.tetr[key] = { last: Date.now(), data: data?.data?.user }
+                } catch (error) {
+                    this.cache.tetr[key] = { last: Date.now(), data: error.response.data, error: true }   
+                }
+                break;
             default:
                 return { status: 404 }
                 break;

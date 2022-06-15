@@ -53,7 +53,8 @@ export default {
                 osu: 'OSU',
                 minecraft: 'Minecraft',
                 email: 'E-Mail',
-                genkan: 'Genkan'
+                genkan: 'Genkan',
+                tetr: 'TETR.IO'
             }
         }
     },

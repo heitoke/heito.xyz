@@ -119,7 +119,8 @@ export default {
                 discord: 'Discord',
                 osu: 'OSU',
                 minecraft: 'Minecraft',
-                genkan: 'Genkan'
+                genkan: 'Genkan',
+                tetr: 'TETR.IO'
             },
             statusNames: {
                 dnd: 'Do not disturb'
@@ -172,6 +173,10 @@ export default {
                     break;
                 case "genkan":
                     account = { avatar: `https://api.genkan.xyz/images/${data.avatar.image.id}?full=true`, username: data.nickname, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://genkan.xyz/users/${data.username}` }] }
+                    break;
+                case "tetr":
+                    console.log(data);
+                    account = { avatar: `https://tetr.io/user-content/avatars/${data._id}.jpg`, username: data.username, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://ch.tetr.io/u/${data.username}` }] }
                     break;
             }
             this.accounts[`${type}:${id}`] = account;

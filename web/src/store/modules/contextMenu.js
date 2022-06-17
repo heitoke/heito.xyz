@@ -41,7 +41,8 @@ export default {
         isActive: false
     },
     mutations: {
-        'contextmenu:open': (state, { event, name, type }) => {
+        'contextmenu:open': (state, { name, type }) => {
+            let event = window.event;
             if (state.x === event.clientX || state.y === event.clientY) return;
             new Promise(res => {
                 state.isActive = true;
@@ -74,8 +75,8 @@ export default {
         }
     },
     actions: {
-        openContextMenu({ commit }, [event, name, type = 'right']) {
-            return commit('contextmenu:open', { event, name, type });
+        setContextMenu({ commit }, [name, type = 'right']) {
+            return commit('contextmenu:open', { name, type });
         },
         closeContextMenu({ commit }) {
             return commit('contextmenu:close');

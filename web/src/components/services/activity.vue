@@ -1,12 +1,12 @@
 <template>
-    <div class="service-activity">
+    <div class="service-activity" v-if="data">
         <div :class="`info ${data.type || ''}`" v-if="data.largeImage || data.largeImage || data.name || data.state || data.details">
             <div class="image" v-if="data.largeImage">
                 <img v-if="data.largeImage" :src="data.largeImage.value"
-                    @mouseenter="openContextMenu([$event, `toolpic:${id}:activity:image:large:text`, 'top center-x fixed hover'])"
+                    @mouseenter="setContextMenu([`toolpic:${id}:activity:image:large:text`, 'top center-x fixed hover'])"
                 >
                 <img v-if="data.smallImage" :src="data.smallImage.value"
-                    @mouseenter="openContextMenu([$event, `toolpic:${id}:activity:image:small:text`, 'top center-x fixed hover'])"
+                    @mouseenter="setContextMenu([`toolpic:${id}:activity:image:small:text`, 'top center-x fixed hover'])"
                 >
                 <ContextMenu :name="`toolpic:${id}:activity:image:large:text`" class="toolpic"><p>{{ data.largeImage.text }}</p></ContextMenu>
                 <ContextMenu :name="`toolpic:${id}:activity:image:small:text`" class="toolpic"><p>{{ data.smallImage.text }}</p></ContextMenu>
@@ -27,17 +27,18 @@
         </div>
         <ul class="buttons" v-if="data.buttons && data.buttons.length > 0">
             <li v-for="(button, idx) of data.buttons.slice(0, 3)" :key="(button, idx)"
-                @mouseenter="openContextMenu([$event, `toolpic:${id}:${idx}`, 'top center-x fixed hover'])"
                 @click="redirect(button.url, true, true)"
+                @mouseenter="setToolpic([button.label])"
             >
+                <!-- @mouseenter="setContextMenu([`toolpic:${id}:${idx}`, 'top center-x fixed hover'])" -->
                 <icon :data="button.icon"/>
 
-                <ContextMenu :name="`toolpic:${id}:${idx}`" class="toolpic">
+                <!-- <ContextMenu :name="`toolpic:${id}:${idx}`" class="toolpic">
                     <p>{{ button.label }}</p>
-                </ContextMenu>
+                </ContextMenu> -->
             </li>
             <li v-if="data.buttons.length > 3"
-                @mouseenter="openContextMenu([$event, `service:activity:buttons:${id}`, 'top center-x fixed'])"
+                @mouseenter="setContextMenu([`service:activity:buttons:${id}`, 'top center-x fixed'])"
             >
                 <i class="uil uil-angle-up"></i>
             </li>

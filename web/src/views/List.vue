@@ -19,18 +19,18 @@
             <main>
                 <ul class="filter">
                     <li class="service" v-if="service?.service"
-                        @mouseenter="openContextMenu([$event, `toolpic:service:name`, 'top center-x fixed hover'])"
+                        @mouseenter="setContextMenu([`toolpic:service:name`, 'top center-x fixed hover'])"
                         @click="redirect(service.service.url, true, true)"
                     >
                         <icon :data="service.service.icon"/>
                     </li>
                     <li class="btn" @click="cardType = !cardType"
-                        @mouseenter="openContextMenu([$event, `toolpic:card:type`, 'top center-x fixed hover'])"
+                        @mouseenter="setContextMenu([`toolpic:card:type`, 'top center-x fixed hover'])"
                     >
                         <i :class="cardType ? 'uil uil-list-ul' : 'uil uil-apps'"></i>
                     </li>
                     <li class="btn" @click="sortType = !sortType"
-                        @mouseenter="openContextMenu([$event, `toolpic:sort:type`, 'top center-x fixed hover'])"
+                        @mouseenter="setContextMenu([`toolpic:sort:type`, 'top center-x fixed hover'])"
                     >
                         <i :class="sortType ? 'uil uil-angle-up' : 'uil uil-angle-down'"></i>
                     </li>

@@ -21,7 +21,7 @@
             <div class="login" v-if="getLocal?.profile && !getLogin" @click="setMenu(['LoginMenu'])">
                 <i class="uil uil-user"></i>
             </div>
-            <div class="profile" v-if="getLocal?.profile && getLogin" @click="openContextMenu([$event, 'profile', 'left fixed'])">
+            <div class="profile" v-if="getLocal?.profile && getLogin" @click="setContextMenu(['profile', 'left fixed'])">
                 <img :src="getUser?.avatar">
             </div>
         </ul>

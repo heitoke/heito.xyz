@@ -1,6 +1,6 @@
 <template>
     <div class="blog" v-if="blog">
-        <div class="block" @contextmenu="openContextMenu([$event, 'blog:edit'])">
+        <div class="block" @contextmenu="setContextMenu(['blog:edit'])">
             <div class="image" :style="{ 'background-image': blog?.image ? `url('${blog?.image}')` : '', height: blog?.image ? '40vh' : '24px' }">
                 <div class="info">
                     <i class="uil uil-clock"></i>
@@ -17,7 +17,7 @@
                 <div class="subtitle" v-if="blog?.links?.length > 0">Links</div>
                 <ul class="links">
                     <li v-for="(link, idx) of blog?.links" :key="(link, idx)"
-                        @contextmenu="openContextMenu([$event, `blog:link:edit:${idx}`])"
+                        @contextmenu="setContextMenu([`blog:link:edit:${idx}`])"
                         @click="redirect(link.url)"
                     >
                         <icon :data="link?.icon"/>
@@ -38,7 +38,7 @@
                         </ContextMenu>
                     </li>
                 </ul>
-                <div class="content" @contextmenu="openContextMenu([$event, 'blog:content:edit'])">
+                <div class="content" @contextmenu="setContextMenu(['blog:content:edit'])">
                     <textarea v-if="edited" v-model="blog['content']"></textarea>
                     <div class="markdown-content" v-else v-html="md(blog['content'] || '')"></div>
                 </div>

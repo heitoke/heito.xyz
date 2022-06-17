@@ -1,6 +1,6 @@
 <template>
     <div class="project-info" v-if="project"
-        @contextmenu="openContextMenu([$event, `project:${project.id}`])"
+        @contextmenu="setContextMenu([`project:${project.id}`])"
     >
         <Button v-if="JSON.stringify(project) !== oldProject" text="Save сhanges" color="green" class="save" @click="save()"/>
         <div class="banner" :style="{ 'background-image': `url('${project?.image}')`, height: project?.image ? null : '0px' }"></div>
@@ -9,7 +9,7 @@
             <div class="description">{{ project?.description }}</div>
         </div>
         <ul class="tags">
-            <li v-for="tag of project?.tags" :key="tag" @contextmenu="openContextMenu([$event, `project:${project.id}:tag:${tag}`])">
+            <li v-for="tag of project?.tags" :key="tag" @contextmenu="setContextMenu([`project:${project.id}:tag:${tag}`])">
                 <i class="uil uil-tag-alt"></i>
                 <span>{{ tag }}</span>
 
@@ -28,7 +28,7 @@
         <ul class="nav-bar">
             <!-- <li :class="{ active: block === 'users' }" @click="block = 'users'">Users</li> -->
             <li :class="{ active: block === 'links' }" @click="block = 'links'"
-                @contextmenu="openContextMenu([$event, `project:${project.id}:links`])"
+                @contextmenu="setContextMenu([`project:${project.id}:links`])"
             >Links</li>
         </ul>
 

@@ -1,15 +1,28 @@
 <template>
     <div class="services-list">
-        <ul class="list">
+        <transition-group tag="ul" class="list" enter-active-class="fade-show" leave-active-class="fade-hide">
             <li v-for="(service, idx) of services" :key="(service, idx)"
                 :class="['service', { off: !service.isActive, deleted: service['deleted'] }]"
-                @contextmenu="openContextMenu([$event, `service:setting:${idx}`])"
+                @contextmenu="setContextMenu([`service:setting:${idx}`])"
             >
-                <div class="name">{{ names[service.type] }}</div>
-                <div class="service-key">{{ service.key }}</div>
                 <div class="type">
                     <icon :data="serviceTypes[service.type]"/>
                 </div>
+                <div class="name" @mouseenter="setToolpic(['Name'])">{{ names[service.type] }}</div>
+                <div class="service-key" @mouseenter="setToolpic(['Key'])">{{ service.key }}</div>
+                <div :class="['up', { disable: !services[idx - 1] }]"
+                    @click="!services[idx - 1] ? null : move(idx)"
+                    @mouseenter="setToolpic([!services[idx - 1] ? 'Blocked' : 'Up'])"
+                >
+                    <i class="uil uil-angle-up"></i>
+                </div>
+                <div :class="['down', { disable: !services[idx + 1] }]"
+                    @click="!services[idx + 1] ? null : move(idx, false)"
+                    @mouseenter="setToolpic([!services[idx + 1] ? 'Blocked' : 'Down'])"
+                >
+                    <i class="uil uil-angle-down"></i>
+                </div>
+
                 <ContextMenu :name="`service:setting:${idx}`">
                     <ul>
                         <li @click="service.isActive = !service.isActive">
@@ -24,7 +37,7 @@
                     </ul>
                 </ContextMenu>
             </li>
-        </ul>
+        </transition-group>
         <div class="buttons">
             <Button text="Add new service" color="green"
                 @click="setMenu(['ServicesAddMenu', { save: add }])"
@@ -76,6 +89,12 @@ export default {
             });
             if (status !== 200) return;
             this.oldServices = JSON.stringify(this.services);
+        },
+        move(id, up = true) {
+            if (!this.services[up ? id - 1 : id + 1]) return;
+            let save = this.services[up ? id - 1 : id + 1];
+            this.services[up ? id - 1 : id + 1] = this.services[id];
+            this.services[id] = save;
         }
     },
     mounted() {
@@ -95,7 +114,7 @@ export default {
 
     .list {
         display: flex;
-        max-height: calc(64px * 4);
+        max-height: 80vh;
         flex-direction: column;
         row-gap: 8px;
         overflow-x: hidden;
@@ -109,6 +128,7 @@ export default {
             box-sizing: border-box;
             background: var(--dimming);
             transition: .2s;
+            gap: 8px;
 
             &.off {
                 background: var(--bg-2);
@@ -119,13 +139,11 @@ export default {
             }
 
             .name {
-                margin: 0 0 0 8px;
                 width: 25%;
                 font-size: 14px;
             }
 
             .service-key {
-                margin: 0 12px;
                 padding: 4px 8px;
                 width: 100%;
                 color: var(--T);
@@ -146,6 +164,28 @@ export default {
             .type img {
                 width: 18px;
                 height: 18px;
+            }
+
+            .up, .down {
+                cursor: pointer;
+                color: var(--color-2);
+                transition: .2s;
+
+                &:not(.disable):hover {
+                    color: var(--color);
+                }
+
+                &.disable {
+                    cursor: default;
+                    color: var(--bg-4) !important;
+                }
+            }
+
+            .up:not(.disable):active {
+                transform: scale(1.5);
+            }
+            .down:not(.disable):active {
+                transform: scale(.7);
             }
         }
     }

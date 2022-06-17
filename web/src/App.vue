@@ -2,6 +2,7 @@
     <router-view v-slot="{ Component }">
         <MainHeader/>
         <Menu v-if="getMenu.length > 0"/>
+        <Toolpic/>
         <div :class="['basic-page', { super: isSuper }]">
             <transition enter-active-class="page-show" leave-active-class="page-hide">
                 <component :class="['page']" :is="!getRole && getContent['ignorePages']?.includes($route.name) ? router('/no-page') : Component" @click="isSuper ? setSuper('auto') : null"/>
@@ -12,7 +13,7 @@
                     <li v-for="r of getRole ? listRouters : listRouters.filter(item => !getContent['ignorePages']?.includes(item.name))" :key="r"
                         :class="{ active: $route.path === r.path, disable: getContent['ignorePages']?.includes(r.name) }"
                         @click="router(r.path)"
-                        @contextmenu="selRouter = r.name; openContextMenu([$event, `page:edit:${r.name}`])"
+                        @contextmenu="selRouter = r.name; setContextMenu([`page:edit:${r.name}`])"
                     >
                         <i :class="r.meta.icon"></i>
                         <span>{{ r.meta.label }}</span>
@@ -41,7 +42,8 @@ import { mapGetters, mapActions } from 'vuex';
 export default {
     name: 'App',
     components: {
-        MainHeader: defineAsyncComponent(() => import('./components/header.vue'))
+        MainHeader: defineAsyncComponent(() => import("./components/header.vue")),
+        Toolpic: defineAsyncComponent(() => import('./components/toolpic.vue'))
     },
     computed: {
         ...mapGetters(['getMenu'])
@@ -57,6 +59,7 @@ export default {
             let content = await this.fetch('/content');
             this.setContent(content);
             document.querySelector('body').classList.remove('loading');
+            console.log(123);
         }
     },
     mounted() {
@@ -98,6 +101,32 @@ body {
         transform: scale(.5);
         opacity: 0;
     }
+}
+
+.fade-show, .fade-hide {
+    transition: .2s;
+    opacity: 0;
+    
+    &.scale {
+        transform: scale(.8);
+    }
+
+    &.width {
+        width: 0px !important;
+        min-width: 0px !important;
+        transition: all .2s;
+    }
+
+    &.height {
+        height: 0px !important;
+        min-height: 0px !important;
+        transition: all .2s;
+    }
+
+    &.top { transform: scale(.8) translateY(-150%) !important; }
+    &.left { transform: scale(.8) translateX(150%) !important; }
+    &.right { transform: scale(.8) translateX(-150%) !important; }
+    &.bottom { transform: scale(.8) translateY(150%) !important; }
 }
 
 .basic-page {

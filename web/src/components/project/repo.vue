@@ -17,18 +17,16 @@
                     <i class="uil uil-star"></i>
                 </li>
                 <li class="lang" v-if="data?.language"
-                    @mouseenter="openContextMenu([$event, `toolpic:repo:${data?.name}:lang`, 'top center-x fixed hover'])"
+                    @mouseenter="setToolpic([data?.language])"
                 >
                     <img :src="`https://img.shields.io/badge/-34333a.svg?style=flat-square&logo=${getLang(data?.language)}`" @error="imgError = true">
-                    <ContextMenu :name="`toolpic:repo:${data?.name}:lang`" class="toolpic"><p>{{ data?.language }}</p></ContextMenu>
                 </li>
                 <li v-if="data?.homepage"
-                    @mouseenter="openContextMenu([$event, `toolpic:repo:${data?.name}:homepage`, 'top center-x fixed hover'])"
+                    @mouseenter="setToolpic([data?.homepage.replace(/(^\w+:|^)\/\//, '')])"
                     @click="redirect(data?.homepage, true, true)"
                     style="cursor: pointer;"
                 >
                     <i class="uil uil-link-alt"></i>
-                    <ContextMenu :name="`toolpic:repo:${data?.name}:homepage`" class="toolpic"><p>{{ data?.homepage.replace(/(^\w+:|^)\/\//, '') }}</p></ContextMenu>
                 </li>
             </ul>
         </div>
@@ -44,12 +42,11 @@
         <div class="footer">
             <div v-for="(stat, idx) of createFooter()" :key="(stat, idx)"
                 :style="stat?.click ? `cursor: pointer;` : null"
-                @mouseenter="openContextMenu([$event, `toolpic:repo:footer:${idx}:${stat.title}`, 'top center-x fixed hover'])"
+                @mouseenter="setToolpic([stat.title])"
                 @click="stat?.click ? stat.click() : null"
             >
                 <i :class="stat.icon"></i>
                 <span>{{ stat.value }}</span>
-                <ContextMenu :name="`toolpic:repo:footer:${idx}:${stat.title}`" class="toolpic"><p>{{ stat.title }}</p></ContextMenu>
             </div>
         </div>
     </li>

@@ -1,10 +1,10 @@
 <template>
     <div class="user-info" v-if="user">
-        <main @contextmenu="openContextMenu([$event, `user:edit:${user.id}`])">
+        <main @contextmenu="setContextMenu([`user:edit:${user.id}`])">
             <Button text="Save changes" color="green" class="save" v-if="JSON.stringify(user) !== oldUser" @click="save"/>
             <div class="banner" :style="{ 'background-image': `url('${getImage(user.banner)}')`, height: user.banner ? null : '96px !important' }">
                 <!-- <div class="level"
-                    @mouseenter="openContextMenu([$event, `toolpic:user:level`, 'bottom center-x fixed'])"
+                    @mouseenter="setContextMenu([`toolpic:user:level`, 'bottom center-x fixed'])"
                 >
                     <div class="bar">
                         <div class="line" :style="{ width: '32%' }"></div>
@@ -17,7 +17,7 @@
                 </div> -->
                 <ul class="role">
                     <UserRole v-for="role of user?.role" :key="role" :role="role"
-                        @mouseenter="openContextMenu([$event, `toolpic:user:role:${role}`, 'top center-x fixed hover'])"
+                        @mouseenter="setContextMenu([`toolpic:user:role:${role}`, 'top center-x fixed hover'])"
                     />
                     <ContextMenu v-for="role of user?.role" :key="role" :name="`toolpic:user:role:${role}`">
                         <span>{{ listRole[role] }}</span>
@@ -32,7 +32,7 @@
                 <div class="description">{{ user.description }}</div>
                 <ul class="nav-bar">
                     <li :class="{ active: block === 'links' }" @click="block = 'links'"
-                        @contextmenu="openContextMenu([$event, `user-edit:${user.id}:links`])"
+                        @contextmenu="setContextMenu([`user-edit:${user.id}:links`])"
                     >Links</li>
                     <li v-if="page" :class="{ active: block === 'projects' }" @click="block = 'projects'">Projects</li>
                     <li v-if="page" :class="{ active: block === 'collections' }" @click="block = 'collections'">Сollections</li>

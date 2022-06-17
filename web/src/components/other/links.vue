@@ -2,7 +2,7 @@
     <ul class="links">
         <li v-for="(link, idx) of links" :key="(link, idx)"
             @click="redirect(link.url)"
-            @contextmenu="openContextMenu([$event, `link:edit:${idx}`])"
+            @contextmenu="setContextMenu([`link:edit:${idx}`])"
         >
             <i :class="link.icon ? link.icon : 'uil uil-link'"></i>
             <span>{{ link.label }}</span>

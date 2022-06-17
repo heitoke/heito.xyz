@@ -3,7 +3,7 @@
         <div class="block">
             <ul :class="['services', { open: services }]" v-if="listServices">
                 <li class="service">
-                    <div class="button" @click="services = !services" @contextmenu="openContextMenu([$event, 'services:settings'])">
+                    <div class="button" @click="services = !services" @contextmenu="setContextMenu(['services:settings'])">
                         <i class="uil uil-apps"></i>
                         <span>Services</span>
                     </div>
@@ -18,38 +18,37 @@
                     </ContextMenu>
                 </li>
                 <li class="service" v-for="(service, idx) of listServices" :key="(service, idx)">
-                    <div class="button" @mouseenter="focusService(idx); serviceAccount(service.type, service.id, service.key)" @mouseleave="blurService(idx)">
+                    <div class="button"
+                        @mouseenter="focusService(idx); serviceAccount(service.type, service.id, service.key)"
+                        @mouseleave="blurService(idx)"
+                    >
                         <icon :data="serviceTypes[service.type]"/>
                         <span>{{ names[service.type] }}</span>
                     </div>
                     <transition enter-active-class="show" leave-active-class="hide">
-                        <div class="block" v-if="services || serviceHover[0] === idx" @mouseenter="focusService(idx, true)" @mouseleave="serviceHover = []">
+                        <div class="service-block" v-if="services || serviceHover[0] === idx"
+                            @mouseenter="focusService(idx, true)"
+                            @mouseleave="serviceHover = []"
+                        >
                             <ServiceAccount :data="accounts[`${service.type}:${service.id}`]" v-if="accounts[`${service.type}:${service.id}`]"/>
                             <ServiceActivity v-if="activity[`${service.type}:${service.id}`]" :data="activity[`${service.type}:${service.id}`]"/>
                         </div>
                     </transition>
                 </li>
             </ul>
-            <div class="content" @contextmenu="openContextMenu([$event, 'main:content'])">
-                <!-- <div class="table">
-                    ヘ <br>
-                    イ <br>
-                    ト
-                </div> -->
+            <div class="content" @contextmenu="setContextMenu(['main:content'])">
                 <div class="info" :style="`border-right: ${!getMobile && getLocal?.models ? '0px solid var(--dimming)' : 'none'};`">
                     <h1 class="glitch font-3" :data-glitch="getContent?.title">
                         <div :class="`status ${isTypeStatus ? mainActivity?.userOnline?.type : (mainActivity?.userOnline || 'offline')}`">
                             <!-- <span>{{ statusNames[mainActivity?.userOnline] || mainActivity?.userOnline }}</span> -->
-                            <div @mouseenter="openContextMenu([$event, `toolpic:status`, 'right center-y fixed hover'])"></div>
+                            <!-- <div @mouseenter="setContextMenu([`toolpic:status`, 'right center-y fixed hover'])"></div> -->
+                            <div @mouseenter="setToolpic([isTypeStatus ? (mainActivity?.userOnline?.value || mainActivity?.userOnline?.type) : (statusNames[mainActivity?.userOnline] || mainActivity?.userOnline), 'right'])"></div> 
                         </div>
                         {{ getContent?.title }}
                     </h1>
                     <div class="text" v-html="getContent?.description"></div>
                 </div>
-                <video class="video" v-if="getContent?.image" :src="require(`../assets/images/${images[Math.floor(Math.random() * images.length)]}.webp`)" autoplay muted loop></video>
-                <div class="activity" v-if="getContent?.activity">
-                    <ServiceActivity :data="mainActivity?.activity"/>
-                </div>
+                <video class="video" v-if="getContent?.image" :src="image" autoplay muted loop></video>
                 
                 <ContextMenu name="toolpic:status" class="toolpic">
                     <p>
@@ -82,6 +81,14 @@
                         </li>
                     </ul>
                 </ContextMenu>
+            </div>
+            <div :class="`activity ${isActivity ? 'enable' : ''}`" v-if="getContent?.activity">
+                <transition enter-active-class="fade-show" leave-active-class="fade-hide">
+                    <ServiceActivity :data="mainActivity?.activity" v-if="isActivity"/>
+                </transition>
+                <div class="footer" @click="isActivity = !isActivity">
+                    <span>{{ isActivity ? 'Hide' : 'Show' }} activity</span>
+                </div>
             </div>
             <div class="bottom">
                 Press the <div class="key" @click="isSuper ? null : setSuper('auto')">Tab</div> key
@@ -120,6 +127,7 @@ export default {
                 osu: 'OSU',
                 minecraft: 'Minecraft',
                 genkan: 'Genkan',
+                email: 'E-Mail',
                 tetr: 'TETR.IO'
             },
             statusNames: {
@@ -131,11 +139,12 @@ export default {
             activity: {},
             listServices: null,
             mainActivity: null,
-            images: [
-                'kotikinu',
-                'utya3d',
-                'twerking'
-            ]
+            isActivity: false
+        }
+    },
+    watch: {
+        'getContent.image'(newImage) {
+            if (newImage === true) this.loadWebpImage();
         }
     },
     methods: {
@@ -175,7 +184,6 @@ export default {
                     account = { avatar: `https://api.genkan.xyz/images/${data.avatar.image.id}?full=true`, username: data.nickname, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://genkan.xyz/users/${data.username}` }] }
                     break;
                 case "tetr":
-                    console.log(data);
                     account = { avatar: `https://tetr.io/user-content/avatars/${data._id}.jpg`, username: data.username, buttons: [{ label: 'Profile', icon: 'uil uil-user', url: `https://ch.tetr.io/u/${data.username}` }] }
                     break;
             }
@@ -193,19 +201,29 @@ export default {
             this.serviceHover = [service, block ? 'block' : ''];
         },
         blurService(service) {
-            setTimeout(() => this.serviceHover[0] === service && this.serviceHover[1] !== 'block' ? this.serviceHover = '' : null, 200)
+            setTimeout(() => this.serviceHover[0] === service && this.serviceHover[1] !== 'block' ? this.serviceHover = '' : null, 200);
         },
         async loadActivity() {
             let activity = await this.fetch('/activity');
             this.mainActivity = activity;
             if (!this.getContent?.activity) return;
             setTimeout(() => this.loadActivity(), 5000);
+        },
+        loadWebpImage() {
+            let images = [
+                'kotikinu',
+                'utya3d',
+                'twerking'
+            ];
+            this.image = require(`../assets/images/${images[Math.floor(Math.random() * images.length)]}.webp`);
         }
     },
     async mounted() {
         this.loadServices();
 
         this.loadActivity();
+
+        if (this.getContent?.image) this.loadWebpImage();
     }
 }
 </script>
@@ -260,7 +278,7 @@ export default {
                     }
                 }
 
-                .block {
+                .service-block {
                     display: block;
                     position: relative;
                     left: 0;
@@ -297,12 +315,13 @@ export default {
             //     display: block;
             // }
 
-            .block {
+            &-block {
                 // display: none;
                 width: 196px;
                 position: absolute;
                 top: 0px;
                 left: 42px;
+                background: var(--T);
                 transition: all .2s;
 
                 .account, .activity, .buttons {
@@ -442,11 +461,6 @@ export default {
             margin: 0 0 0 64px;
             width: 320px;
         }
-
-        .activity {
-            margin: 0 0 0 64px;
-            min-width: 376px;
-        }
     }
 
     .bottom {
@@ -466,107 +480,147 @@ export default {
     }
 
     .status {
-                display: flex;
-                margin: 0 0 12px 0;
-                font-size: 12px;
-                font-weight: 700;
-                text-transform: uppercase;
-                align-items: center;
-                justify-content: flex-end;
+        display: flex;
+        margin: 0 0 12px 0;
+        font-size: 12px;
+        font-weight: 700;
+        text-transform: uppercase;
+        align-items: center;
+        justify-content: flex-end;
 
-                div {
-                    margin: 0 12px;
-                    width: 12px;
-                    height: 12px;
-                    border-radius: 3px;
-                    // border: 5px solid var(--dimming);
-                    transform: rotate(45deg);
-                    transition: .2s;
-                }
+        div {
+            margin: 0 12px;
+            width: 12px;
+            height: 12px;
+            border-radius: 3px;
+            // border: 5px solid var(--dimming);
+            transform: rotate(45deg);
+            transition: .2s;
+        }
 
-                &.online {
-                    div {
-                        box-shadow: 0 0 0 5px var(--C2-alt);
-                        background: var(--C2);
-                        animation: AnimationStatusOnline 2s ease-in-out infinite;
-                    }
-                }
-
-                &.idle {
-                    color: var(--C3);
-
-                    div {
-                        box-shadow: 0 0 0 5px var(--C3-alt);
-                        background: var(--C3);
-                        animation: AnimationStatusIdle 2s ease-in-out infinite;
-                    }
-                }
-
-                &.dnd {
-                    text-decoration: var(--bg) line-through;
-
-                    div {
-                        box-shadow: 0 0 0 5px var(--C5-alt);
-                        background: var(--C5);
-                        animation: AnimationStatusDnd 2s ease-in-out infinite;
-                    }
-                }
-
-                &.offline {
-                    color: var(--color-3);
-
-                    div {
-                        box-shadow: 0 0 0 5px var(--bg-2);
-                        background: var(--dimming);
-                        animation: AnimationStatusOffline 2s ease-in-out infinite;
-                    }
-                }
-
-                @keyframes AnimationStatusOnline {
-                    from, to {
-                        box-shadow: 0 0 0 0px var(--T);
-                    }
-                    50% {
-                        border-radius: 50%;
-                        box-shadow: 0 0 0 5px var(--C2-alt);
-                        transform: rotate(-45deg);
-                    }
-                }
-
-                @keyframes AnimationStatusDnd {
-                    from, to {
-                        box-shadow: 0 0 0 0px var(--T);
-                        transform: scale(.7);
-                    }
-                    50% {
-                        border-radius: 0px;
-                        box-shadow: 0 0 0 5px var(--C5-alt);
-                        transform: rotate(-135deg) scale(1.1);
-                    }
-                }
-
-                @keyframes AnimationStatusIdle {
-                    from, to {
-                        border-radius: 50%;
-                        box-shadow: 0 0 0 0px var(--T);
-                        transform: scale(.5);
-                    }
-                    50% {
-                        border-radius: 5px;
-                        box-shadow: 0 0 0 5px var(--C3-alt);
-                        transform: scale(1);
-                    }
-                }
-
-                @keyframes AnimationStatusOffline {
-                    from, to {
-                        box-shadow: 0 0 0 0px var(--bg-3);
-                    }
-                    50% {
-                        box-shadow: 0 0 0 5px var(--bg-2);
-                    }
-                }
+        &.online {
+            div {
+                box-shadow: 0 0 0 5px var(--C2-alt);
+                background: var(--C2);
+                animation: AnimationStatusOnline 2s ease-in-out infinite;
             }
+        }
+
+        &.idle {
+            color: var(--C3);
+
+            div {
+                box-shadow: 0 0 0 5px var(--C3-alt);
+                background: var(--C3);
+                animation: AnimationStatusIdle 2s ease-in-out infinite;
+            }
+        }
+
+        &.dnd {
+            text-decoration: var(--bg) line-through;
+
+            div {
+                box-shadow: 0 0 0 5px var(--C5-alt);
+                background: var(--C5);
+                animation: AnimationStatusDnd 2s ease-in-out infinite;
+            }
+        }
+
+        &.offline {
+            color: var(--color-3);
+
+            div {
+                box-shadow: 0 0 0 5px var(--bg-2);
+                background: var(--dimming);
+                animation: AnimationStatusOffline 2s ease-in-out infinite;
+            }
+        }
+
+        @keyframes AnimationStatusOnline {
+            from, to {
+                box-shadow: 0 0 0 0px var(--T);
+            }
+            50% {
+                border-radius: 50%;
+                box-shadow: 0 0 0 5px var(--C2-alt);
+                transform: rotate(-45deg);
+            }
+        }
+
+        @keyframes AnimationStatusDnd {
+            from, to {
+                box-shadow: 0 0 0 0px var(--T);
+                transform: scale(.7);
+            }
+            50% {
+                border-radius: 0px;
+                box-shadow: 0 0 0 5px var(--C5-alt);
+                transform: rotate(-135deg) scale(1.1);
+            }
+        }
+
+        @keyframes AnimationStatusIdle {
+            from, to {
+                border-radius: 50%;
+                box-shadow: 0 0 0 0px var(--T);
+                transform: scale(.5);
+            }
+            50% {
+                border-radius: 5px;
+                box-shadow: 0 0 0 5px var(--C3-alt);
+                transform: scale(1);
+            }
+        }
+
+        @keyframes AnimationStatusOffline {
+            from, to {
+                box-shadow: 0 0 0 0px var(--bg-3);
+            }
+            50% {
+                box-shadow: 0 0 0 5px var(--bg-2);
+            }
+        }
+    }
+
+    .activity {
+        // margin: 0 0 0 64px;
+        min-width: 376px;
+        position: absolute;
+        left: 50%;
+        bottom: 48px;
+        transform: translateX(-50%);
+
+        &.enable {
+            .footer {
+                color: var(--color-3);
+            }
+        }
+
+        .footer {
+            cursor: pointer;
+            margin: 8px 0 0 0;
+            color: var(--color-2);
+            text-align: center;
+            transition: .2s;
+            user-select: none;
+
+            span {
+                font-size: 14px;
+            }
+        }
+    }
+
+    @media (max-width: 360px) {
+        .content {
+            .video {
+                width: 90vw;
+            }
+        }
+
+        .activity {
+            min-width: 256px;
+        }
+    }
 }
 
 @media (max-width: 760px) {
@@ -588,10 +642,13 @@ export default {
             }
 
             .video {
-                margin: 0px !important;
+                margin: 32px 0 0 0 !important;
+                width: 50vw !important;
             }
         }
     }
 }
+
+
 
 </style>

@@ -13,16 +13,16 @@ import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 library.add(fas, fab);
 
 // * CSS
-import './assets/css/root.css'
-import './assets/css/theme.css'
-import './assets/css/fonts.css'
-import './assets/css/markdown.css'
+import './assets/css/root.css';
+import './assets/css/theme.css';
+import './assets/css/fonts.css';
+import './assets/css/markdown.css';
 
 // * Main Components
-import { Components, Fields } from './components'
+import { Components, Fields } from './components';
 
 // * Main Functions
-import Functions from './functions'
+import Functions from './functions';
 
 createApp(App).mixin({
     components: { ...Components, ...Fields },
@@ -55,7 +55,7 @@ createApp(App).mixin({
         }
     },
     methods: {
-        ...mapActions(['setSuper', 'setMenu', 'closeMenu', 'setLocal', 'openContextMenu', 'closeContextMenu', 'setUser', 'setLogin', 'setContent', 'setContentKey', 'setContentEdited']),
+        ...mapActions(['setSuper', 'setMenu', 'closeMenu', 'setLocal', 'setContextMenu', 'closeContextMenu', 'setUser', 'setLogin', 'setContent', 'setContentKey', 'setContentEdited', 'setToolpic']),
         ...Functions,
         generate(length = 32) {
             return new Array(length).fill(`0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz`).map(x => x[Math.floor(Math.random() * x.length)]).join('');

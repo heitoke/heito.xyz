@@ -1,0 +1,102 @@
+:root {
+    /* --font-family: 'Open Sans', sans-serif; */
+    /* --font-family: Avenir, Helvetica, Arial, sans-serif; */
+    /* --font-family: "Raleway", sans-serif; */
+    /* --font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+                   Cantarell, 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif; */
+    --font-family: 'Lora', serif;
+}
+
+/* ? Roboto Slab */
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Thin.ttf') format('truetype');
+    font-weight: 100;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Thin.ttf') format('truetype');
+    font-weight: 200;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/ExtraLight.ttf') format('truetype');
+    font-weight: 300;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Light.ttf') format('truetype');
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Regular.ttf') format('truetype');
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Medium.ttf') format('truetype');
+    font-weight: 600;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/SemiBold.ttf') format('truetype');
+    font-weight: 700;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Bold.ttf') format('truetype');
+    font-weight: 800;
+}
+@font-face {
+    font-family: 'RobotoSlab';
+    src: url('../fonts/RobotoSlab/Black.ttf') format('truetype');
+    font-weight: 900;
+}
+
+/* ? Shalimar */
+@font-face {
+    font-family: 'Shalimar';
+    src: url('../fonts/Shalimar/Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+
+/* ? Lora */
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/Regular.ttf') format('truetype');
+    font-weight: 400;
+}
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/Medium.ttf') format('truetype');
+    font-weight: 500;
+}
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/MediumItalic.ttf') format('truetype');
+    font-weight: 500;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/SemiBold.ttf') format('truetype');
+    font-weight: 600;
+}
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/SemiBoldItalic.ttf') format('truetype');
+    font-weight: 600;
+    font-style: italic;
+}
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/Bold.ttf') format('truetype');
+    font-weight: 700;
+}
+@font-face {
+    font-family: 'Lora';
+    src: url('../fonts/Lora/BoldItalic.ttf') format('truetype');
+    font-weight: 700;
+    font-style: italic;
+}

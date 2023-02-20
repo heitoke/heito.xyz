@@ -1,0 +1,21 @@
+:root {
+    --C1: #FFBF34;
+    --C1-alt: #FFBF3433;
+
+    --font: calc(4.5vw + 1vh + .5vmin);
+
+    --T: transparent;
+}
+
+html[theme="dark"]:root {
+    /* * Background Color */
+    --background-primary: #0b0b0b;
+    --background-secondary: #171717;
+
+    /* * Text Color */
+    --text-primary: #e8e8e8;
+    --text-secondary: #b4b4b4;
+}
+html[theme="light"]:root {
+
+}

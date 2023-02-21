@@ -6,7 +6,9 @@
     <Header/>
     <RouterView v-slot="{ Component }">
         <ScrollBar>
-            <component :is="Component" :class="['page', { 'to-left': getActiveNotifications }]"></component>
+            <Transition name="page">
+                <component :is="Component" :class="['page', { 'to-left': getActiveNotifications }]"></component>
+            </Transition>
         </ScrollBar>
     </RouterView>
 </template>
@@ -51,6 +53,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss">
+
+.page-enter-active,
+.poge-leave-active {
+    transition: .2s;
+    transform: scale(.8) translateY(-25vh);
+    opacity: 0;
+}
 
 body {
     max-width: 100vw;

@@ -59,7 +59,12 @@ export default defineComponent({
             childrens: []
         }
     },
-    watch: {},
+    watch: {
+        menu(newValue: IContextMenu) {
+            this.name = newValue?.name as string;
+            this.childrens = [newValue];
+        }
+    },
     methods: {
         buttonClick(btn: IContextMenuButton, e: Event) {
             if (btn.children) {

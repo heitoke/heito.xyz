@@ -80,7 +80,7 @@ export default defineComponent({
                             title: this.getLang.global.lang[1],
                             buttons: Object.keys(Langs).map((key: any) => ({
                                 // @ts-ignore
-                                label: Langs[key][this.getLangName] || Langs[key].name,
+                                label: `${Langs[key][this.getLangName] || Langs[key].name} ${this.getLangName === key ? '(now)' : ''}`,
                                 icon: 'lang',
                                 text: 'Beta',
                                 click: () => {
@@ -160,6 +160,7 @@ header {
     left: 0px;
     align-items: center;
     justify-content: space-between;
+    backdrop-filter: blur(5px);
     box-sizing: border-box;
     z-index: 100;
 
@@ -193,6 +194,7 @@ header {
         justify-content: center;
 
         .notifications {
+            cursor: pointer;
             margin: 0 12px 0 0;
             height: 16px;
             position: relative;
@@ -216,18 +218,6 @@ header {
                     transform: rotate(-45deg) scale(1);
                     opacity: 1;
                 }
-            }
-        }
-
-        .lang {
-            cursor: pointer;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            transition: .2s;
-            user-select: none;
-
-            &:hover {
-                color: var(--text-primary);
             }
         }
 

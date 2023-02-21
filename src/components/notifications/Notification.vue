@@ -141,7 +141,8 @@ export default defineComponent({
     transition: all .2s;
     font-family: 'Shalimar' !important;
     // animation: ShowNotification 1s linear;
-    background-color: var(--background-secondary);
+    // background-color: var(--background-secondary);
+    backdrop-filter: blur(5px);
     overflow: hidden;
 
     &.shadow::before {

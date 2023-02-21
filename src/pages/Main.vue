@@ -3,6 +3,9 @@
         <!-- <M/> -->
         <div class="hello-world">
             <div class="content">
+                <RouterLink to="/projects">Projects</RouterLink>
+                <RouterLink to="/blogs">Blogs</RouterLink>
+                
                 <!-- <div class="title">{{ text }}</div> -->
                 <Text class="title" :text="getLang.page.main.title"/>
                 <Text class="text" :text="getLang.page.main.text"/>

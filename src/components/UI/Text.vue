@@ -24,11 +24,17 @@ export default defineComponent({
         }
     },
     watch: {
-        'text'(newValue) {
+        'text'() {
+            if (!this.text) return;
+
             this.n = 0;
             this.value = '';
+
             clearInterval(this.timer);
+
             this.timer = setInterval(async () => {
+                if (!this.text) return clearInterval(this.timer);
+                
                 this.value += this.text[this.n++];
                 if (this.n >= this.text.length) clearInterval(this.timer);
             }, Math.round(1000 / this.text?.length));
@@ -36,7 +42,7 @@ export default defineComponent({
     },
     methods: {},
     mounted() {
-        this.value = this.text;
+        if (this.text) this.value = this.text;
     }
 });
 

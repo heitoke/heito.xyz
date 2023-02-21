@@ -1,9 +1,9 @@
 <template>
     <div class="scrollbar">
         <div scrollbar-block @scroll="setScroll($event.target as Element)" ref="el">
-            <slot ref="test"></slot>
+            <slot></slot>
         </div>
-        <div :class="['indicator', { active: height }]">
+        <div :class="['indicator', { active: height }]" v-show="scrollHeight < 100">
             <div :style="{ top: `${scroll}%`, height: `${scrollHeight}%` }"></div>
         </div>
     </div>
@@ -36,23 +36,42 @@ export default defineComponent({
         y: 0,
         height: 0,
         show: false,
-        hover: false
+        hover: false,
+        hasSlotContent: false
     }),
-    watch: {},
     methods: {
         setScroll(el: Element) {
+            if (!el) return;
+
             this.x = 0;
             this.y = el.scrollTop;
 
             this.height = el?.lastElementChild?.scrollHeight as number;
+        },
+        checkForSlotContent() {
+            let checkForContent = (hasContent: any, node: any) => {
+                return hasContent || node.tag || (node.text && node.text.trim());
+            }
+
+            setTimeout(() => {
+                this.setScroll(this.$refs.el as Element);
+            }, 10);
+
+            return this.$slots.default && this.$slots.default()?.reduce(checkForContent, false);
         }
     },
     mounted() {
         if (window) {
             this.show = true;
 
-            this.height = (this.$refs.el as Element).lastElementChild?.scrollHeight as number;
+            this.setScroll(this.$refs.el as Element);
         }
+    },
+    beforeUpdate() {
+        this.hasSlotContent = this.checkForSlotContent();
+    },
+    created() {
+        this.hasSlotContent = this.checkForSlotContent();
     }
 })
 

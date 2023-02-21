@@ -9,6 +9,26 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/Main.vue')
     },
     {
+        name: 'ProjectsPage',
+        path: '/projects',
+        component: () => import('../pages/projects/Main.vue'),
+    },
+    {
+        name: 'ProjectPage',
+        path: '/projects/:projectId',
+        component: () => import('../pages/projects/Project.vue')
+    },
+    {
+        name: 'BlogsPage',
+        path: '/blogs',
+        component: () => import('../pages/blogs/Main.vue')
+    },
+    {
+        name: 'BlogPage',
+        path: '/blogs/:blogId',
+        component: () => import('../pages/blogs/Blog.vue')
+    },
+    {
         path: '/:catchAll(.*)',
         name: 'ErrorPage',
         component: () => import('../pages/Error.vue')

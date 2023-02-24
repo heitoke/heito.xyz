@@ -53,10 +53,11 @@ export default defineComponent({
     width: 100%;
     border: 1px solid var(--background-secondary);
     border-radius: 5px;
+    box-sizing: border-box;
     overflow: hidden;
 
     .image {
-        height: 128px;
+        height: 169px;
         position: relative;
         transition: .2s;
         overflow: hidden;

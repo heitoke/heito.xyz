@@ -11,7 +11,7 @@ export interface IContextMenuButton {
     component?: Component;
     separator?: boolean;
     value?: object | number | string;
-    click(e?: Event): void;
+    click?(e?: Event): void;
     checkbox?(value?: boolean): void;
     children?: IContextMenu;
 }

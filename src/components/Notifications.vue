@@ -66,7 +66,7 @@ export default defineComponent({
         let a = 0;
 
         let b: any = setInterval(() => {
-            if (a > 50) return clearInterval(b)
+            if (a > 5) return clearInterval(b)
             this.pushNotification({
                 title: a,
                 color: "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0"),

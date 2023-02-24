@@ -1,7 +1,12 @@
 <template>
     <div class="scrollbar">
-        <div scrollbar-block @scroll="setScroll($event.target as Element)" ref="el">
-            <slot></slot>
+        <div scrollbar-block @scroll="setScroll($event.target as Element, true)" ref="el">
+            <slot
+                :scrollPercentY="scroll || 0"
+                :scrollY="y"
+                :scrollHeight="scrollHeight"
+                :toScroll="toScroll"
+            ></slot>
         </div>
         <div :class="['indicator', { active: height }]" v-show="scrollHeight < 100">
             <div :style="{ top: `${scroll}%`, height: `${scrollHeight}%` }"></div>
@@ -40,13 +45,24 @@ export default defineComponent({
         hasSlotContent: false
     }),
     methods: {
-        setScroll(el: Element) {
+        setScroll(el: Element, set: boolean = false) {
             if (!el) return;
 
             this.x = 0;
             this.y = el.scrollTop;
 
-            this.height = el?.lastElementChild?.scrollHeight as number;
+            if (!set) return;
+
+            let coll: HTMLCollection = el?.children;
+
+            this.height = 0;
+
+            for (let i = 0; i < coll.length; i++)
+                this.height += coll[i]?.scrollHeight;
+            
+
+
+            // this.height = el?.lastElementChild?.scrollHeight as number;
         },
         checkForSlotContent() {
             let checkForContent = (hasContent: any, node: any) => {
@@ -54,17 +70,28 @@ export default defineComponent({
             }
 
             setTimeout(() => {
+                console.log(123);
+                
                 this.setScroll(this.$refs.el as Element);
             }, 10);
 
             return this.$slots.default && this.$slots.default()?.reduce(checkForContent, false);
+        },
+        toScroll(x: number, y: number) {
+            let el: Element = this.$refs?.el as Element;
+
+            el?.scrollTo({
+                top: y,
+                left: x,
+                behavior: 'smooth'
+            });
         }
     },
     mounted() {
         if (window) {
             this.show = true;
 
-            this.setScroll(this.$refs.el as Element);
+            this.setScroll(this.$refs.el as Element, true);
         }
     },
     beforeUpdate() {

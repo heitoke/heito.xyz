@@ -5,10 +5,13 @@
     <Windows/>
     <Header/>
     <RouterView v-slot="{ Component }">
-        <ScrollBar>
+        <ScrollBar v-slot="scrollProps">
             <Transition name="page">
-                <component :is="Component" :class="['page', { 'to-left': getActiveNotifications }]"></component>
+                <component :is="Component" :class="['page', { 'to-left': getActiveNotifications }]"
+                    :scrollProps="scrollProps"
+                ></component>
             </Transition>
+            <Footer/>
         </ScrollBar>
     </RouterView>
 </template>
@@ -16,6 +19,7 @@
 <script setup lang="ts">
 
 import Header from './components/Header.vue';
+import Footer from './components/Footer.vue';
 import ScrollBar from './components/ScrollBar.vue';
 import Notifications from './components/Notifications.vue';
 import Toolpics from './components/Toolpics.vue';
@@ -77,7 +81,7 @@ body {
     width: 100vw;
     min-width: 100vw;
     // max-height: 100vh;
-    height: 100vh;
+    // height: 100vh;
     // min-height: 100vh;
     position: relative;
     box-sizing: border-box;
@@ -85,7 +89,9 @@ body {
     // overflow-x: hidden;
 
     &.to-left {
+        border-radius: 15px;
         transform: scale(.8) translateX(-20vw);
+        overflow: hidden;
     }
 }
 

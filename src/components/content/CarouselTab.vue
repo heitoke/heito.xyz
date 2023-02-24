@@ -1,12 +1,16 @@
 <template>
     <div class="carousel-tab">
         <div class="content">
-            <div :style="{ transform: `translateX(calc(-${index * 100}% - ${index * gap}px))` }">
-                <slot></slot>
+            <div :style="{
+                transform: `translateX(calc(-${index * 100}% - ${index * gap}px))`,
+                'grid-template': `1fr / repeat(${countElements}, calc(${100 / column}% - ${gap / 2}px))`,
+                'column-gap': `${gap}px`
+            }">
+                <slot style="--g: 123px;"></slot>
             </div>
         </div>
         <div class="bar">
-            <div v-for="(_, id) of new Array($slots.default()[0]?.children?.length)" :key="id"
+            <div v-for="(_, id) of new Array(barLength)" :key="id"
                 :class="['btn', { active: id === index }]"
                 @click="index = id"
             ></div>
@@ -20,7 +24,12 @@ import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: 'CarouselTab',
-    computed: {},
+    computed: {
+        barLength(): number {
+            let n = (this.countElements / this.column);
+            return n > Math.floor(n) ? n + .5 : n;
+        }
+    },
     props: {
         column: {
             type: Number,
@@ -33,13 +42,13 @@ export default defineComponent({
     },
     data() {
         return {
+            countElements: 0,
             index: 0
         }
     },
     methods: {},
     mounted() {
-        console.log(this.$slots.default()[0]?.children);
-        
+        this.countElements = this.$slots?.default()[0]?.children?.length;
     }
 });
 
@@ -49,17 +58,17 @@ export default defineComponent({
 
 .carousel-tab {
     .content {
-        overflow: auto;
+        overflow: hidden;
 
         div {
-            display: flex;
-            scroll-snap-type: x mandatory;
-            overscroll-behavior-x: contain;
-            scrollbar-width: none;
-            transition: .3s;
+            display: grid;
+            grid-auto-flow: column;
+            transition: .2s;
 
             * {
                 margin: 0 16px 0 0;
+                scroll-snap-align: center;
+                max-width: var(--w) !important;
             
                 &:last-child {
                     margin: 0;

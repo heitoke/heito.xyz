@@ -16,7 +16,7 @@ console.log(import.meta);
 
 
 const
-    isProd: boolean = false,
+    isProd: boolean = process.env.NODE_ENV === 'production',
     PORT: number = 3000,
     __dirname: string = path.dirname(fileURLToPath(import.meta.url));
 
@@ -54,7 +54,7 @@ async function start() {
                 render = null;
 
             // @ts-ignore
-            if (isProd) render = await (await import('../../dist/server/entry.ts')).render;
+            if (isProd) render = await (await import('./entry.ts')).render;
             else {
                 template = await vite.transformIndexHtml(url, template);
                 render = (await vite.ssrLoadModule(resolve('./entry.ts'))).render;

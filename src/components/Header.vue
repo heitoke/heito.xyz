@@ -152,7 +152,7 @@ export default defineComponent({
 
 header {
     display: flex;
-    padding: 0 5vw;
+    padding: 0 10vw;
     width: 100vw;
     height: 64px;
     position: fixed;

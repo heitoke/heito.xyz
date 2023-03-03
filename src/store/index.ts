@@ -7,6 +7,7 @@ import notifications from './modules/notifications';
 import toolpics from './modules/toolpics';
 import windows from './modules/windows';
 import contextMenu from './modules/contextMenu';
+import header from './modules/header';
 
 let modules: any = {
     langs,
@@ -14,7 +15,8 @@ let modules: any = {
     notifications,
     toolpics,
     windows,
-    contextMenu
+    contextMenu,
+    header
 }
 
 const store = createStore({

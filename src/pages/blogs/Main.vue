@@ -18,6 +18,14 @@
                 </CarouselTab>
             </div>
         </header>
+        <div>
+            <div class="title">Latest blogs</div>
+            <CarouselTab :gap="12" :column="4">
+                <Blog v-for="(_, id) of new Array(9)" :key="id" :blog="blog"
+                    @click="$router.push(`/blogs/${id}`)"
+                />
+            </CarouselTab>
+        </div>
         <div class="title" style="margin: 64px 0 16px 0;">All blogs</div>
         
         <div class="list">

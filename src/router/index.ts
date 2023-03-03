@@ -40,4 +40,6 @@ const router = createRouter({
     routes
 });
 
+let a: number | string = 'asd';
+
 export default router;

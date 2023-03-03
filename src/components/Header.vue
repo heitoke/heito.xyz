@@ -1,5 +1,12 @@
 <template>
-    <header>
+    <header :style="{
+        'backdrop-filter': getHeaderOptions.blur.enable ? `blur(${getHeaderOptions.blur.value})` : '' }"
+    >
+        <Transition name="loading">
+            <div class="loading" v-show="getHeaderLoading.process > 0 && getHeaderLoading.process < 100">
+                <div :style="{ width: `${getHeaderLoading.process}%`, background: getHeaderLoading.color }"></div>
+            </div>
+        </Transition>
         <RouterLink class="logo" to="/">heito.xyz</RouterLink>
         <div>
             <div :class="['notifications', { 'new-message': getListNotifications.filter((n: any) => !n?.hide)?.length > 0 }]"
@@ -52,7 +59,7 @@ export default defineComponent({
     name: 'MainHeader',
     components: {},
     computed: {
-        ...mapGetters(['getLangName', 'getLang', 'getActiveNotifications', 'getListNotifications']),
+        ...mapGetters(['getLangName', 'getLang', 'getActiveNotifications', 'getListNotifications', 'getHeaderLoading', 'getHeaderOptions']),
         getProfileMenu(): IContextMenu {
             return {
                 name: 'header:profile:menu',
@@ -150,6 +157,12 @@ export default defineComponent({
     opacity: 0;
 }
 
+.loading-enter-active,
+.loading-leave-active {
+    top: -4px;
+    opacity: 0;
+}
+
 header {
     display: flex;
     padding: 0 10vw;
@@ -160,9 +173,29 @@ header {
     left: 0px;
     align-items: center;
     justify-content: space-between;
-    backdrop-filter: blur(5px);
+    
     box-sizing: border-box;
     z-index: 100;
+
+    .loading {
+        width: 100%;
+        height: 2px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        background: var(--background-secondary);
+        transition: .2s;
+        overflow: hidden;
+
+        div {
+            height: 2px;
+            position: absolute;
+            top: 0;
+            left: 0;
+            background-color: var(--C1);
+            transition: .2s;
+        }
+    }
 
     .logo {
         position: relative;

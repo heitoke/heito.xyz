@@ -1,12 +1,24 @@
 <template>
     <div class="carousel-tab">
         <div class="content">
-            <div :style="{
+            <!-- <div :style="{
                 transform: `translateX(calc(-${index * 100}% - ${index * gap}px))`,
-                'grid-template': `1fr / repeat(${countElements}, calc(${100 / column}% - ${gap / 2}px))`,
+                'grid-template': `1fr / repeat(${countElements}, calc(${100 / column}% - ${column > 1 ? gap / 2 : 0}px))`,
                 'column-gap': `${gap}px`
             }">
                 <slot style="--g: 123px;"></slot>
+            </div> -->
+            <div class="grid"
+                :style="{
+                    transform: `translateX(calc(-${index * 100}% - ${index * gap}px))`,
+                    'grid-template': `1fr / repeat(${countElements}, calc(${100 / column}% - ${column > 1 ? gap / 2 : 0}px))`,
+                }"
+            >
+                <div v-for="(_, idx) in new Array(barLength).fill(0)" :key="idx"
+                    :style="{ 'column-gap': `${gap}px` }"
+                >
+                    <component v-for="c of $slots?.default()[0]?.children?.slice(idx, idx * column)" :key="c" :is="c"></component>
+                </div>
             </div>
         </div>
         <div class="bar">
@@ -27,7 +39,7 @@ export default defineComponent({
     computed: {
         barLength(): number {
             let n = (this.countElements / this.column);
-            return n > Math.floor(n) ? n + .5 : n;
+            return Number.isInteger(n) ? n : Math.floor(n + 1);
         }
     },
     props: {
@@ -48,7 +60,7 @@ export default defineComponent({
     },
     methods: {},
     mounted() {
-        this.countElements = this.$slots?.default()[0]?.children?.length;
+        this.countElements = this.$slots?.default()[0]?.children?.length as number;
     }
 });
 
@@ -60,19 +72,17 @@ export default defineComponent({
     .content {
         overflow: hidden;
 
-        div {
-            display: grid;
-            grid-auto-flow: column;
+        .grid {
+            display: flex;
+            position: relative;
+            scroll-behavior: smooth;
+            scroll-snap-type: x mandatory;
             transition: .2s;
-
-            * {
-                margin: 0 16px 0 0;
+        
+            div {
+                display: flex;
+                flex-shrink: 0;
                 scroll-snap-align: center;
-                max-width: var(--w) !important;
-            
-                &:last-child {
-                    margin: 0;
-                }
             }
         }
     }

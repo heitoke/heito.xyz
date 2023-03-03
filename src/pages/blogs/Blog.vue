@@ -43,7 +43,7 @@
 
 import { defineComponent } from 'vue';
 
-import { mapGetters } from 'vuex';
+import { mapGetters, mapActions } from 'vuex';
 
 export default defineComponent({
     name: 'BlogPage',
@@ -62,10 +62,45 @@ export default defineComponent({
     data: () => ({
         image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg'
     }),
-    watch: {},
-    methods: {},
-    mounted() {},
-    unmounted() {}
+    watch: {
+        headerActive(newValue) {
+            this.setHeaderOptions({
+                blur: {
+                    enable: newValue,
+                    value: '5px'
+                }
+            });
+        }
+    },
+    methods: {
+        ...mapActions(['setHeaderLoading', 'setHeaderOptions'])
+    },
+    mounted() {
+        this.setHeaderOptions({
+            blur: {
+                enable: false
+            }
+        });
+
+        let n = 0;
+        setInterval(() => {
+            this.setHeaderLoading({
+                process: n
+            })
+
+            n++
+        }, 100)
+    },
+    unmounted() {
+        console.log(123213);
+        
+        this.setHeaderOptions({
+            blur: {
+                enable: true,
+                value: '5px'
+            }
+        });
+    }
 });
 
 </script>

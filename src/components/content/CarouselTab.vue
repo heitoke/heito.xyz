@@ -11,14 +11,19 @@
             <div class="grid"
                 :style="{
                     transform: `translateX(calc(-${index * 100}% - ${index * gap}px))`,
-                    'grid-template': `1fr / repeat(${countElements}, calc(${100 / column}% - ${column > 1 ? gap / 2 : 0}px))`,
                 }"
             >
                 <div v-for="(_, idx) in new Array(barLength).fill(0)" :key="idx"
-                    :style="{ 'column-gap': `${gap}px` }"
+                    :style="{
+                        margin: `0 ${gap}px 0 0`,
+                        'grid-template-columns': `repeat(${column}, 1fr)`, //`1fr / repeat(${countElements}, calc(${100 / column}% - ${column > 1 ? gap / 2 : 0}px))`,
+                        'column-gap': `${gap}px`
+                    }"
                 >
-                    <component v-for="c of $slots?.default()[0]?.children?.slice(idx, idx * column)" :key="c" :is="c"></component>
+                    <!-- | {{ idx * column }} {{ (idx * column) + column }} | -->
+                    <component v-for="c of $slots?.default()[0]?.children?.slice(idx * column, idx * column + column)" :key="c" :is="c"></component>
                 </div>
+                <!-- --- {{ column }} | {{ countElements }} -->
             </div>
         </div>
         <div class="bar">
@@ -80,7 +85,9 @@ export default defineComponent({
             transition: .2s;
         
             div {
-                display: flex;
+                display: grid;
+                max-width: 100%;
+                width: 100%;
                 flex-shrink: 0;
                 scroll-snap-align: center;
             }

@@ -7,7 +7,19 @@
                 <div :style="{ width: `${getHeaderLoading.process}%`, background: getHeaderLoading.color }"></div>
             </div>
         </Transition>
-        <RouterLink class="logo" to="/">heito.xyz</RouterLink>
+        <div class="left">
+            <RouterLink class="logo" to="/">heito.xyz</RouterLink>
+            <div class="track">
+                <div class="image" :style="{ '--image': `url(${track.image})` }"></div>
+                <div>
+                    <div class="label">{{ track.name }}</div>
+                    <div class="description">{{ track.description }}</div>
+                    <div class="process">
+                        <div :style="{ width: '10%' }"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
         <div>
             <div :class="['notifications', { 'new-message': getListNotifications.filter((n: any) => !n?.hide)?.length > 0 }]"
                 @click="setActiveNotifications(!getActiveNotifications)"
@@ -112,6 +124,16 @@ export default defineComponent({
         darkTheme: true,
         menu: {
             isActive: false
+        },
+        track: {
+            image: 'https://www.patee.ru/r/x6/10/a5/d5/512x512.jpg',
+            name: 'Name',
+            description: 'Description',
+            process: {
+                start: 0,
+                end: 0,
+                value: 0
+            }
         }
     }),
     watch: {},
@@ -197,31 +219,88 @@ header {
         }
     }
 
-    .logo {
-        position: relative;
-        color: var(--text-primary);
-        text-decoration: none;
-        transition: .2s;
-
-        &::after {
-            content: " ";
-            width: 0px;
-            position: absolute;
-            top: calc(100% - 2px);
-            left: 0px;
-            border-bottom: .5px solid var(--text-primary);
+    .left {
+        display: flex;
+        align-items: center;
+        
+        .logo {
+            position: relative;
+            color: var(--text-primary);
+            text-decoration: none;
             transition: .2s;
-            mix-blend-mode: difference;
+
+            &::after {
+                content: " ";
+                width: 0px;
+                position: absolute;
+                top: calc(100% - 2px);
+                left: 0px;
+                border-bottom: .5px solid var(--text-primary);
+                transition: .2s;
+                mix-blend-mode: difference;
+            }
+
+            &:hover {
+                &::after {
+                    width: 100%;
+                }
+            }
         }
 
-        &:hover {
-            &::after {
+        .track {
+            display: flex;
+            margin: 0 0 0 32px;
+            max-width: 256px;
+            width: 100%;
+            align-items: center;
+
+            .image {
+                margin: 0 8px 0 0;
+                min-width: 42px;
+                min-height: 42px;
+                border-radius: 5px;
+                background-size: cover;
+                background-position: center;
+                background-image: var(--image);
+                background-color: var(--background-secondary);
+            }
+
+            .image + div {
                 width: 100%;
+            }
+
+            .label {
+                font-size: 13px;
+                font-weight: 700;
+            }
+
+            .description {
+                color: var(--text-secondary);
+                font-size: 12px;
+            }
+
+            .process {
+                margin: 4px 0 0 0;
+                width: 100%;
+                height: 3px;
+                position: relative;
+                border-radius: 5px;
+                background-color: var(--background-secondary);
+                overflow: hidden;
+
+                div {
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    background: var(--C1);
+                    transition: .2s;
+                }
             }
         }
     }
 
-    .logo + div {
+    .left + div {
         display: flex;
         align-items: center;
         justify-content: center;

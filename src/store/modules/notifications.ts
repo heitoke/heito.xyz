@@ -1,5 +1,7 @@
 import type { StoreOptions } from 'vuex';
 
+import { TIcon } from '../../libs/types';
+
 export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
 export type TTypeNotification = 'shadow' | 'old' | 'mini' | 'info' | 'toast';
@@ -11,7 +13,7 @@ export interface INotification {
     title: string;
     message?: string;
     color?: string;
-    icon?: string;
+    icon?: TIcon;
     shadow?: boolean;
     shadowPosition?: TShadowPosition;
     type?: TTypeNotification;

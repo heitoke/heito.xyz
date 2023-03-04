@@ -1,12 +1,14 @@
 import type { Component } from 'vue';
 import type { StoreOptions } from 'vuex';
 
+import { TIcon } from '../../libs/types';
+
 export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
 export interface IContextMenuButton {
     label: string;
     text?: string;
-    icon?: string;
+    icon?: TIcon;
     color?: string;
     component?: Component;
     separator?: boolean;

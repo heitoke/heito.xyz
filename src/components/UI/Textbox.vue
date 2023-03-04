@@ -7,6 +7,11 @@
             @blur="$emit('blur', $event)"
         >
 
+        <Menu v-if="menu === true && buttons?.length > 3" :menu="{
+            name: 'textbox:menu',
+            buttons: (buttons as IContextMenuButton[])
+        }"/>
+
         <Transition name="width">
             <ul class="buttons" v-show="modelValue?.length > 0 && buttons?.length > 0">
                 <li v-for="btn of buttons.slice(0, 3)" :key="btn.icon"
@@ -14,7 +19,7 @@
                 >
                     <Icon name="close" :size="'14px'"/>
                 </li>
-                <li v-show="buttons?.length > 3">
+                <li v-show="buttons?.length > 3" @click="menu = !menu">
                     <Icon name="arrow-down" :size="'14px'"/>
                 </li>
             </ul>
@@ -22,9 +27,17 @@
     </label>
 </template>
 
+<script lang="ts" setup>
+
+import Menu from '../content/Menu.vue';
+
+</script>
+
 <script lang="ts">
 
 import { defineComponent, PropType } from 'vue';
+
+import type { IContextMenuButton } from '../../store/modules/contextMenu';
 
 export type TInput = 'text' | 'password' | 'number';
 
@@ -52,29 +65,33 @@ export default defineComponent({
     },
     data: () => ({
         modelValue: '',
+        menu: false,
         buttons: [
             {
-                label: '',
+                label: 'Close',
                 icon: 'close'
             },
             {
-                label: '',
+                label: 'Close',
                 icon: 'close'
             },
             {
-                label: '',
+                label: 'Close',
                 icon: 'close'
             },
             {
-                label: '',
+                label: 'Close',
                 icon: 'close'
             }
-        ],
-        menu: {
-            
-        }
+        ]
     }),
-    watch: {},
+    watch: {
+        modelValue(newValue) {
+            console.log(newValue);
+            
+            // this.$emit('input', newValue);
+        }
+    },
     methods: {},
     mounted() {}
 });
@@ -166,6 +183,21 @@ export default defineComponent({
                 --color: var(--text-secondary);
             }
         }
+    }
+
+    .menu {
+        padding: 8px;
+        width: 100%;
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        border-radius: 5px;
+        border: 1px solid var(--background-secondary);
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+        background-color: var(--background-secondary);
+        box-sizing: border-box;
+        z-index: 3;
     }
 }
 

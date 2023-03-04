@@ -36,7 +36,7 @@ class Markdown {
                 match: /^((&gt;|\s+&gt;){1,999} (.*))+/gm,
                 result(text, self) {
                     let matches = text.match(self.match),
-                        setValue = (val: string) => `<div class="blockquote">\n${val}</div>`;
+                        setValue = (val: string) => `<blockquote>\n${val}</blockquote>`;
                     if (matches) for (let match of matches) {
                         // console.log(match);
                         let value = match.replace(/\n/, '').replace(/\n/gm, '<br>\n').replace(/&gt; |&gt;/g, '');
@@ -86,7 +86,7 @@ class Markdown {
                 name: 'bold',
                 match: /(?<!\*|\\\*)\*{2,2}(.+?)\*{2,2}(?!\*|\\)|(?<!_|_)_{2,2}(.+?)_{2,2}(?!_|\\)/gm,
                 result(text, self) {
-                    return text.replace(self.match, `<span class="bold">$1$2</span>`);
+                    return text.replace(self.match, `<strong>$1$2</strong>`);
                 }
             },
             // * Italic
@@ -94,7 +94,7 @@ class Markdown {
                 name: 'italic',
                 match: /(?<!\*|\\\*)\*{1,1}(.+?)\*{1,1}(?!\*|\\)|(?<!_|_)_{1,1}(.+?)_{1,1}(?!_|\\)/gmi,
                 result(text, self) {
-                    return text.replace(self.match, `<span class="italic">$1$2</span>`);
+                    return text.replace(self.match, `<em>$1$2</em>`);
                 }
             },
             // * Image
@@ -161,9 +161,11 @@ class Markdown {
 
                     return `
 <table>
-<tr>
+<thead>
+    <tr>
     ${header.slice(0, width.length).map(item => `<th scope="col">${item}</th>`).join('')}
-</tr>
+    </tr>
+</thead>
 ${rows.map(row => `<tr>${row.slice(0, width.length).map((col, idx) => {
     let align = width[idx].replace(/-/g, '');
     return `<td style="text-align: ${(align[0] === ' ' && align[1] === ' ') || (align[0] === ':' && align[1] === ' ') ? 'left' : (align[0] === ':' && align[1] === ':' ? 'center' : 'right')};">${col}</td>`;
@@ -221,6 +223,8 @@ ${rows.map(row => `<tr>${row.slice(0, width.length).map((col, idx) => {
     createList(content: string[], type: 'ul' | 'ol' = 'ul', name: string = 'list') {
         content = content?.map(item => item.replace(/\s\s\s\s/g, `\t`).replace(/\n/g, ''));
         let result = ``, next = 0;
+        console.log(content);
+        
         content.map((item, i) => {
             let c = (e: string) => e?.split('\t').filter(e => e === '').length,
                 n = content[i + 1], p = content[i - 1],

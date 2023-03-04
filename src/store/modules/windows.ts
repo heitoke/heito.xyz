@@ -1,6 +1,8 @@
 import type { Component } from 'vue';
 import type { StoreOptions } from 'vuex';
 
+import { TIcon } from '../../libs/types';
+
 export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
 export interface IButton {
@@ -8,7 +10,7 @@ export interface IButton {
     label?: string;
     text?: string;
     color?: string;
-    icon?: string;
+    icon?: TIcon;
     click?(e: Event): void;
 }
 
@@ -17,6 +19,7 @@ export interface IWindow {
     title: string;
     message?: string;
     component?: Component;
+    icon?: TIcon;
     color?: string;
     position?: TPosition;
     hide?: boolean;

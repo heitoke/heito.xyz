@@ -251,7 +251,7 @@ header {
             display: flex;
             margin: 0 0 0 32px;
             max-width: 256px;
-            width: 100%;
+            width: 256px;
             align-items: center;
 
             .image {

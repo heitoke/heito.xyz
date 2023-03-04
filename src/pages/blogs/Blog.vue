@@ -20,24 +20,27 @@
         <div class="content">
             <div class="separator">Start</div>
 
-            <h1>Lorem ipsum dolor sit amet.</h1>
-
-            <p>Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore corporis sed delectus ipsum, excepturi quae minus voluptatem, amet enim numquam, veniam necessitatibus? Debitis adipisci harum id itaque, voluptate consequuntur ipsam inventore sequi, qui, vero exercitationem doloremque eum? Exercitationem reiciendis rerum repellat quos porro dolor voluptatibus inventore, laudantium natus corrupti, laborum, temporibus laboriosam eos asperiores consectetur. Libero tenetur quae cumque porro numquam temporibus saepe eius harum corporis consequuntur itaque qui distinctio eum vero reiciendis, fugit quasi sequi cum eligendi voluptates odit dolore! Nemo quibusdam quia nostrum voluptatem repellat ea unde ducimus debitis est hic facere aperiam, laborum consectetur repudiandae, accusamus excepturi ratione, inventore odio dolore? Facilis odio, a, nemo excepturi repellat velit molestiae quae iure consectetur impedit cupiditate dolores, veniam adipisci quibusdam ullam alias nihil voluptatem nostrum aliquam corrupti?</p>
-
-            <h2>Lorem ipsum dolor sit amet.</h2>
-
-            <h3>Lorem ipsum dolor sit amet.</h3>
-
-            <h4>Lorem ipsum dolor sit amet.</h4>
-
-            <h5>Lorem ipsum dolor sit amet.</h5>
-
-            <h6>Lorem ipsum dolor sit amet.</h6>
+            <Markdown :text="content"/>
 
             <div class="separator">The End</div>
+
+            <CarouselTab :gap="12">
+                <div v-for="(_, id) in new Array(10)" :key="id"
+                    :style="{ height: '128px' }"
+                >{{ id }}</div>
+            </CarouselTab>
         </div>
+
     </div>
 </template>
+
+<script lang="ts" setup>
+
+import CarouselTab from '../../components/content/CarouselTab.vue';
+
+import Markdown from '../../components/content/Markdown.vue';
+
+</script>
 
 <script lang="ts">
 
@@ -60,7 +63,44 @@ export default defineComponent({
         }
     },
     data: () => ({
-        image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg'
+        image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg',
+        content: `
+# Welcome to StackEdit!
+
+Hi! I'm your first Markdown file in **StackEdit**. If you want to learn about StackEdit, you can read me. If you want to play with Markdown, you can edit me. Once you have finished with me, you can create new files by opening the **file explorer** on the left corner of the navigation bar.
+
+
+# Files
+
+StackEdit stores your files in your browser, which means all your files are automatically saved locally and are accessible **offline!**
+
+## Create files and folders
+
+The file explorer is accessible using the button in left corner of the navigation bar. You can create a new file by clicking the **New file** button in the file explorer. You can also create folders by clicking the **New folder** button.
+
+## Switch to another file
+
+All your files and folders are presented as a tree in the file explorer. You can switch from one to another by clicking a file in the tree.
+
+## Rename a file
+
+You can rename the current file by clicking the file name in the navigation bar or by clicking the **Rename** button in the file explorer.
+
+
+* rtee
+* фывфыв
+    * фвы
+    * выфывф
+        * вфыфыв
+    * фвы
+* ывф
+
+|                |ASCII                          |HTML                         |
+|----------------|-------------------------------|-----------------------------|
+|Single backticks|\`'Isn't this fun?'\`            |'Isn't this fun?'            |
+|Quotes          |\`"Isn't this fun?"\`            |"Isn't this fun?"            |
+|Dashes          |\`-- is en-dash, --- is em-dash\`|-- is en-dash, --- is em-dash|
+`
     }),
     watch: {
         headerActive(newValue) {
@@ -134,10 +174,11 @@ export default defineComponent({
         transition: .2s;
 
         &.active {
-            transform: translateY(2.5vw);
+            transform: translateY(64px);
+
             .image {
                 border-radius: 15px;
-                transform: translateY(-10vw) scale(.8);
+                transform: translateY(-128px) scale(.8);
                 opacity: .5;
 
                 &::after {

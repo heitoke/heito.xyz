@@ -60,7 +60,9 @@ export default defineComponent({
         }
     },
     watch: {
-        menu(newValue: IContextMenu) {
+        menu(newValue: IContextMenu, oldValue: IContextMenu) {
+            if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
+
             this.name = newValue?.name as string;
             this.childrens = [newValue];
         }

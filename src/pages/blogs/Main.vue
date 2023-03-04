@@ -4,7 +4,7 @@
             <div style="width: calc(50% - 8px); margin: 0 16px 0 0;">
                 <div class="title">Popular blogs</div>
                 <CarouselTab :gap="12" :column="2">
-                    <Blog v-for="(_, id) of new Array(5)" :key="id" :blog="blog"
+                    <Blog v-for="(blog, id) of blogs" :key="id" :blog="blog"
                         @click="$router.push(`/blogs/${id}`)"
                     />
                 </CarouselTab>
@@ -12,7 +12,7 @@
             <div style="width: calc(50% - 8px);">
                 <div class="title">Latest blogs</div>
                 <CarouselTab :gap="12">
-                    <Blog v-for="(_, id) of new Array(5)" :key="id" :blog="blog"
+                    <Blog v-for="(blog, id) of blogs" :key="id" :blog="blog"
                         @click="$router.push(`/blogs/${id}`)"
                     />
                 </CarouselTab>
@@ -22,7 +22,7 @@
         
         <div class="list">
             <div class="filters">
-                <Textbox/>
+                <Textbox style="z-index: 1;" @input="filters.text = $event.target.value"/>
                 
                 <div class="line"></div>
 
@@ -30,16 +30,31 @@
                     name: 'blogs:filters',
                     buttons: [
                         {
-                            label: 'Test'
+                            label: 'All',
+                            icon: 'lang',
+                            click: () => filters.category = 'all'
+                        },
+                        { label: '', separator: true },
+                        {
+                            label: 'Void',
+                            icon: 'moon',
+                            click: () => filters.category = 'void'
+                        },
+                        {
+                            label: 'Test',
+                            icon: 'half-sun',
+                            click: () => filters.category = 'test'
                         }
                     ]
                 }"/>
             </div>
-            <TransitionGroup tag="ul">
-                <Blog v-for="(_, id) of new Array(5)" :key="id" :blog="blog" style="margin: 0 12px 0 0;"
-                    @click="$router.push(`/blogs/${id}`)"
-                />
-            </TransitionGroup>
+            <ul>
+                <TransitionGroup name="show-blog">
+                    <Blog v-for="(blog, id) of getListBlogs" :key="id" :blog="blog"
+                        @click="$router.push(`/blogs/${id}`)"
+                    />
+                </TransitionGroup>
+            </ul>
         </div>
     </div>
 </template>
@@ -60,20 +75,47 @@ import { defineComponent } from 'vue';
 export default defineComponent({
     name: 'BlogsPage',
     components: {},
-    computed: {},
+    computed: {
+        getListBlogs() {
+            let regexText = new RegExp(this.filters.text.trim(), 'i')
+            return [...this.blogs]
+                .filter(b => this.filters.category === 'all' ? b : b.category === this.filters.category)
+                .filter(b => regexText.test(b.title) || regexText.test(b.description))
+        }
+    },
     props: {},
     data: () => ({
-        blog: {
-            title: 'Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog',
-            description: 'Description',
-            image: 'https://avatars.mds.yandex.net/i?id=79ebacfe308fb494ac056a01cb3cba3840e07e0c-8350343-images-thumbs&n=13',
-            createdAt: Date.now()
-        }
+        filters: {
+            text: '',
+            category: 'void'
+        },
+        blogs: [
+            ...new Array(5).fill({
+                title: 'Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog',
+                description: 'Description',
+                image: 'https://avatars.mds.yandex.net/i?id=79ebacfe308fb494ac056a01cb3cba3840e07e0c-8350343-images-thumbs&n=13',
+                tags: [
+                    'new'
+                ],
+                category: 'void',
+                createdAt: Date.now()
+            }),
+            ...new Array(5).fill({
+                title: 'Test',
+                description: 'Description',
+                image: 'https://avatars.mds.yandex.net/i?id=79ebacfe308fb494ac056a01cb3cba3840e07e0c-8350343-images-thumbs&n=13',
+                tags: [
+                    'old'
+                ],
+                category: 'test',
+                createdAt: Date.now()
+            })
+        ]
     }),
     watch: {},
     methods: {
-        log() {
-            console.log(123);
+        log(...args: any) {
+            console.log(args);
             
         }
     },
@@ -83,6 +125,16 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+
+.show-blog {
+    &-enter, &-leave {
+        &-active {
+            transform: scale(.9);
+            transition: .2s;
+            opacity: 0;
+        }
+    }
+}
 
 .page.blogs {
     padding: 5vw 10vw 64px 10vw;
@@ -127,6 +179,7 @@ export default defineComponent({
 
         ul {
             display: grid;
+            width: 100%;
             grid-template-columns: repeat(3, 1fr);
             grid-column-gap: 12px;
             grid-row-gap: 12px;

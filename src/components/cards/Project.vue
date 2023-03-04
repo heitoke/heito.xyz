@@ -9,17 +9,25 @@
             <ul class="members">
                 <li v-for="(member, idx) of members.slice(0, 5)" :key="idx"
                     :style="{
-                        '--avatar': `url('${getAvatar({ nameId: member.name })}')`
+                        '--avatar': `url('${getAvatar({ nameId: member.name })}')`,
+                        opacity: hoverMember > -1 ? (hoverMember === idx ? 1 : 0) : 1
                     }"
-                    @mouseenter="setToolpic({ name: `project:asd`, title: member.name })"
+                    @mouseenter="setToolpic({ name: `project:asd`, title: member.name }); hoverMember = idx"
+                    @mouseleave="hoverMember = -1"
                 ></li>
-                <li v-show="members.length > 5">
+                <li v-show="members.length > 5" :style="{ opacity: hoverMember > -1 ? 0 : 1 }">
                     +{{ members?.length - 5 }}
                 </li>
             </ul>
-            <div class="date">03.03.2023</div>
+            <div class="date">{{ unixFormat(Date.now(), 'dd MMM YYYY') }}</div>
             <ul class="tags">
-                <li>New</li>
+                <li>New 1</li>
+                <li>New 2</li>
+                <li>New 3</li>
+                <li>New 4</li>
+                <li>New 5</li>
+                <li>New 6</li>
+                <li>New 7</li>
             </ul>
         </div>
     </div>
@@ -27,7 +35,7 @@
 
 <script setup lang="ts">
 
-import { getAvatar } from '../../libs/functions';
+import { getAvatar, unixFormat } from '../../libs/functions';
 
 </script>
 
@@ -53,6 +61,7 @@ export default defineComponent({
         }
     },
     data: () => ({
+        hoverMember: -1,
         members: [
             {
                 name: 'heito'
@@ -87,7 +96,7 @@ export default defineComponent({
         ]
     }),
     methods: {
-        ...mapActions(['setToolpic'])
+        ...mapActions(['setToolpic', 'setContextMenu'])
     },
     mounted() {}
 });
@@ -134,6 +143,15 @@ export default defineComponent({
     }
 
     header {
+        .title, .description {
+            display: -webkit-box;
+            text-overflow: ellipsis;
+            line-clamp: 2;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
         .title {
             font-size: 32px;
             font-weight: bold;
@@ -167,6 +185,7 @@ export default defineComponent({
                 background-position: center;
                 background-image: var(--avatar);
                 background-color: var(--background-secondary);
+                transition: .2s;
 
                 &:first-child {
                     margin: 0;
@@ -177,12 +196,32 @@ export default defineComponent({
         .date {
             color: var(--text-secondary);
             font-size: 12px;
+            white-space: nowrap;
+            mix-blend-mode: difference;
         }
 
         ul.tags {
             display: flex;
+            margin: 0 0 0 12px !important;
             margin-left: auto;
             align-items: center;
+            justify-content: flex-end;
+            overflow: hidden;
+
+            li {
+                margin: 0 8px 0 0;
+                padding: 4px 8px;
+                font-size: 12px;
+                white-space: nowrap;
+                border-radius: 5px;
+                background-color: #00000055;
+                backdrop-filter: blur(5px);
+                transition: .2s;
+
+                &:last-child {
+                    margin: 0;
+                }
+            }
         }
     }
 }

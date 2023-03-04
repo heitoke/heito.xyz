@@ -1,12 +1,10 @@
 <template>
     <div class="projects">
-        <Project :project="{
-            title: 'Project',
-            image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg',
-            description: 'Description',
-            createdAt: Date.now()
-        }"/>
-        <RouterLink to="/projects/78543">Project</RouterLink>
+        <div class="grid">
+            <Project v-for="(project, idx) in projects" :key="idx" :project="project"
+                @click="createWindow({ title: `Project ${project.title}`, component: 'Project' });"
+            />
+        </div>
     </div>
 </template>
 
@@ -20,14 +18,27 @@ import Project from '../../components/cards/Project.vue';
 
 import { defineComponent } from 'vue';
 
+import { mapActions } from 'vuex';
+
 export default defineComponent({
     name: 'ProjectsPage',
     components: {},
     computed: {},
     props: {},
-    data: () => ({}),
+    data: () => ({
+        projects: [
+            ...new Array(5).fill({
+                title: 'Project',
+                image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg',
+                description: 'Description',
+                createdAt: Date.now()
+            })
+        ]
+    }),
     watch: {},
-    methods: {},
+    methods: {
+        ...mapActions(['createWindow'])
+    },
     mounted() {}
 });
 
@@ -38,6 +49,13 @@ export default defineComponent({
 .page.projects {
     padding: 0 10vw;
     min-height: 100vh;
+
+    .grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        column-gap: 12px;
+        row-gap: 12px;
+    }
 }
 
 </style>

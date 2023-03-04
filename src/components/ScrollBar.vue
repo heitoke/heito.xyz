@@ -129,6 +129,7 @@ export default defineComponent({
         transform-origin: center right;
         transform: scale(.85);
         transition: .2s;
+        z-index: 101;
         overflow: hidden;
         opacity: 0;
 

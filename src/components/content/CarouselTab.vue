@@ -21,7 +21,7 @@
                     }"
                 >
                     <!-- | {{ idx * column }} {{ (idx * column) + column }} | -->
-                    <component v-for="c of $slots?.default()[0]?.children?.slice(idx * column, idx * column + column)" :key="c" :is="c"></component>
+                    <component v-for="c of ($slots as any)?.default()[0]?.children?.slice(idx * column, idx * column + column)" :key="c" :is="c"></component>
                 </div>
                 <!-- --- {{ column }} | {{ countElements }} -->
             </div>
@@ -65,7 +65,7 @@ export default defineComponent({
     },
     methods: {},
     mounted() {
-        this.countElements = this.$slots?.default()[0]?.children?.length as number;
+        this.countElements = (this.$slots as any)?.default()[0]?.children?.length as number;
     }
 });
 
@@ -130,7 +130,7 @@ export default defineComponent({
 
             &.active {
                 &::after {
-                    background-color: var(--C1);
+                    background-color: var(--main-color);
                 }
             }
         }

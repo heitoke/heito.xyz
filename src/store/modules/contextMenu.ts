@@ -3,7 +3,7 @@ import type { StoreOptions } from 'vuex';
 
 import { TIcon } from '../../libs/types';
 
-export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
+export type TPosition = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'fixed-target';
 
 export interface IContextMenuButton {
     label: string;
@@ -18,15 +18,28 @@ export interface IContextMenuButton {
     children?: IContextMenu;
 }
 
+export interface IComponent {
+    component: Component | string;
+    name: string;
+    props?: {
+        [key: string]: any;
+    },
+    events?: {
+        [key: string]: (...args: any) => any;
+    }
+}
+
 export interface IContextMenu {
     name: string;
     title?: string;
     text?: string;
-    event?: Event;
-    position?: TPosition;
+    event?: Event | MouseEvent;
+    position?: Array<TPosition>;
     x?: number;
     y?: number;
-    buttons: IContextMenuButton[];
+    autoMaxWidth?: boolean;
+    buttons?: IContextMenuButton[];
+    components?: IComponent[];
 }
 
 interface State {
@@ -47,8 +60,8 @@ const module: StoreOptions<State> = {
 
             let event = contextMenu.event || window.event;
             
-            state.list = [...state.list, {
-                position: 'bottom right',
+            state.list = [...state.list || [], {
+                position: ['bottom', 'right'],
                 ...contextMenu,
                 event
             }];

@@ -6,7 +6,7 @@
         </header>
         <ul>
             <TransitionGroup name="button">
-                <li v-for="btn in getMenu?.buttons" :key="btn"
+                <li v-for="btn in getMenu?.buttons?.filter((btn: IContextMenuButton) => btn?.label || btn?.separator)" :key="btn"
                     :class="{ separator: btn?.separator }"
                     :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                     @click="buttonClick(btn, $event)"
@@ -33,9 +33,12 @@
 
 import { defineComponent, PropType } from 'vue';
 
+import { mapActions } from 'vuex';
+
 import type { IContextMenu, IContextMenuButton, TPosition } from '../../store/modules/contextMenu';
 
 interface IData {
+    mainName: string;
     name: string;
     childrens: IContextMenu[];
 }
@@ -55,6 +58,7 @@ export default defineComponent({
     },
     data(): IData {
         return {
+            mainName: '',
             name: '',
             childrens: []
         }
@@ -68,15 +72,20 @@ export default defineComponent({
         }
     },
     methods: {
+        ...mapActions(['closeContextMenu']),
         buttonClick(btn: IContextMenuButton, e: Event) {
             if (btn.children) {
                 this.childrens = [...this.childrens, btn.children];
-                this.name = btn.children.name;
-            } else if (btn.click) btn.click(e);
+                return this.name = btn.children.name;
+            }
+            
+            if (btn?.click) btn.click(e);
+            
+            this.closeContextMenu(this.mainName);
         }
     },
     mounted() {
-        this.name = this.menu?.name as string;
+        this.mainName = this.name = this.menu?.name as string;
         this.childrens = [this.menu as IContextMenu];
     }
 })
@@ -171,7 +180,7 @@ export default defineComponent({
             }
 
             i.hx-icon:not(.arrow) {
-                --color: var(--button-color);
+                color: var(--button-color);
                 margin: 0 12px 0 0;
             }
 
@@ -192,7 +201,7 @@ export default defineComponent({
             }
 
             .arrow {
-                --color: var(--text-secondary);
+                color: var(--text-secondary);
                 margin: 0 0 0 12px;
                 transition: .2s;
             }

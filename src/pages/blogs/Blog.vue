@@ -3,7 +3,7 @@
         <header :class="{ active: headerActive }">
             <div class="image" :style="{ '--image': `url('${image}')` }"></div>
 
-            <div class="data">0 seconds ago</div>
+            <div class="date">0 seconds ago</div>
             <div class="title">Guidelines for Designing a Catalog and Product Page for Products with Multiple Options</div>
             
             <Transition name="height">
@@ -164,9 +164,10 @@ You can rename the current file by clicking the file name in the navigation bar 
 
     header {
         display: flex;
-        padding: 5vh 10vw;
-        width: 100vw;
-        height: 100vh;
+        padding: 5% 10%;
+        width: 100%;
+        min-height: 100%;
+        position: relative;
         align-items: flex-start;
         justify-content: flex-end;
         flex-direction: column;
@@ -178,7 +179,7 @@ You can rename the current file by clicking the file name in the navigation bar 
 
             .image {
                 border-radius: 15px;
-                transform: translateY(-128px) scale(.8);
+                transform: translateY(-169px) scale(.8);
                 opacity: .5;
 
                 &::after {
@@ -187,11 +188,16 @@ You can rename the current file by clicking the file name in the navigation bar 
                     // box-shadow: 0 -100px 100px 100px var(--background-primary) inset;
                 }
             }
+
+            .date, .title, .scroll {
+                color: var(--text-primary);
+                mix-blend-mode: none;
+            }
         }
         
         .image {
-            width: 100vw;
-            height: 100vh;
+            width: 100%;
+            height: 100%;
             position: absolute;
             top: 0;
             left: 0;
@@ -214,6 +220,7 @@ You can rename the current file by clicking the file name in the navigation bar 
         }
 
         .date, .title, .scroll {
+            color: #fff;
             mix-blend-mode: difference;
         }
 
@@ -236,7 +243,7 @@ You can rename the current file by clicking the file name in the navigation bar 
     }
 
     .content {
-        padding: 5vh 10vw;
+        padding: 5% 10%;
 
         .separator {
             --t: #222222;

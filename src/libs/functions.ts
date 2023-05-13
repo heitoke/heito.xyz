@@ -9,12 +9,19 @@ export interface IUserAvatar {
 }
 
 export function getAvatar(options: IUserAvatar = {}): string {
-    let defaultValues: IUserAvatar = {
+    try {
+        if (process) return '';
+    } catch (err) {
+        
+    }
+
+    let color = localStorage['color'],
+        defaultValues: IUserAvatar = {
         type: 'beam',
-        size: 128,
+        size: 512,
         nameId: 'guast',
         square: true,
-        colors: ['0b0b0b', '171717', 'FFBF34']
+        colors: ['0b0b0b', '171717', color ? JSON.parse(color)?.slice(1) : 'FFBF34'],
     };
     options = { ...defaultValues, ...options }
     
@@ -31,6 +38,12 @@ export function randomHexList(count: number = 8): string[] {
     return new Array(count).fill(1).map(() => createHex());
 }
 
+export function rgbToHex(r: number, g: number, b: number): string {
+    return '#' + (r < 10 ? '0' : '') + r.toString(16) +
+            (g < 10 ? '0' : '') + g.toString(16) +
+            (b < 10 ? '0' : '') + b.toString(16);
+}
+
 export function getAltColor(color: string): string {
     if (color[0] === '#') color = color.substring(1);
     let rgb = parseInt(color, 16),
@@ -39,6 +52,12 @@ export function getAltColor(color: string): string {
         b = (rgb >>  0) & 0xff,
         luma = 0.2126 * r + 0.7152 * g + 0.0722 * b;
     return `#${luma < 40 ? 'ffffff' : '000000'}`;
+}
+
+export function addAlpha(color: string, opacity: number) {
+    let _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
+
+    return color + _opacity.toString(16).toUpperCase();
 }
 
 export function uts(UT: number, one: string, two: string, five: string): string {
@@ -55,7 +74,7 @@ export function getString(input: number): string {
     return input < 10 ? `0${input}` : input.toString();
 }
 
-export function unix(unix: number = Date.now()) {
+export function unix(unix: number | string = Date.now()) {
     let date = new Date(unix),
         year = date.getFullYear(),
         day = getString(date.getDate()),
@@ -63,15 +82,6 @@ export function unix(unix: number = Date.now()) {
         hours = getString(date.getHours()),
         minutes = getString(date.getMinutes()),
         seconds = getString(date.getSeconds());
-
-    // if (month < 10) month = `0${month}`;
-    // if (day < 10) day = `0${day}`;
-    // if (hours < 10) hours = `0${hours}`;
-    // if (hours >= 24) hours = `0${hours - (new Number(24) as number)}`;
-    // if (minutes < 10) minutes = `0${minutes}`;
-    // if (minutes >= 60) minutes = `0${minutes - (new Number(60) as number)}`;
-    // if (seconds < 10) seconds = `0${ seconds }`;
-    // if (seconds >= 60) seconds = `0${seconds - (new Number(60) as number)}`;
 
     return {
         year,
@@ -88,7 +98,7 @@ export interface IFormat {
     YYYY: string;
 }
 
-export function unixFormat(time: number = Date.now(), format: string = 'd dd h hh m mm s ss MMM MMM YY YYYY'): string {
+export function unixFormat(time: number | string = Date.now(), format: string = 'dd MMM YYYY'): string {
     let { year, day, month, hours, minutes, seconds } = unix(time),
         miniMonth = miniMonthsName[Number(month)],
         fullMonth = monthsName[Number(month)],
@@ -132,4 +142,31 @@ export function timeago(time: number = Date.now()) {
         let { day, month_name, year } = unix(time);
         return `${day} ${month_name} ${year}`;
     }
+}
+
+
+
+
+export function setCookie(name: string, value: string, days: number) {
+    let expires = '';
+
+    if (days) {
+        let date = new Date();
+
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = '; expires=' + date.toUTCString();
+    }
+    
+    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+}
+
+export function getCookie(name: string) {
+    var nameEQ = name + "=";
+    var ca = document.cookie.split(';');
+    for(var i=0;i < ca.length;i++) {
+        var c = ca[i];
+        while (c.charAt(0)==' ') c = c.substring(1,c.length);
+        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    }
+    return null;
 }

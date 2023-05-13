@@ -1,19 +1,20 @@
 <template>
     <div class="main">
-        <!-- <M/> -->
         <div class="hello-world">
             <div class="content">
-                <RouterLink to="/projects">Projects</RouterLink>
-                <RouterLink to="/blogs">Blogs</RouterLink>
-                
-                <!-- <div class="title">{{ text }}</div> -->
                 <Text class="title" :text="getLang.page.main.title"/>
                 <Text class="text" :text="getLang.page.main.text"/>
             </div>
+            <SpaceOfStars/>
         </div>
-        <div style="height: 100vh;"></div>
     </div>
 </template>
+
+<script lang="ts" setup>
+
+import SpaceOfStars from '../components/content/SpaceOfStars.vue';
+
+</script>
 
 <script lang="ts">
 
@@ -42,14 +43,15 @@ export default defineComponent({
     padding: 0 !important;
 
     .hello-world {
-        width: 100vw;
-        height: 100vh;
+        width: 100%;
+        height: 100%;
         position: relative;
 
         .content {
             position: absolute;
-            left: 5vw;
-            bottom: 5vh;
+            left: 5%;
+            bottom: 5%;
+            z-index: 1;
 
             .title {
                 font-size: clamp(32px, calc(var(--font) - 4vmin), 90px);

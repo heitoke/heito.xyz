@@ -7,20 +7,121 @@
                 <div :style="{ width: `${getHeaderLoading.process}%`, background: getHeaderLoading.color }"></div>
             </div>
         </Transition>
+
         <div class="left">
-            <RouterLink class="logo" to="/">heito.xyz</RouterLink>
-            <div class="track">
-                <div class="image" :style="{ '--image': `url(${track.image})` }"></div>
-                <div>
-                    <div class="label">{{ track.name }}</div>
-                    <div class="description">{{ track.description }}</div>
-                    <div class="process">
-                        <div :style="{ width: '10%' }"></div>
-                    </div>
+            <div class="logo">
+                <RouterLink to="/">heito.xyz</RouterLink>
+                <div class="online"
+                    @click="open($event, 'online', () => getListOnlineUsers(online.isActive), () => online.isActive = false)"
+                >
+                    <span>Online:</span> {{ online.count }}
                 </div>
+
+                <Transition name="activities">
+                    <ul class="blur" v-if="online.isActive">
+                        <Loading v-show="online.list?.length < 1"/>
+                        <User v-for="user of online.list" :key="user._id"
+                            :user="user"
+                        />
+                    </ul>
+                </Transition>
+            </div>
+            <div :class="['activities', { active: activities.isActive }]" ref="activities">
+                <Transition name="activities">
+                    <div class="data blur" v-if="activities?.list?.length > 0"
+                        @click="open($event, 'activities', () => activities.isActive = true, () => activities.isActive = false)"
+                    >
+                        <Activity :show-buttons="activities.isActive" :content="{
+                            ...activities.list[0],
+                            buttons: [
+                                {
+                                    label: '1'
+                                },
+                                {
+                                    label: '2'
+                                }
+                            ]
+                        }"/>
+    
+                        <Transition name="fadeHeight">
+                            <div class="list" v-if="activities.isActive">
+                                <ScrollBar :max-height="'256px'">
+                                    <div>
+                                        <Activity v-for="(_, idx) in new Array(25)" :key="idx" :show-buttons="true"
+                                            :content="{
+                                                ...activities.list[0],
+                                                state: '123',
+                                                details: '123321',
+                                                type: idx % 2 === 1 ? 'mini' : 'default',
+                                                smallImage: {
+                                                    url: activities.list[0].largeImage?.url as string
+                                                },
+                                                buttons: [
+                                                    {
+                                                        label: 'Test'
+                                                    },
+                                                    {
+                                                        label: 'Test'
+                                                    },
+                                                    {
+                                                        label: 'Test'
+                                                    },
+                                                    {
+                                                        label: 'Collections'
+                                                    },
+                                                    {
+                                                        label: 'Authorization'
+                                                    }
+                                                ]
+                                            }"
+                                        />
+                                    </div>
+                                </ScrollBar>
+                            </div>
+                        </Transition>
+                    </div>
+                </Transition>
             </div>
         </div>
+
         <div>
+            <div :class="['search']"
+                @click="search.isActive ? null : open($event, 'search', () => search.isActive = true, () => search.isActive = false)"
+                @mouseenter="search.isActive ? null : setToolpic({ name: 'global-search', title: 'Search', position: 'bottom' })"
+            >
+                <Icon name="search-alt" v-if="!search.isActive"/>
+
+                <Transition name="account-username">
+                    <div v-if="search.isActive" ref="search">
+                        <Textbox :label="'Search'" :autofocus="true"
+                            @input="search.text = $event.target?.value"
+                        />
+                        <div class="result blur"></div>
+                    </div>
+                </Transition>
+            </div>
+
+            <div :class="['tabs']" :data-count="getBroadcastWindows.length" v-if="getBroadcastWindows.length > 1"
+                @click="open($event, 'tabs', () => tabs = true, () => tabs = false)"
+            >
+                <Icon name="layers"/>
+
+                <Transition name="tabs">
+                    <ul class="blur" ref="tabs" v-if="tabs">
+                        <li v-for="window of getBroadcastWindows" :key="window"
+                            :style="{ '--color': createHex() }"
+                            @click="sendBroadcastMessage({ cmd: 'focus', to: window.id })"
+                        >
+                            <div class="image"></div>
+                            <div>
+                                <div>{{ window.id }}</div>
+                                <div>{{ timeago(window.createdAt) }}</div>
+                            </div>
+                        </li>
+                    </ul>
+                </Transition>
+            </div>
+
             <div :class="['notifications', { 'new-message': getListNotifications.filter((n: any) => !n?.hide)?.length > 0 }]"
                 @click="setActiveNotifications(!getActiveNotifications)"
                 @mouseenter="setToolpic({ name: 'notification', title: getLang.global.notification[0], position: 'bottom' })"
@@ -28,21 +129,40 @@
                 <Icon name="notification"/>
             </div>
 
-            <div :class="['account', { active: menu.isActive }]" ref="account">
-                <div class="data">
-                    <div class="header">
+            <div :class="['account', { active: menu }]" ref="account">
+                <div class="data blur">
+                    <div class="header" :style="{ '--color': getUser?.color || 'var(--main-color)' }"
+                        @click="menu ? createWindow({ component: 'User', data: getUser?._id }) : false"
+                    >
                         <Transition name="account-username">
-                            <div class="username" v-show="menu.isActive">heito</div>
+                            <div class="username" v-show="menu">{{ getUser?.nickname || getUser?.username || getUser?._id || 'Guest' }}</div>
                         </Transition>
                         <div class="avatar"
-                            @click="openProfileMenu"
+                            @click.prevent.stop="menu ? createWindow({ component: 'User', data: getUser?._id }) : open($event, 'account', () => menu = true, () => menu = false)"
                         >
-                            <div :style="{ '--avatar': `url('${getAvatar()}')` }"></div>
+                            <div :style="{ '--avatar': `url('${getAvatar({ nameId: getUser?._id })}')` }"></div>
+                        </div>
+                    </div>
+                    <div class="level" v-if="menu">
+                        <div class="bar" :style="{ '--p': '90%' }"></div>
+                        <div class="text">
+                            <span>9 lvl</span>
+                            <span>10 lvl</span>
                         </div>
                     </div>
                     <Transition name="account-menu">
-                        <Menu :menu="getProfileMenu" v-if="menu.isActive"/>
+                        <Menu :menu="getProfileMenu" v-if="menu"/>
                     </Transition>
+                </div>
+            </div>
+
+            <div :class="['super', { active: superMenu }]">
+                <div class="icon"
+                    @click="superMenu = !superMenu; $emit('changeSuperMode', superMenu)"
+                >
+                    <div></div>
+                    <div></div>
+                    <div></div>
                 </div>
             </div>
         </div>
@@ -53,13 +173,20 @@
 
 import Menu from './content/Menu.vue';
 
-import { getAvatar } from '../libs/functions';
+import Activity, { type IContent } from './content/Activity.vue';
+
+import ScrollBar from './ScrollBar.vue';
+
+import { type IUser } from '../libs/api/routes/users';
+import User from './cards/User.vue';
+
+import { getAvatar, timeago, createHex } from '../libs/functions';
 
 </script>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { defineComponent, Ref } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
 
@@ -67,11 +194,53 @@ import type { IContextMenu, IContextMenuButton } from '../store/modules/contextM
 
 import Langs from '../libs/langs';
 
+type TTrack = {
+    id?: string;
+    name?: string;
+    preview?: string;
+    type?: string;
+    image?: string;
+    artists?: Array<{ id: string, name: string, type: string, url: string }>;
+    url?: string;
+    start?: number;
+    end?: number;
+}
+
+interface IData {
+    darkTheme: boolean;
+    tabs: boolean;
+    menu: boolean;
+    search: {
+        isActive: boolean;
+        text: string;
+    }
+    online: {
+        isActive: boolean;
+        count: number;
+        list: Array<IUser>;
+    };
+    activities: {
+        isActive: boolean;
+        list: IContent[];
+    };
+    superMenu: boolean;
+}
+
 export default defineComponent({
     name: 'MainHeader',
     components: {},
     computed: {
-        ...mapGetters(['getLangName', 'getLang', 'getActiveNotifications', 'getListNotifications', 'getHeaderLoading', 'getHeaderOptions']),
+        ...mapGetters([
+            'getLangName',
+            'getLang',
+            'getActiveNotifications',
+            'getListNotifications',
+            'getHeaderLoading',
+            'getHeaderOptions',
+            'getUser',
+            'getBroadcastWindows',
+            'getSocket'
+        ]),
         getProfileMenu(): IContextMenu {
             return {
                 name: 'header:profile:menu',
@@ -80,96 +249,219 @@ export default defineComponent({
                         label: this.getLang.global.settings,
                         icon: 'settings',
                         click: () => {
-                            this.createWindow({ title: 'Test', component: 'Test' });
+                            this.createWindow({ title: 'Setting', component: 'Setting' });
                         }
                     },
                     {
                         label: this.getLang.global.theme.dark,
                         icon: 'sun-moon',
-                        value: this.darkTheme,
+                        value: this.$local.params?.theme === 'dark',
                         checkbox: (value: boolean) => {
-                            this.darkTheme = value;
+                            let theme = this.$local.params?.theme === 'dark' ? 'light' : 'dark';
+                            
+                            this.$local.set('theme', theme);
+                            document.querySelector('html')?.setAttribute('theme', theme);
                         }
                     },
                     {
                         label: this.getLang.global.lang[1],
-                        icon: 'lang',
+                        icon: 'translate',
+                        // @ts-ignore
+                        text: `${Langs[this.getLangName]['en'] || Langs[this.getLangName].name} (Beta)`,
                         children: {
                             name: 'header:lang',
                             title: this.getLang.global.lang[1],
                             buttons: Object.keys(Langs).map((key: any) => ({
                                 // @ts-ignore
-                                label: `${Langs[key][this.getLangName] || Langs[key].name} ${this.getLangName === key ? '(now)' : ''}`,
-                                icon: 'lang',
-                                text: 'Beta',
+                                label: Langs[key][this.getLangName] || Langs[key].name,
+                                text:  this.getLangName === key ? 'Used' : '',
+                                icon: 'translate',
                                 click: () => {
                                     this.setLang(key);
+                            
+                                    this.$local.set('lang', key);
+                                    document.querySelector('html')?.setAttribute('lang', key);
                                 }
                             }))
                         }
                     },
+                    !this.getUser?.isRegistered ? {
+                        separator: true,
+                    } : {},
+                    !this.getUser?.isRegistered ? {
+                        label: this.getLang.global.sign.in,
+                        icon: 'hand',
+                        click: () => {
+                            this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth' });
+                        }
+                    } : {},
+                    !this.getUser?.isRegistered ? {
+                        label: this.getLang.user.create.title[0],
+                        icon: 'user-circle',
+                        click: () => {
+                            this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
+                        }
+                    } : {},
                     {
                         separator: true
                     },
                     {
                         label: this.getLang.global.exit[1],
-                        icon: 'sign-out',
+                        icon: 'exit',
                         class: 'exit'
                     }
                 ]
             } as IContextMenu;
         }
     },
-    data: () => ({
-        darkTheme: true,
-        menu: {
-            isActive: false
-        },
-        track: {
-            image: 'https://www.patee.ru/r/x6/10/a5/d5/512x512.jpg',
-            name: 'Name',
-            description: 'Description',
-            process: {
-                start: 0,
-                end: 0,
-                value: 0
-            }
-        }
-    }),
-    watch: {},
-    methods: {
-        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow']),
-        log(e: any) {
-            console.log(e);
-            
-        },
-        openProfileMenu(e: Event) {
-            this.menu.isActive = true;
-            
-            let close = () => {
-                window.addEventListener('click', (e) => {
-                    // @ts-ignore
-                    if (this.$refs?.account?.contains(e.target)) return close();
-                    
-                    this.menu.isActive = false;
-                }, { once: true });
-            }
-            
-            setTimeout(() => {
-                close();
-            }, 10);
+    data(): IData {
+        return {
+            darkTheme: true,
+            tabs: false,
+            activities: {
+                isActive: false,
+                list: []
+            },
+            menu: false,
+            online: {
+                isActive: false,
+                count: 0,
+                list: []
+            },
+            search: {
+                isActive: false,
+                text: ''
+            },
+            superMenu: false
         }
     },
-    mounted() {}
+    watch: {},
+    sockets: {
+        'users:online'(data) {
+            if (data?.online) {
+                this.online.count = data?.online;
+            } else if (data?.list) {
+                this.online.list = data?.list as IUser[];
+            }
+        },
+        'songs:track:playing'(data: { is_playing: boolean, track: TTrack }) {
+            if (!data.is_playing) return;
+
+            let trackIndex = this.activities.list.findIndex((a: IContent) => a.id === 'spotify:track');
+
+            let activity: IContent = {
+                id: 'spotify:track',
+                type: 'mini',
+                name: data?.track?.name as string,
+                largeImage: {
+                    url: data?.track?.image as string
+                },
+                progressBar: {
+                    value: data?.track?.start,
+                    end: data?.track?.end,
+                    isTime: true
+                }
+            }
+
+            if (trackIndex > -1) {
+                this.activities.list[trackIndex] = { ...activity };
+            } else {
+                this.activities.list = [...this.activities.list || [], activity];
+            }
+
+            setTimeout(() => {
+                this.$socket.emit('songs:track:playing');
+            }, 5000);
+        }
+    },
+    methods: {
+        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow', 'sendBroadcastMessage']),
+        log(e: any) {
+            console.log(e);
+        },
+        open(e: Event, ref: string, callbackTrue: Function = () => {}, callbackFalse: Function = () => {}) {
+            callbackTrue();
+
+            let close = () => {
+                window.addEventListener('click', (e) => {
+                    if ((this.$refs[ref] as any)?.contains(e.target)) return close();
+                    
+                    callbackFalse();
+                }, { once: true });
+            }
+
+            setTimeout(() => close(), 10);
+        },
+        getListOnlineUsers(boolean: boolean) {
+            this.online.isActive = !boolean;
+
+            if (boolean || this.online.list?.length > 1) return;
+
+            this.$socket.emit('users:online', 'list');
+        }
+    },
+    mounted() {
+        this.darkTheme = this.$local.get('theme') === 'dark';
+
+        this.$socket.emit('users:online', 'count');
+
+        this.$socket.emit('songs:track:playing');
+    }
 });
 
 </script>
 
 <style lang="scss" scoped>
 
+// @keyframes Height {
+//     from {
+//         max-height: 0px;
+//         height: 0px;
+//         opacity: 0;
+//     }
+//     to {
+//         max-height: 256px;
+//     }
+// }
+
+// .height-enter-active {
+//     animation: Height .2s linear;
+// }
+
+// .height-leave-active {
+//     animation: Height .2s linear reverse;
+// }
+
+.fadeHeight-enter-active,
+.fadeHeight-leave-active {
+    transition: all 0.2s;
+    max-height: 230px;
+    margin: 0;
+}
+.fadeHeight-enter,
+.fadeHeight-leave-to
+{
+    opacity: 0;
+    max-height: 0px;
+    margin: 0;
+}
+
 .account-menu-enter-active,
 .account-menu-leave-active {
     transform: scale(0.8);
+    opacity: 0;
+}
+
+.activities-enter-active,
+.activities-leave-active {
+    transform: translateY(-32px);
+    opacity: 0;
+}
+
+.tabs-enter-active,
+.tabs-leave-active {
+    transform: translateX(-50%) scale(0.8);
+    transform-origin: top center;
     opacity: 0;
 }
 
@@ -214,7 +506,7 @@ header {
             position: absolute;
             top: 0;
             left: 0;
-            background-color: var(--C1);
+            background-color: var(--main-color);
             transition: .2s;
         }
     }
@@ -225,78 +517,98 @@ header {
         
         .logo {
             position: relative;
-            color: var(--text-primary);
-            text-decoration: none;
-            transition: .2s;
 
-            &::after {
-                content: " ";
-                width: 0px;
-                position: absolute;
-                top: calc(100% - 2px);
-                left: 0px;
-                border-bottom: .5px solid var(--text-primary);
+            a {
+                position: relative;
+                color: var(--text-primary);
+                text-decoration: none;
                 transition: .2s;
-                mix-blend-mode: difference;
+
+                &::after {
+                    content: " ";
+                    width: 0px;
+                    position: absolute;
+                    top: calc(100% - 2px);
+                    left: 0px;
+                    border-bottom: .5px solid var(--text-primary);
+                    transition: .2s;
+                    mix-blend-mode: difference;
+                }
+
+                &:hover {
+                    &::after {
+                        width: 100%;
+                    }
+                }
             }
 
-            &:hover {
-                &::after {
-                    width: 100%;
+            .online {
+                cursor: pointer;
+                position: relative;
+                color: var(--main-color);
+                font-size: 14px;
+                user-select: none;
+                
+                span {
+                    color: var(--text-secondary);
+                    font-size: 12px;
                 }
+            }
+
+            ul {
+                padding: 12px;
+                max-width: 256px;
+                min-width: 256px;
+                position: absolute;
+                top: calc(100% + 8px);
+                left: -12px;
+                border-radius: 5px;
+                border: 1px solid var(--background-secondary);
+                transition: .2s;
+                overflow: hidden;
             }
         }
 
-        .track {
-            display: flex;
+        .activities {
             margin: 0 0 0 32px;
-            max-width: 256px;
-            width: 256px;
-            align-items: center;
+            height: 42px;
+            position: relative;
 
-            .image {
-                margin: 0 8px 0 0;
-                min-width: 42px;
-                min-height: 42px;
-                border-radius: 5px;
-                background-size: cover;
-                background-position: center;
-                background-image: var(--image);
-                background-color: var(--background-secondary);
-            }
-
-            .image + div {
-                width: 100%;
-            }
-
-            .label {
-                font-size: 13px;
-                font-weight: 700;
-            }
-
-            .description {
-                color: var(--text-secondary);
-                font-size: 12px;
-            }
-
-            .process {
-                margin: 4px 0 0 0;
-                width: 100%;
-                height: 3px;
-                position: relative;
-                border-radius: 5px;
-                background-color: var(--background-secondary);
-                overflow: hidden;
-
-                div {
-                    height: 100%;
-                    position: absolute;
-                    top: 0;
-                    left: 0;
-                    background: var(--C1);
-                    transition: .2s;
+            &.active {
+                .data {
+                    padding: 12px;
+                    top: calc(50% - 24px);
+                    left: -12px;
+                    border-color: var(--background-secondary);
                 }
             }
+
+            .data {
+                cursor: pointer;
+                max-width: 256px;
+                min-width: 256px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                border-radius: 5px;
+                border: 1px solid var(--T);
+                transition: .3s;
+    
+                .list {
+                    margin: 12px 0 0 0;
+                    padding: 12px 0 0 0;
+                    border-top: 1px solid var(--background-secondary);
+
+                    .activity {
+                        margin: 0 0 12px 0;
+
+                        &:last-child {
+                            margin: 0;
+                        }
+                    }
+                }
+            }
+
         }
     }
 
@@ -305,9 +617,108 @@ header {
         align-items: center;
         justify-content: center;
 
+        .search,
+        .tabs,
         .notifications {
             cursor: pointer;
             margin: 0 12px 0 0;
+            transition: .2s;
+        }
+
+        .search {
+            cursor: default;
+            min-width: 16px;
+            min-height: 16px;
+            position: relative;
+
+            .hx-icon {
+                cursor: pointer;
+            }
+
+            .result {
+                min-width: 100%;
+                padding: 12px;
+                position: absolute;
+                top: calc(100% + 8px);
+                right: 0;
+                border-radius: 5px;
+                border: 1px solid var(--background-secondary);
+            }
+        }
+
+        .tabs {
+            cursor: pointer;
+            position: relative;
+            transform: translateY(1px);
+            z-index: 2;
+
+            .hx-icon {
+                cursor: pointer;
+            }
+
+            &::after {
+                content: attr(data-count);
+                width: 12px;
+                height: 12px;
+                position: absolute;
+                top: -6px;
+                right: -6px;
+                font-size: 10px;
+                text-align: center;
+                line-height: 12px;
+                border-radius: 5px;
+                background: var(--background-secondary);
+            }
+
+            ul {
+                padding: 8px;
+                min-width: 169px;
+                position: absolute;
+                top: calc(100% + 16px);
+                left: 50%;
+                border-radius: 5px;
+                border: 1px solid var(--background-secondary);
+                transform: translateX(-50%);
+                transition: .2s;
+
+                li {
+                    cursor: pointer;
+                    display: flex;
+                    margin: 0 0 8px 0;
+                    align-items: center;
+
+                    &:last-child {
+                        margin: 0;
+                    }
+
+                    .image {
+                        margin: 0 8px 0 0;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 5px;
+                        background-color: var(--color);
+                    }
+
+                    .image + div {
+                        max-width: 100%;
+
+                        div {
+                            max-width: 100%;
+                            white-space: nowrap;
+                            text-overflow: ellipsis;
+                            overflow: hidden;
+                        }
+
+                        div:nth-child(2) {
+                            color: var(--text-secondary);
+                            font-size: 12px;
+                        }
+                    }
+                }
+            }
+        }
+
+        .notifications {
             height: 16px;
             position: relative;
 
@@ -319,7 +730,7 @@ header {
                 top: -4px;
                 right: -2px;
                 border-radius: 2px;
-                background-color: var(--C1);
+                background-color: var(--main-color);
                 transform: scale(0);
                 transition: .2s;
                 opacity: 0;
@@ -334,6 +745,7 @@ header {
         }
 
         .account {
+            margin: 0 24px 0 0;
             min-width: 42px;
             position: relative;
             transition: .2s;
@@ -347,7 +759,6 @@ header {
                 position: absolute;
                 top: -22px;
                 border: 1px solid var(--T);
-                backdrop-filter: blur(5px);
                 transition: .2s;
             }
 
@@ -374,7 +785,7 @@ header {
                     cursor: pointer;
                     padding: 16px 8px;
                     border-radius: 5px;
-                    backdrop-filter: blur(5px);
+                    // backdrop-filter: blur(5px);
                     overflow: hidden;
 
                     &::after {
@@ -392,6 +803,7 @@ header {
 
             .header {
                 display: flex;
+                position: relative;
                 align-items: center;
                 justify-content: flex-end;
                 transition: all .2s;
@@ -411,7 +823,8 @@ header {
                     left: 0;
                     background-size: cover;
                     background-position: center;
-                    background-image: url('https://avatars.mds.yandex.net/i?id=b5ed82d65587a3cd0a6818c4c02c16e15c046b92-8497600-images-thumbs&n=13');
+                    // background-image: url('https://avatars.mds.yandex.net/i?id=b5ed82d65587a3cd0a6818c4c02c16e15c046b92-8497600-images-thumbs&n=13');
+                    background-color: var(--color);
                     transform: scale(1.2);
                     transition: .2s;
                     filter: blur(2px);
@@ -442,7 +855,13 @@ header {
                 overflow: hidden;
 
                 &:hover {
-                    box-shadow: 0 0 0 2px var(--background-secondary);
+                    border-radius: 50%;
+                    transform: rotate(0) scale(1.3);
+                    // box-shadow: 0 0 0 2px var(--background-secondary);
+
+                    div {
+                        transform: rotate(0);
+                    }
                 }
 
                 div {
@@ -454,11 +873,108 @@ header {
                     background-image: var(--avatar);
                     background-position: 50% 50%;
                     transform: rotate(-25deg);
+                    transition: .2s;
                 }
             }
 
-            .menu {
-                margin: 8px 0 0 0;
+            .level {
+                margin: 12px 0;
+                position: relative;
+
+                .bar {
+                    $bg: linear-gradient(var(--main-color), var(--main-color));
+                    $bg-2: linear-gradient(var(--main-color-alt), var(--main-color-alt));
+
+                    width: 100%;
+                    height: 8px;
+                    position: relative;
+                    border-radius: 5px;
+                    background: $bg, $bg-2;
+                    background-size: var(--p) 8px, calc(100% - var(--p)) 8px;
+                    background-repeat: no-repeat, no-repeat;
+                    background-position: left top, right top;
+                    box-sizing: border-box;
+                    animation: BackgroundShow .2s ease-in-out;
+                    transition: .2s;
+
+                    @keyframes BackgroundShow {
+                        from {
+                            background-size: 0px 8px, 0% 8px;
+                        }
+                    }
+                }
+
+                .text {
+                    display: flex;
+                    margin: 2px 0 0 0;
+                    padding: 0 4px;
+                    align-items: center;
+                    justify-content: space-between;
+                    animation: TextShow .3s ease-in-out;
+                    box-sizing: border-box;
+
+                    span {
+                        color: var(--text-secondary);
+                        font-size: 12px;
+                    }
+
+                    @keyframes TextShow {
+                        from {
+                            transform: translateY(50%);
+                            opacity: 0;
+                        }
+                    }
+                }
+            }
+        }
+
+        .super {
+            position: relative;
+
+            .icon {
+                cursor: pointer;
+                display: flex;
+                width: 16px;
+                min-height: 13px;
+                align-items: center;
+                justify-content: space-between;
+                flex-direction: column;
+                transition: .2s;
+
+                &:hover {
+                    div {
+                        background-color: var(--text-primary);
+                    }
+                }
+
+                div {
+                    width: 100%;
+                    min-height: 1px;
+                    border-radius: 5px;
+                    background-color: var(--text-secondary);
+                    transition: .2s;
+                }
+            }
+
+            &.active {
+                .icon {
+                    div {
+                        width: 70%;
+                        background-color: var(--main-color);
+
+                        &:nth-child(1) {
+                            transform: rotate(-45deg) translate(-25%, -1px);
+                        }
+
+                        &:nth-child(2) {
+                            opacity: 0;
+                        }
+
+                        &:nth-child(3) {
+                            transform: rotate(45deg) translate(-25%, 0px);
+                        }
+                    }
+                }
             }
         }
     }

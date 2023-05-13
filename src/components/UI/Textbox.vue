@@ -1,20 +1,22 @@
 <template>
-    <label class="ui-textbox">
-        <div :class="['label', { active: modelValue?.length > 0 }]" v-show="labelType === 'block'">{{ label }}</div>
-        
+    <label :class="['ui-textbox', { error }]"
+        :style="{ '--left': `${isValid ? labelWidth : 0}px` }"
+    >
         <input :type="type" :placeholder="labelType === 'input' ? label : ''" v-model="modelValue"
-            @focus="$emit('focus', $event)"    
-            @blur="$emit('blur', $event)"
+            @focus="$emit('focus', $event); focus = true"    
+            @blur="$emit('blur', $event); focus = false"
         >
+        
+        <div :class="['label', { active: isValid }]" v-show="labelType === 'block'">{{ label }}</div>
 
         <Menu v-if="menu === true && buttons?.length > 3" :menu="{
             name: 'textbox:menu',
             buttons: (buttons as IContextMenuButton[])
         }"/>
 
-        <Transition name="width">
+        <!-- <Transition name="width">
             <ul class="buttons" v-show="modelValue?.length > 0 && buttons?.length > 0">
-                <li v-for="btn of buttons.slice(0, 3)" :key="btn.icon"
+                <li v-for="btn in buttons.slice(0, 3)" :key="btn"
                     @click.stop.prevent=""
                 >
                     <Icon name="close" :size="'14px'"/>
@@ -23,7 +25,7 @@
                     <Icon name="arrow-down" :size="'14px'"/>
                 </li>
             </ul>
-        </Transition>
+        </Transition> -->
     </label>
 </template>
 
@@ -45,7 +47,15 @@ export type TLabel = 'block' | 'input';
 
 export default defineComponent({
     name: 'UITextbox',
-    computed: {},
+    computed: {
+        isValid(): boolean {
+            let is = this.modelValue?.length > 0 || this.focus;
+
+            if (is) this.setLabelWidth();
+
+            return is;
+        }
+    },
     props: {
         label: {
             type: String,
@@ -61,39 +71,81 @@ export default defineComponent({
         type: {
             type: String as PropType<TInput>,
             default: 'text'
+        },
+        match: {
+            type: RegExp,
+            default: /(.*)/
+        },
+        min: {
+            type: Number,
+            default: 0
+        },
+        max: {
+            type: Number,
+            default: 256
+        },
+        autofocus: {
+            type: Boolean,
+            default: false
         }
     },
     data: () => ({
+        focus: false,
         modelValue: '',
         menu: false,
+        error: false,
+        labelWidth: 0,
         buttons: [
-            {
-                label: 'Close',
-                icon: 'close'
-            },
-            {
-                label: 'Close',
-                icon: 'close'
-            },
-            {
-                label: 'Close',
-                icon: 'close'
-            },
-            {
-                label: 'Close',
-                icon: 'close'
-            }
+            // {
+            //     label: 'Close',
+            //     icon: 'close'
+            // },
+            // {
+            //     label: 'Close',
+            //     icon: 'close'
+            // },
+            // {
+            //     label: 'Close',
+            //     icon: 'close'
+            // },
+            // {
+            //     label: 'Close',
+            //     icon: 'close'
+            // }
         ]
     }),
     watch: {
-        modelValue(newValue) {
-            console.log(newValue);
-            
-            // this.$emit('input', newValue);
+        modelValue(newValue: string) {
+            this.error = !this.match.test(newValue) || newValue.length > this.max || newValue.length < this.min;
+
+            if (this.error) return;
+
+            this.$emit('update', newValue);
         }
     },
-    methods: {},
-    mounted() {}
+    methods: {
+        setLabelWidth() {
+            let label = (this.$el as Element)?.querySelector('.label'),
+                oldWidth = label?.scrollWidth as number;
+
+            setTimeout(() => {
+                let now = label?.scrollWidth as number;
+
+                if (now <= this.labelWidth) return;
+
+                this.labelWidth = now - (now - oldWidth - 12);
+            }, 100);
+        }
+    },
+    mounted() {
+        this.modelValue = this.value || '';
+        
+        this.setLabelWidth();
+        
+        if (this.autofocus) {
+            this.$el?.querySelector('input')?.focus();
+        }
+    }
 });
 
 </script>
@@ -119,6 +171,8 @@ export default defineComponent({
     }
 }
 
+$bg: linear-gradient(var(--background-secondary), var(--background-secondary));
+
 .ui-textbox {
     cursor: text;
     display: flex;
@@ -128,15 +182,32 @@ export default defineComponent({
     position: relative;
     border-radius: 5px;
     border: 1px solid var(--background-secondary);
+    border-top-color: var(--T);
     box-sizing: border-box;
-    backdrop-filter: blur(5px);
+    background: $bg, $bg;
+    background-size: 6px 1px, calc(100% - var(--left)) 1px;
+    background-repeat: no-repeat, no-repeat;
+    background-position: left top, right top;
     transition: .2s;
+
+    &.error {
+        $bg: linear-gradient(var(--red), var(--red));
+
+        border: 1px solid var(--red);
+        border-top-color: var(--T);
+        box-sizing: border-box;
+        background: $bg, $bg;
+        background-size: 6px 1px, calc(100% - var(--left)) 1px;
+        background-repeat: no-repeat, no-repeat;
+        background-position: left top, right top;
+    }
 
     .label {
         position: absolute;
         top: 8px;
         color: var(--text-secondary);
         transition: .2s;
+        user-select: none;
         z-index: 1;
 
         &.active {
@@ -154,6 +225,12 @@ export default defineComponent({
         background: var(--T);
         transition: .2s;
         outline: none;
+    
+        &:focus + .label {
+            top: -10px;
+            font-size: 12px;
+            color: var(--text-primary);
+        }
     }
 
     ul.buttons {
@@ -175,7 +252,7 @@ export default defineComponent({
 
             &:hover {
                 i.hx-icon {
-                    --color: var(--C1);
+                    --color: var(--main-color);
                 }
             }
 

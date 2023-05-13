@@ -10,6 +10,7 @@
                         <Notification v-for="notification of getListNotifications" :key="notification" :id="notification.id"
                             :notification="notification"
                         />
+                        <div style="padding: 12px; color: var(--text-secondary);" v-show="getListNotifications.length < 1">So far, it's empty</div>
                     </ul>
                 </ScrollBar>
             </div>
@@ -62,21 +63,7 @@ export default defineComponent({
             }, 7000);
         }
     },
-    mounted() {
-        let a = 0;
-
-        let b: any = setInterval(() => {
-            if (a > 5) return clearInterval(b)
-            this.pushNotification({
-                title: a,
-                color: "#" + ((1 << 24) * Math.random() | 0).toString(16).padStart(6, "0"),
-                icon: 'notification',
-                shadowPosition: 'right',
-                // shadow: false
-            });
-            a++;
-        }, 1000);
-    }
+    mounted() {}
 })
 
 </script>
@@ -91,7 +78,7 @@ export default defineComponent({
 
 .notifications {
     position: relative;
-    z-index: 105;
+    z-index: 106;
 
     .bg {
         width: 100vw;

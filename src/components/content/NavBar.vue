@@ -1,5 +1,7 @@
 <template>
-    <div class="nav-bar">
+    <div :class="`nav-bar ${orientation}`"
+        @wheel.prevent.stop="setScroll"
+    >
         <ul>
             <li v-for="(btn, idx) of menu" :key="btn.label"
                 :class="{ active: id === idx }"
@@ -8,10 +10,16 @@
                 @mouseenter="id === idx ? null : hoverId = idx"
                 @mouseleave="hoverId = -1"
             >
+                <img :src="btn?.img" v-if="btn?.img">
                 <Icon :name="btn.icon" v-if="btn?.icon"/>
                 <span>{{ btn.label }}</span>
             </li>
-            <div :style="{ width: `${width}px`, left: `${left}px` }"></div>
+            <div :style="{
+                width: `${width}px`,
+                height: `${height}px`,
+                top: `${orientation === 'vertical' ? top : 0}px`,
+                left: `${orientation === 'horizontal' ? left : 0}px`
+            }"></div>
         </ul>
     </div>
 </template>
@@ -22,10 +30,12 @@ import { defineComponent, PropType } from 'vue';
 
 import type { TIcon } from '../../libs/types';
 
-export interface IButtons {
+export interface IButton {
     label: string;
     icon?: TIcon;
     color?: string;
+    img?: string;
+    value?: string;
 }
 
 export default defineComponent({
@@ -36,13 +46,25 @@ export default defineComponent({
             type: Number
         },
         menu: {
-            type: Object as PropType<IButtons[] | any>
+            type: Object as PropType<Array<IButton>>,
+            default: []
+        },
+        orientation: {
+            type: String as PropType<'vertical' | 'horizontal'>,
+            default: 'horizontal'
+        }
+    },
+    emits: {
+        select(a: IButton): IButton {
+            return a;
         }
     },
     data() {
         return {
             id: 0,
             width: 0,
+            height: 0,
+            top: 0,
             left: 0,
             hoverId: -1
         }
@@ -63,10 +85,20 @@ export default defineComponent({
             console.log(...args);
             
         },
+        setScroll(e: WheelEvent) {
+            let el = this.$el as Element;
+            
+            el.scroll({
+                behavior: 'smooth',
+                left: el.scrollLeft + e.deltaY
+            });
+        },
         set(position: number = 0) {
             let el: Element | any = (this.$el as Element)?.querySelector(`ul li:nth-child(${position})`);
 
             this.width = el.clientWidth;
+            this.height = el.clientHeight;
+            this.top = el?.offsetTop;
             this.left = el?.offsetLeft;
         }
     },
@@ -81,6 +113,28 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .nav-bar {
+    max-width: 100%;
+    position: relative;
+    overflow-y: hidden;
+
+    &.vertical {
+        width: 100%;
+
+        ul {
+            flex-direction: column;
+            align-items: flex-start;
+
+            li {
+                margin: 0 0 12px 0;
+                width: 100%;
+            }
+
+            div {
+                width: 100% !important;
+            }
+        }
+    }
+
     ul {
         display: flex;
         position: relative;
@@ -96,13 +150,19 @@ export default defineComponent({
             z-index: 2;
 
             &:last-child {
-                margin: 0;
+                margin: 0 !important;
             }
 
             &.active {
                 span {
                     color: var(--text-primary);
                 }
+            }
+
+            img {
+                margin: 0 8px 0 0;
+                width: 32px;
+                height: 32px;
             }
 
             .hx-icon {

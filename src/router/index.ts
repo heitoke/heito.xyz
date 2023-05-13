@@ -6,32 +6,94 @@ const routes: RouteRecordRaw[] = [
     {
         name: 'MainPage',
         path: '/',
-        component: () => import('../pages/Main.vue')
+        component: () => import('../pages/Main.vue'),
+        meta: {
+            title: 'Main',
+            icon: 'search-alt',
+            description: '',
+            hide: ['footer']
+        }
     },
     {
         name: 'ProjectsPage',
         path: '/projects',
         component: () => import('../pages/projects/Main.vue'),
+        props: { type: 'projects' }
     },
     {
-        name: 'ProjectPage',
-        path: '/projects/:projectId',
-        component: () => import('../pages/projects/Project.vue')
+        name: 'RepositoriesPage',
+        path: '/repositories',
+        alias: [
+            '/repos/',
+            '/repos/:login',
+            '/repositories/:login'
+        ],
+        component: () => import('../pages/projects/Main.vue'),
+        props: ({ query, params }) => ({
+            login: params?.login || query?.login || 'heitoke',
+            type: 'repos'
+        })
     },
+    // {
+    //     name: 'ProjectPage',
+    //     path: '/projects/:projectId',
+    //     component: () => import('../pages/projects/Project.vue'),
+    //     meta: {
+    //         hide: ['page']
+    //     }
+    // },
     {
         name: 'BlogsPage',
         path: '/blogs',
-        component: () => import('../pages/blogs/Main.vue')
+        component: () => import('../pages/blogs/Main.vue'),
+        meta: {
+            title: 'Blogs',
+            icon: 'quill'
+        }
     },
     {
         name: 'BlogPage',
         path: '/blogs/:blogId',
-        component: () => import('../pages/blogs/Blog.vue')
+        component: () => import('../pages/blogs/Blog.vue'),
+        meta: {
+            hide: ['page']
+        }
+    },
+    {
+        name: 'StatsPage',
+        path: '/stats',
+        redirect: '/stats/code',
+        children: [
+            {
+                name: 'StatsCode',
+                path: 'code',
+                component: () => import('../pages/stats/Code.vue')
+            }
+        ],
+        meta: {
+            title: 'Stats',
+            icon: 'stats'
+        }
+    },
+    {
+        name: 'RefPage',
+        path: '/ref/:refId',
+        alias: [
+            '/referral/:refId',
+            '/r/:refId'
+        ],
+        component: () => import('../pages/Ref.vue'),
+        meta: {
+            hide: ['page']
+        } // referral
     },
     {
         path: '/:catchAll(.*)',
         name: 'ErrorPage',
-        component: () => import('../pages/Error.vue')
+        component: () => import('../pages/Error.vue'),
+        meta: {
+            hide: ['page']
+        }
     }
 ];
 

@@ -3,13 +3,20 @@
         <TransitionGroup name="window">
             <div :class="['window', window.position]" v-for="window of (getListWindows as IWindow[])" :key="window.id" v-show="!window.hide">
                 <div class="bg" @click="removeWindow(window.id)"></div>
-                <div>
-                    <component :is="window.component" class="block" :windowId="window.id" :data="window.data"
+                <div class="blur">
+                    <component :is="window.component" class="block" :windowId="window.id" :data="window.data" v-if="!window.error"
+                        :closeWindow="() => removeWindow(window.id)"
                         v-bind="window.props"
+                        @error="window.error = true"
                     ></component>
 
+                    <div class="error" v-else>
+                        <Text :text="'Произошла ошибка при загрузки'"/>
+                        <Button>Перезагрузить</Button>
+                    </div>
+
                     <ul class="buttons" v-show="getWindowButtons(window).length > 0">
-                        <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.id" :style="{ '--button-color': btn?.color }"
+                        <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.id" :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                             @click="btn?.click ? btn?.click($event) : null;"
                             @mouseenter="btn?.text ? setToolpic({ title: btn.text, position: getWinWidth > 540 ? 'left' : 'right' }) : null"
                         >
@@ -77,6 +84,9 @@ export default defineComponent({
         padding: 5vw 5vh;
         width: 100vw;
         height: 100vh;
+        position: fixed;
+        top: 0;
+        left: 0;
         align-items: center;
         justify-content: center;
         box-sizing: border-box;
@@ -113,7 +123,6 @@ export default defineComponent({
             position: absolute;
             border-radius: 5px;
             border: 1px solid var(--background-secondary);
-            backdrop-filter: blur(5px);
             z-index: 2;
 
             &::before {
@@ -168,6 +177,15 @@ export default defineComponent({
                     i.hx-icon {
                         --color: var(--button-color);
                     }
+                }
+            }
+
+            @media (max-width: 512px) {
+                max-width: calc(100% - 48px) !important;
+
+                .buttons {
+                    top: -48px;
+                    left: 12px;
                 }
             }
         }

@@ -30,7 +30,7 @@ export default defineComponent({
 
 footer {
     margin: 64px 0 0 0;
-    padding: 5vh 10vw;
+    padding: 5% 10%;
     width: 100%;
     // height: 100px;
     border-top: 1px solid var(--background-secondary);

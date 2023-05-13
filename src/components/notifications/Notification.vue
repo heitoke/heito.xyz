@@ -120,7 +120,7 @@ export default defineComponent({
 
         .text {
             color: var(--text-secondary);
-            font-size: 13px;
+            font-size: 12px;
             text-overflow: ellipsis;
             white-space: nowrap;
             overflow: hidden;

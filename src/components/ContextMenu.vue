@@ -2,10 +2,21 @@
     <div class="context-menus">
         <TransitionGroup name="context-menu" @enter="showContextMenu">
             <div v-for="contextMenu of (getListContextMenus as IContextMenu[])" :key="contextMenu.name" :name="contextMenu.name"
-                :class="['context-menu', contextMenu.position]"
-                :style="{ top: `${contextMenu.y}px`, left: `${contextMenu.x}px` }"
+                :class="['context-menu blur', contextMenu.position]"
+                :style="{
+                    top: `${contextMenu.y}px`,
+                    left: `${contextMenu.x}px`,
+                    'max-width': contextMenu.autoMaxWidth ? 'auto' : '196px'
+                }"
             >
-                <Menu :menu="contextMenu"/>
+                <Menu :menu="contextMenu" v-if="contextMenu?.buttons?.length! > 0"/>
+
+                <div v-if="contextMenu?.components?.length! > 0">
+                    <component v-for="component of contextMenu?.components" :is="component.component"
+                        v-bind="component.props"
+                        v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
+                    />
+                </div>
             </div>
         </TransitionGroup>
     </div>
@@ -34,20 +45,25 @@ export default defineComponent({
     watch: {},
     methods: {
         ...mapActions(['closeContextMenu']),
-        getPosition(position: string | any, elPos: DOMRect, el: DOMRect, e: MouseEvent): number[] {
-            let has = (val: string): boolean => position.split(' ').includes(val),
-                x = e.x,
-                y = e.y;
+        getPosition(position: Array<TPosition>, elPos: DOMRect, el: DOMRect, e: MouseEvent): number[] {
+            let has = (val: TPosition): boolean => position.includes(val),
+                isFix = has('fixed-target'),
+                x = isFix ? elPos.x : e.x,
+                y = isFix ? elPos.y : e.y;
 
             if (!el) return [-1, -1];
             
-            if (has('top')) y -= el.height - 4;
+            if (has('center')) {
+                x -= isFix ? (el.width - elPos.width) / 2 : (el.height / 2);
+                y -= isFix ? (el.height - elPos.height) / 2 : (el.height / 2);
+            }
+
+            if (has('top')) y = elPos?.y - (el?.height * 2) - 8;
+            if (has('bottom')) y = elPos?.y + elPos?.height + 8;
             
+            if (has('left')) x -= (el.width + 4);
+            if (has('right')) x += (el.width + 4);
 
-            if (has('left')) x -= (el.width + 42);
-            if (has('right')) x += 4;
-
-            if (has('center')) y -= (el.height / 2);
 
             return [x, y];
         },
@@ -57,10 +73,10 @@ export default defineComponent({
             if (!contextMenu) return;
 
             // @ts-ignore
-            let elPos: DOMRect = contextMenu.event.target?.getBoundingClientRect(),
+            let elPos: DOMRect = contextMenu.event?.target?.getBoundingClientRect() || contextMenu.event?.getBoundingClientRect(),
                 el: DOMRect = e.getBoundingClientRect();
 
-            let [x, y]: number[] = await this.getPosition(contextMenu.position, elPos, el, contextMenu.event as MouseEvent);
+            let [x, y]: number[] = await this.getPosition(contextMenu.position || [], elPos, el, contextMenu.event as MouseEvent);
 
             contextMenu.x = x;
             contextMenu.y = y;
@@ -88,18 +104,17 @@ export default defineComponent({
 .context-menus {
     .context-menu {
         padding: 8px;
-        max-width: 196px;
+        // max-width: 196px;
         min-width: 196px;
         position: absolute;
         border-radius: 5px;
         border: 1px solid var(--background-secondary);
-        backdrop-filter: blur(5px);
         transition: .2s;
         z-index: 109;
 
         &-enter-active,
         &-leave-active {
-            transform: scale(.8);
+            // transform: scale(.8);
             opacity: 0;
         }
 

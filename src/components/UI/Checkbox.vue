@@ -63,11 +63,11 @@ export default defineComponent({
         display: none;
 
         &:checked + div {
-            background: var(--C1-alt);
+            background: var(--main-color-alt);
 
             &::after {
                 left: calc(100% - 16px);
-                background: var(--C1);
+                background: var(--main-color);
             }
         }
 

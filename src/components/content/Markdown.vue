@@ -38,10 +38,10 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .markdown-content {
-    ::v-deep div {
-        * {
+    :deep(div) {
+        // * {
             // font-family: Lato, sans-serif !important;
-        }
+        // }
 
         h1, h2, h3, h4, h5, h6 {
             margin: 1.2em 0;
@@ -56,7 +56,7 @@ export default defineComponent({
         h6 { font-size: .67em; }
 
         a {
-            color: var(--C1);
+            color: var(--main-color);
             text-decoration: none;
             
             &:hover {

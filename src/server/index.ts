@@ -12,12 +12,10 @@ import * as dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log(import.meta);
-
 
 const
     isProd: boolean = process.env.NODE_ENV === 'production',
-    PORT: number = 3000,
+    PORT: number = Number(process.env.PORT) || 3000,
     __dirname: string = path.dirname(fileURLToPath(import.meta.url));
 
 function resolve(p: string): string {
@@ -54,7 +52,7 @@ async function start() {
                 render = null;
 
             // @ts-ignore
-            if (isProd) render = await (await import('./entry.ts')).render;
+            if (isProd) render = await (await import('../../dist/server/entry.js')).render;
             else {
                 template = await vite.transformIndexHtml(url, template);
                 render = (await vite.ssrLoadModule(resolve('./entry.ts'))).render;

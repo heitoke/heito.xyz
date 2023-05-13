@@ -1,14 +1,17 @@
 <template>
     <div class="scrollbar">
-        <div scrollbar-block @scroll="setScroll($event.target as Element, true)" ref="el">
+        <div scrollbar-block :style="{ 'max-height': maxHeight }"
+            @scroll="setScroll($event.target as Element, true)" ref="el"
+        >
             <slot
                 :scrollPercentY="scroll || 0"
                 :scrollY="y"
                 :scrollHeight="scrollHeight"
+                :scrollMaxHeight="heightMax"
                 :toScroll="toScroll"
             ></slot>
         </div>
-        <div :class="['indicator', { active: height }]" v-show="scrollHeight < 100">
+        <div :class="['indicator', { active: height }]" :style="{ height: `calc(${maxHeight} - 16px)` }" v-show="scrollHeight < 100">
             <div :style="{ top: `${scroll}%`, height: `${scrollHeight}%` }"></div>
         </div>
     </div>
@@ -26,24 +29,40 @@ export default defineComponent({
         ...mapGetters(['getScrollY', 'getWinHeight']),
         scrollHeight(): number {
             if (this.show) {
-                return 100 - (100 * (this.height - this.getWinHeight) / this.height);
+                let el = (this.$el as Element).querySelector('[scrollbar-block]');
+                return 100 - (100 * (this.height - (el?.clientHeight || 0)) / this.height);
             } else return 0;
         },
         scroll(): number {
             if (this.show) {
                 let hMaxP = 100 - this.scrollHeight;
-                return hMaxP * this.y / (this.height - this.getWinHeight);
+                let el = (this.$el as Element).querySelector('[scrollbar-block]');
+                return hMaxP * this.y / (this.height - (el?.clientHeight || 0));
             } else return 0;
+        }
+    },
+    props: {
+        maxHeight: {
+            type: String,
+            default: '100vh'
         }
     },
     data: () => ({
         x: 0,
         y: 0,
         height: 0,
+        heightMax: 0,
         show: false,
         hover: false,
         hasSlotContent: false
     }),
+    watch: {
+        y(newValue: number) {
+            if ((newValue + 35) >= this.heightMax) {
+                this.setMaxHeight();
+            }
+        }
+    },
     methods: {
         setScroll(el: Element, set: boolean = false) {
             if (!el) return;
@@ -70,8 +89,6 @@ export default defineComponent({
             }
 
             setTimeout(() => {
-                console.log(123);
-                
                 this.setScroll(this.$refs.el as Element);
             }, 10);
 
@@ -85,6 +102,11 @@ export default defineComponent({
                 left: x,
                 behavior: 'smooth'
             });
+        },
+        setMaxHeight() {
+            let el = (this.$el as Element).querySelector('[scrollbar-block]');
+    
+            this.heightMax = (el?.scrollHeight || 0) - document.documentElement?.clientHeight;
         }
     },
     mounted() {
@@ -92,6 +114,8 @@ export default defineComponent({
             this.show = true;
 
             this.setScroll(this.$refs.el as Element, true);
+
+            this.setMaxHeight();
         }
     },
     beforeUpdate() {
@@ -107,8 +131,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .scrollbar {
+    position: relative;
+
     [scrollbar-block] {
-        max-height: 100vh;
+        max-height: 100%;
+        height: 100%;
         overflow-x: hidden;
 
         &:hover {
@@ -141,7 +168,7 @@ export default defineComponent({
             transition: .2s;
 
             &:hover {
-                background-color: var(--C1);
+                background-color: var(--main-color);
             }
         }
     }

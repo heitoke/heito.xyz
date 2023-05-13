@@ -1,4 +1,4 @@
-import { createStore, type StoreOptions, Store, Module } from 'vuex';
+import { createStore } from 'vuex';
 
 // * Modules
 import langs from './modules/langs';
@@ -8,6 +8,8 @@ import toolpics from './modules/toolpics';
 import windows from './modules/windows';
 import contextMenu from './modules/contextMenu';
 import header from './modules/header';
+import user from './modules/user';
+import broadcast from './modules/broadcastChannel';
 
 let modules: any = {
     langs,
@@ -16,7 +18,9 @@ let modules: any = {
     toolpics,
     windows,
     contextMenu,
-    header
+    header,
+    user,
+    broadcast
 }
 
 const store = createStore({

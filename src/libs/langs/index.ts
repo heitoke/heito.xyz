@@ -24,11 +24,29 @@ export interface ILang {
             default: string;
             dark: string;
             light: string;
+        },
+        nickname: string;
+        login: string;
+        email: string;
+        password: string;
+        repeatPassword: string;
+        sign: {
+            in: string;
+            out: string;
         }
     },
     page: {
         main: {
             title: string;
+            text: string;
+        }
+    },
+    user: {
+        auth: {
+            title: [string]
+        },
+        create: {
+            title: [string, string];
             text: string;
         }
     }

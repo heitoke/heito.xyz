@@ -61,15 +61,15 @@ export default defineComponent({
 
             let [x, y]: number[] = await this.getPosition(toolpic.position, elPos, el);
 
-            toolpic.x = x;
-            toolpic.y = y;
-
             setTimeout(() => {
-                for (let name of ['mouseleave', 'click']) {
+                for (let name of ['mouseleave', 'mouseout', 'mousedown', 'click']) {
                     toolpic?.event.target?.addEventListener(name, () => {
                         this.closeToolpic(toolpic.id);
                     });
                 }
+
+                toolpic.x = x;
+                toolpic.y = y;
             }, 10);
         }
     },

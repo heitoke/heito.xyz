@@ -1,5 +1,11 @@
 @import url('./fonts.css');
 @import url('./theme.css');
+@import url('../fonts/icons/style.css');
+
+:root {
+    --blur: blur(5px);
+    --transparent: #01010180;
+}
 
 * {
     font-family: var(--font-family);
@@ -23,4 +29,13 @@ ul, ol, li {
     margin-inline-start: 0px;
     margin-inline-end: 0px;
     padding-inline-start: 0px;
+}
+
+html:not(.no-blur) .blur {
+    backdrop-filter: blur(var(--blur));
+    -webkit-backdrop-filter: blur(var(--blur));
+}
+
+.no-blur .blur {
+    background-color: var(--transparent);
 }

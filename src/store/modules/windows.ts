@@ -26,6 +26,7 @@ export interface IWindow {
     data?: object;
     props?: object;
     buttons?: IButton[];
+    error?: boolean;
     createdAt: number;
 }
 
@@ -57,10 +58,7 @@ const module: StoreOptions<State> = {
         'windows:buttons:add'(state: State, { windowId, buttons }: { windowId: number, buttons: IButton[] }) {
             let windowIndex: number = state.list.findIndex((window: IWindow) => window.id === windowId);
 
-            state.list[windowIndex].buttons = [
-                ...state.list[windowIndex].buttons || [],
-                ...buttons
-            ]
+            state.list[windowIndex].buttons = buttons;
         },
         'windows:buttons:remove'(state: State, { windowId, buttonIds }: { windowId: number, buttonIds: number[] }) {
             let windowIndex: number = state.list.findIndex((window: IWindow) => window.id === windowId);

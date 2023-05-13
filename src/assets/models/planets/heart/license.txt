@@ -1,0 +1,11 @@
+Model Information:
+* title:	Heart in Love
+* source:	https://sketchfab.com/3d-models/heart-in-love-f39ce19b92e246268f4c501b72ea7d0e
+* author:	Azamuki (https://sketchfab.com/Azamuki)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Heart in Love" (https://sketchfab.com/3d-models/heart-in-love-f39ce19b92e246268f4c501b72ea7d0e) by Azamuki (https://sketchfab.com/Azamuki) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)

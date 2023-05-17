@@ -2,7 +2,7 @@
     <div class="windows">
         <TransitionGroup name="window">
             <div :class="['window', window.position]" v-for="window of (getListWindows as IWindow[])" :key="window.id" v-show="!window.hide">
-                <div class="bg" @click="removeWindow(window.id)"></div>
+                <div class="bg" @click="window?.close ? removeWindow(window.id) : null"></div>
                 <div class="blur">
                     <component :is="window.component" class="block" :windowId="window.id" :data="window.data" v-if="!window.error"
                         :closeWindow="() => removeWindow(window.id)"
@@ -18,9 +18,9 @@
                     <ul class="buttons" v-show="getWindowButtons(window).length > 0">
                         <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.id" :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                             @click="btn?.click ? btn?.click($event) : null;"
-                            @mouseenter="btn?.text ? setToolpic({ title: btn.text, position: getWinWidth > 540 ? 'left' : 'right' }) : null"
+                            @mouseenter="btn?.label ? setToolpic({ title: btn.label, position: getWinWidth > 540 ? 'left' : 'right' }) : null"
                         >
-                            <Icon :name="btn?.icon" />
+                            <Icon :name="btn?.icon" :style="{ color: btn?.color }"/>
                         </li>
                     </ul>
                 </div>
@@ -50,7 +50,7 @@ export default defineComponent({
         getWindowButtons(window: IWindow): IButton[] {
             let closeButton: IButton = {
                 id: -1,
-                text: 'Close',
+                label: 'Close',
                 icon: 'close',
                 color: 'red',
                 click: () => {
@@ -58,7 +58,7 @@ export default defineComponent({
                 }
             }
 
-            return [closeButton, ...window.buttons || []];
+            return [window?.close ? closeButton : {} as IWindow, ...window.buttons || []];
         }
     },
     mounted() { }

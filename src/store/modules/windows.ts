@@ -27,6 +27,7 @@ export interface IWindow {
     props?: object;
     buttons?: IButton[];
     error?: boolean;
+    close?: boolean;
     createdAt: number;
 }
 
@@ -43,6 +44,7 @@ const module: StoreOptions<State> = {
             state.list = [...state.list, {
                 position: 'center',
                 buttons: [],
+                close: true,
                 ...window,
                 id: state.list.length + 1,
                 createdAt: Date.now()
@@ -56,9 +58,13 @@ const module: StoreOptions<State> = {
             state.list = state.list.filter(n => n.id !== windowId);
         },
         'windows:buttons:add'(state: State, { windowId, buttons }: { windowId: number, buttons: IButton[] }) {
+            if (buttons?.length < 1) return;
             let windowIndex: number = state.list.findIndex((window: IWindow) => window.id === windowId);
 
-            state.list[windowIndex].buttons = buttons;
+            state.list[windowIndex].buttons = [
+                ...state.list[windowIndex].buttons || [],
+                ...buttons
+            ];
         },
         'windows:buttons:remove'(state: State, { windowId, buttonIds }: { windowId: number, buttonIds: number[] }) {
             let windowIndex: number = state.list.findIndex((window: IWindow) => window.id === windowId);
@@ -80,7 +86,7 @@ const module: StoreOptions<State> = {
             return commit('windows:buttons:add', { windowId, buttons });
         },
         removeWindowButtons({ commit }, { windowId, buttonIds }: { windowId: number, buttonIds: number[] }) {
-            return commit('windows:buttons:add', { windowId, buttonIds });
+            return commit('windows:buttons:remove', { windowId, buttonIds });
         }
     },
     getters: {

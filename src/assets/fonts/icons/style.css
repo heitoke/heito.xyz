@@ -1,10 +1,10 @@
 @font-face {
   font-family: 'HeitoIcons';
-  src:  url('fonts/HeitoIcons.eot?8xsmem');
-  src:  url('fonts/HeitoIcons.eot?8xsmem#iefix') format('embedded-opentype'),
-    url('fonts/HeitoIcons.ttf?8xsmem') format('truetype'),
-    url('fonts/HeitoIcons.woff?8xsmem') format('woff'),
-    url('fonts/HeitoIcons.svg?8xsmem#HeitoIcons') format('svg');
+  src:  url('./fonts/HeitoIcons.eot?5oaju6');
+  src:  url('./fonts/HeitoIcons.eot?5oaju6#iefix') format('embedded-opentype'),
+    url('./fonts/HeitoIcons.ttf?5oaju6') format('truetype'),
+    url('./fonts/HeitoIcons.woff?5oaju6') format('woff'),
+    url('./fonts/HeitoIcons.svg?5oaju6#HeitoIcons') format('svg');
   font-weight: normal;
   font-style: normal;
   font-display: block;
@@ -25,6 +25,30 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.i-trash:before {
+  content: "\e936";
+}
+.i-trash-alt:before {
+  content: "\e95f";
+}
+.i-level:before {
+  content: "\e942";
+}
+.i-level-alt:before {
+  content: "\e95a";
+}
+.i-repo:before {
+  content: "\e95b";
+}
+.i-shield:before {
+  content: "\e95c";
+}
+.i-damage-void:before {
+  content: "\e95d";
+}
+.i-close:before {
+  content: "\e95e";
+}
 .i-share:before {
   content: "\e901";
 }
@@ -105,7 +129,7 @@
 }
 .i-comment-alt:before {
   content: "\e90e";
-  color: #09244b;
+  color: #323232;
 }
 .i-arrow-up:before {
   content: "\e90f";
@@ -140,7 +164,7 @@
 .i-hand-alt:before {
   content: "\e91b";
 }
-.i-android-svgrepo-com:before {
+.i-android-alt:before {
   content: "\e91d";
 }
 .i-tag:before {

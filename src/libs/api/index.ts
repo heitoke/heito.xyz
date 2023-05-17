@@ -56,9 +56,12 @@ export default {
                 method
             },
             res = await fetch(this.getDomain() + (uri[0] !== '/' ? `/${uri}` : uri), options),
-            result = await res.json();
+            result = await res.json(),
+            props = { ...result };
 
-        return [result, await res.status];
+        delete props['result'];
+
+        return [result?.result || result, await res.status, props];
     },
     async get(uri: string = '', options?: IFetch) {
         return await this.fetch(uri, { ...options, method: 'GET' });

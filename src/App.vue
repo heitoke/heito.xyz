@@ -71,7 +71,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel']),
+        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel', 'createWindow']),
         setEffects() {
             let html = document.querySelector('html'),
                 style = document.documentElement.style;
@@ -104,12 +104,18 @@ export default defineComponent({
             this.setEffects();
         },
         async initUser() {
-            let [user] = await Users.me(true);
+            let [user, _, props] = await Users.me(true);
             
-            if (user?.token?.refresh) setCookie('HX_RT', user?.token?.refresh, 365);
-            if (user?.token?.access) setCookie('HX_AT', user?.token?.access, 7);
+            if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, 365);
+            if (props?.token?.access) setCookie('HX_AT', props?.token?.access, 7);
 
-            delete user['token'];
+            if (props?.merge) {
+                this.createWindow({
+                    component: 'Merge',
+                    close: false,
+                    data: props.merge
+                });
+            }
 
             if (user?._id) this.setUser(user);
         }

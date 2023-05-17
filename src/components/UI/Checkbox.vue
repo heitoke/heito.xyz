@@ -1,17 +1,26 @@
 <template>
     <label class="ui-checkbox">
         <input type="checkbox" :checked="modelValue" @change="$emit('onEvent', modelValue = !modelValue)">
-        <div></div>
+        <div :style="{ margin: isSlot ? '0 12px 0 0' : '' }"></div>
+        <slot/>
     </label>
 </template>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { defineComponent, Slots } from 'vue';
 
 export default defineComponent({
     name: 'UICheckbox',
-    computed: {},
+    computed: {
+        isSlot() {
+            try {
+                return (this.$slots as any)?.default();
+            } catch (err) {
+                return false;
+            }
+        }
+    },
     props: {
         value: {
             type: Boolean
@@ -23,7 +32,7 @@ export default defineComponent({
     watch: {},
     methods: {},
     mounted() {
-        this.modelValue = this.value
+        this.modelValue = this.value;
     }
 });
 
@@ -32,8 +41,11 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .ui-checkbox {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+
     div {
-        cursor: pointer;
         width: 32px;
         height: 16px;
         position: relative;

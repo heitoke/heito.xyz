@@ -1,7 +1,7 @@
 <template>
     <div :class="['auth', type]">
         <div class="banner" :style="{ '--image': `url('${image}')` }"></div>
-        {{ type }} {{ getValid }}
+        
         <div>
             <Text class="title" :text="getLang.user[type === 'login' ? 'auth' : 'create'].title[0]"/>
             <Text class="text" :text="getLang.user.create.text" v-show="type === 'register'"/>

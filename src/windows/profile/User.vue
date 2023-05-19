@@ -154,6 +154,8 @@ export default defineComponent({
 
                                 this.selfUser = this.user;
                                 this.changes = {} as IUser;
+
+                                if (this.selfUser?._id === this.getUser._id) this.setUser(this.selfUser);
                             }
                         }
                     ]
@@ -167,7 +169,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['createWindow', 'addWindowButtons', 'removeWindowButtons', 'setContextMenu', 'removeWindow']),
+        ...mapActions(['createWindow', 'addWindowButtons', 'removeWindowButtons', 'setContextMenu', 'removeWindow', 'setUser']),
         buttonAdmin() {
             return [
                 { separator: true },
@@ -232,9 +234,8 @@ export default defineComponent({
                             buttons: [
                                 {
                                     label: 'Submit',
-                                    click: (e: any, data: any) => {
-                                        let com = data?.components?.find((c: any) => c.name === 'nickname');
-                                        console.log(com);
+                                    click: (e: MouseEvent, data: any, windowId: number) => {
+                                        this.removeWindow(windowId);
                                     }
                                 }
                             ]
@@ -269,9 +270,8 @@ export default defineComponent({
                             buttons: [
                                 {
                                     label: 'Submit',
-                                    click: (e: any, data: any) => {
-                                        let com = data?.components?.find((c: any) => c.name === 'username');
-                                        console.log(com);
+                                    click: (e: MouseEvent, data: any, windowId: number) => {
+                                        this.removeWindow(windowId);
                                     }
                                 }
                             ]
@@ -280,6 +280,7 @@ export default defineComponent({
                 }
             };
 
+            let color = '';
             let buttonColor = {
                 label: 'Color',
                 icon: 'colors',
@@ -299,7 +300,9 @@ export default defineComponent({
                                     },
                                     events: {
                                         color: (e: string) => {
-                                            this.changes['color'] = e;
+                                            if (this.user?.color === e) return delete this.changes['color'];
+
+                                            this.changes['color'] = color = e;
                                         }
                                     }
                                 }
@@ -307,9 +310,8 @@ export default defineComponent({
                             buttons: [
                                 {
                                     label: 'Submit',
-                                    click: (e: any, data: any) => {
-                                        let com = data?.components?.find((c: any) => c.name === 'nickname');
-                                        console.log(com);
+                                    click: (e: MouseEvent, data: any, windowId: number) => {
+                                        this.removeWindow(windowId);
                                     }
                                 }
                             ]

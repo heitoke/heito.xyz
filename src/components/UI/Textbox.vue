@@ -1,6 +1,7 @@
 <template>
     <label :class="['ui-textbox', { error }]"
         :style="{ '--left': `${isValid ? labelWidth : 0}px` }"
+        @click="($event.target as any).focus()"
     >
         <input :type="type" :placeholder="labelType === 'input' ? label : ''" v-model="modelValue"
             @focus="$emit('focus', $event); focus = true"    
@@ -221,6 +222,7 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
         padding: 0;
         width: 100%;
         color: var(--text-primary);
+        caret-color: var(--main-color);
         border: none;
         background: var(--T);
         transition: .2s;

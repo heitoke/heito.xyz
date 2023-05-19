@@ -1,9 +1,9 @@
 <template>
     <div class="ui-color-picker">
-        <header @click="open" ref="header">
+        <header ref="header" @click="open">
             <div class="color" :style="{ 'background-color': `#${color}` }"></div>
             
-            <label @click.prevent.stop="">
+            <label @click.prevent.stop="($event.target as any).focus()">
                 <input type="text" v-model="color"
                     maxlength="6"
                     :placeholder="text || value.replace('#', '')"
@@ -73,7 +73,7 @@ export default defineComponent({
                         component: this.panel,
                         name: 'panel-for-color-picker',
                         props: {
-                            color: '#7975ff'
+                            color: this.value
                         },
                         events: {
                             color: (color: string) => {

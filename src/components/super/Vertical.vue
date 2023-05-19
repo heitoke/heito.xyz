@@ -145,12 +145,15 @@ export default defineComponent({
 .super {
     display: flex;
     position: relative;
+    max-width: 100vw;
+    min-width: 100vw;
     max-height: 100vh;
     min-height: 100vh;
     box-sizing: border-box;
     transition: all .2s;
 
     .scrollbar {
+        width: 100%;
         transition: all .2s;
         overflow: hidden;
     }

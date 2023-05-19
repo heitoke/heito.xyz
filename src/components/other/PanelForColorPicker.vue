@@ -1,21 +1,42 @@
 <template>
     <div class="panel-for-color-picker">
         <ul class="colors">
+            <li
+                :class="{ active: color === value }"
+                :style="{ '--color': color }"
+                @click="value = color"
+            ></li>
+
+            <div></div>
+
             <li v-for="(color, idx) of colors" :key="color"
                 :class="{ active: color === value }"
                 :style="{ '--color': color }"
                 @click="value = color"
             ></li>
+
+            <div></div>
+
+            <Icon name="damage-void" style="cursor: pointer;"
+                @mouseenter="setToolpic({ text: 'Reload colors' })"
+                @click="rollRandomColors"
+            />
         </ul>
 
         <div style="display: flex; margin: 12px 0 0 0; max-width: 248px; max-height: 200px;">
             <div class="shade">
-                <div :style="{ '--color': getAltColor(value), opacity: shade.x < 0 || shade.y < 0 ? 0 : 1 }"></div>
-                <canvas id="shade" width="200" height="200"></canvas>
+                <div :style="{ '--color': value, opacity: shade.x < 0 || shade.y < 0 ? 0 : 1 }"></div>
+                <canvas id="shade" width="200" height="200"
+                    @pointerup="shade.drag = false"
+                    @pointerleave="shade.drag = false"
+                ></canvas>
             </div>
             <div class="palette">
                 <div :style="{ opacity: palette.x < 0 || palette.y < 0 ? 0 : 1  }"></div>
-                <canvas id="palette" width="32" height="200"></canvas>
+                <canvas id="palette" width="32" height="200"
+                    @pointerup="palette.drag = false"
+                    @pointerleave="palette.drag = false"
+                ></canvas>
             </div>
         </div>
     </div>
@@ -25,7 +46,9 @@
 
 import { defineComponent, PropType } from 'vue';
 
-import { randomHexList, rgbToHex, getAltColor } from '../../libs/functions';
+import { randomHexList, rgbToHex, getAltColor, hexToRgb } from '../../libs/functions';
+import { mapActions } from 'vuex';
+import { numberLiteralTypeAnnotation } from '@babel/types';
 
 export default defineComponent({
     name: 'PanelForColorPicker',
@@ -38,12 +61,15 @@ export default defineComponent({
     },
     data: () => ({
         value: '',
+        paletteColor: '',
         colors: [] as string[],
         shade: {
+            drag: false,
             x: -1,
             y: -1
         },
         palette: {
+            drag: false,
             x: -1,
             y: -1,
             value: ''
@@ -51,13 +77,17 @@ export default defineComponent({
     }),
     watch: {
         'value'(newValue, oldValue) {
-            if (newValue === this.color) return;
+            if (!oldValue) return;
 
             this.$emit('color', newValue);
         }
     },
     methods: {
+        ...mapActions(['setToolpic']),
         getAltColor,
+        rollRandomColors() {
+            this.colors = randomHexList(5);
+        },
         initPalette() {
             const canvasShare: HTMLCanvasElement = (this.$el as Element).querySelector('canvas#shade')!;
             const ctxShare = canvasShare?.getContext('2d')!;
@@ -69,8 +99,6 @@ export default defineComponent({
             const widthPalette = canvasPalette.width;
             const heightPalette = canvasPalette.height;
 
-            var drag = false;
-            let dragPalette = false;
             var rgbaColor = 'rgba(255,0,0,1)';
 
             ctxShare.rect(0, 0, widthShare, heightShare);
@@ -78,15 +106,44 @@ export default defineComponent({
 
             ctxPalette.rect(0, 0, widthPalette, heightPalette);
             var grd1 = ctxPalette.createLinearGradient(0, 0, 0, heightPalette)
-            grd1.addColorStop(0, 'rgba(255, 0, 0, 1)');
-            grd1.addColorStop(0.17, 'rgba(255, 255, 0, 1)');
-            grd1.addColorStop(0.34, 'rgba(0, 255, 0, 1)');
-            grd1.addColorStop(0.51, 'rgba(0, 255, 255, 1)');
-            grd1.addColorStop(0.68, 'rgba(0, 0, 255, 1)');
-            grd1.addColorStop(0.85, 'rgba(255, 0, 255, 1)');
-            grd1.addColorStop(1, 'rgba(255, 0, 0, 1)');
+            grd1.addColorStop(0, 'rgb(255, 0, 0)');
+            grd1.addColorStop(0.17, 'rgb(255, 255, 0)');
+            grd1.addColorStop(0.34, 'rgb(0, 255, 0)');
+            grd1.addColorStop(0.51, 'rgb(0, 255, 255)');
+            grd1.addColorStop(0.68, 'rgb(0, 0, 255)');
+            grd1.addColorStop(0.85, 'rgb(255, 0, 255)');
+            grd1.addColorStop(1, 'rgb(255, 0, 0)');
             ctxPalette.fillStyle = grd1;
             ctxPalette.fill();
+
+            function findPositionColor(ctx: CanvasRenderingContext2D, r: number, g: number, b: number): [number, number] {
+                let x, y;
+
+                for (let i = 0; i < ctx.canvas.height; i++) {
+                    for (let j = 0; j < ctx.canvas.width; j++) {
+                        const color = ctx.getImageData(j, i, 1, 1).data;
+                        if (color[0] === r && color[1] === g && color[2] === b) {
+                            x = j;
+                            y = i;
+                            return [x, y];
+                        }
+                    }
+                }
+
+                return [-1, -1];
+            }
+
+            let [r, g, b] = hexToRgb(this.value);
+            console.log('a', r, g, b);
+            
+            let [x, y] = findPositionColor(ctxPalette, r, g, b);
+            console.log('c', x, y);
+            
+            let a = ctxPalette.getImageData(x, y, 1, 1).data;
+            console.log('b', a[0], a[1], a[2]);
+            
+            console.log(rgbToHex(a[0], a[1], a[2]));
+            
 
             function fillGradient() {
                 ctxShare.fillStyle = rgbaColor;
@@ -105,7 +162,10 @@ export default defineComponent({
                 ctxShare.fillRect(0, 0, widthShare, heightShare);
             }
 
-            const changeColor = (e?: MouseEvent) => {
+            
+            
+
+            const changeShadeColor = (e?: MouseEvent) => {
                 if (e) {
                     this.shade.x = e.offsetX;
                     this.shade.y = e.offsetY;
@@ -113,48 +173,56 @@ export default defineComponent({
 
                 var imageData = ctxShare.getImageData(this.shade.x, this.shade.y, 1, 1).data;
                 rgbaColor = 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
-                
-                this.value = rgbToHex(imageData[0], imageData[1], imageData[2]);
 
+                this.value = rgbToHex(imageData[0], imageData[1], imageData[2]);
             }
 
-            canvasPalette.addEventListener("mousedown", () => dragPalette = true, false);
-            canvasPalette.addEventListener("mouseup", () => dragPalette = false, false);
-            canvasPalette.addEventListener('mouseleave', () => dragPalette = false, false);
-            canvasPalette.addEventListener("mousemove", (e: MouseEvent) => {
-                if (!dragPalette) return;
-
+            const changePaletteColor = (e: MouseEvent) => {
+                if (!this.palette.drag) return;
+    
                 this.palette.x = e.offsetX;
                 this.palette.y = e.offsetY;
-
+    
                 var imageData = ctxPalette.getImageData(this.palette.x, this.palette.y, 1, 1).data;
-
+    
                 rgbaColor = 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
-
+    
+                this.paletteColor = rgbaColor;
+    
                 fillGradient();
+    
+                changeShadeColor();
+            }
 
-                changeColor()
+            canvasPalette.addEventListener("pointerdown", (e: MouseEvent) => {
+                this.palette.drag = true;
+
+                changePaletteColor(e);
+            });
+
+            canvasPalette.addEventListener("pointermove", (e: MouseEvent) => {
+                if (!this.palette.drag) return;
+
+                changePaletteColor(e);
             }, false);
 
-            canvasShare.addEventListener("mousedown", (e: MouseEvent) => {
-                drag = true;
-                changeColor(e);
+            canvasShare.addEventListener("pointerdown", (e: MouseEvent) => {
+                this.shade.drag = true;
+
+                changeShadeColor(e);
             }, false);
 
-            canvasShare.addEventListener("mouseup",() => drag = false, false);
-            canvasShare.addEventListener('mouseleave', () => drag = false, false);
+            canvasShare.addEventListener("pointermove", (e: MouseEvent) => {
+                if (!this.shade.drag) return;
 
-            canvasShare.addEventListener("mousemove", (e: MouseEvent) => {
-                if (!drag) return;
-
-                changeColor(e);
+                changeShadeColor(e);
             }, false);
         }
     },
     mounted() {
         this.value = this.color;
         
-        this.colors = randomHexList(8);
+        this.rollRandomColors();
 
         this.initPalette();
     }
@@ -165,9 +233,20 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .panel-for-color-picker {
+    position: relative;
+
     ul.colors {
         display: flex;
+        max-width: 100%;
         align-items: center;
+        justify-content: space-between;
+
+        div {
+            margin: 0 8px 0 0;
+            min-width: 1px;
+            min-height: 16px;
+            background-color: var(--text-secondary);
+        }
 
         li {
             cursor: pointer;
@@ -204,23 +283,27 @@ export default defineComponent({
         margin: 0 12px 0 0;
 
         div {
-            width: 4px;
-            height: 4px;
-            top: calc(v-bind('shade.y') * 1px);
-            left: calc(v-bind('shade.x') * 1px);
+            width: 12px;
+            height: 12px;
+            top: calc((v-bind('shade.y') * 1px) - 8px);
+            left: calc((v-bind('shade.x') * 1px) - 8px);
             border-radius: 50%;
-            background: v-bind(getAltColor(value));
-            outline-offset: 10px;
-            outline: solid 3px v-bind(getAltColor(value));
+            border: 3px solid #fff;
+            background: v-bind(value);
         }
     }
 
     .palette {
-        div {padding: 2px 0;
-            width: 100%;
+        display: flex;
+        justify-content: center;
+
+        div {
+            padding: 2px 0;
+            width: 24px;
             top: calc(v-bind('palette.y') * 1px);
             border-radius: 25px;
-            border: 2px solid v-bind(getAltColor(value));
+            border: 3px solid #fff;
+            background: v-bind(paletteColor);
             box-sizing: border-box;
         }
     }

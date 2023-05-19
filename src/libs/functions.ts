@@ -39,9 +39,21 @@ export function randomHexList(count: number = 8): string[] {
 }
 
 export function rgbToHex(r: number, g: number, b: number): string {
-    return '#' + (r < 10 ? '0' : '') + r.toString(16) +
-            (g < 10 ? '0' : '') + g.toString(16) +
-            (b < 10 ? '0' : '') + b.toString(16);
+    return '#' + (1 << 24 | r << 16 | g << 8 | b).toString(16).slice(1);
+}
+
+export function hexToRgb(hex: string): [number, number, number] {
+    let shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+
+    hex = hex.replace(shorthandRegex, (m, r, g, b) => r + r + g + g + b + b);
+
+    let result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+
+    return result ? [
+        parseInt(result[1], 16),
+        parseInt(result[2], 16),
+        parseInt(result[3], 16)
+    ] : [0, 0, 0];
 }
 
 export function getAltColor(color: string): string {

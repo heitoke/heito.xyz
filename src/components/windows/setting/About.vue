@@ -1,6 +1,6 @@
 <template>
     <section class="about">
-        Section about
+        Version: 0.0.25
     </section>
 </template>
 

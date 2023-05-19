@@ -26,6 +26,68 @@ function getCookie(name: string) {
     return null;
 }
 
+
+export interface IQuery {
+    name: string;
+    enum?: {
+        [key: string]: {
+            label?: string;
+            value?: string;
+            type?: 'string' | 'boolean' | 'number'
+        }
+    };
+}
+export interface IRoute {
+    label: string;
+    icon?: string;
+    description?: string;
+    path?: string;
+    params?: Array<IQuery>;
+    queries?: Array<IQuery>;
+    method?: 'GET' | 'POST' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'PUT' | 'DELETE';
+}
+export interface ICategory {
+    label?: string;
+    name: string;
+    icon?: string;
+    description?: string;
+    path: string;
+    routes?: Array<IRoute>
+}
+
+export let categories: Array<ICategory> = [];
+
+export const descriptors = {
+    addCategory(options: ICategory) {
+        return function(ctor: Function) {
+            if (!options.name || categories.find(c => c.name === options.name)) return;
+
+            categories = [...categories || [], {
+                ...options,
+                routes: []
+            }];
+        }
+    },
+    addRoute(categoryName: string, route: IRoute) {
+        return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
+            setTimeout(() => {
+                let index = categories?.findIndex(c => c?.name === categoryName);
+            
+                if (index < 0) return;
+
+                categories[index].routes = [
+                    ...categories[index].routes || [],
+                    {
+                        path: `/${propertyKey}`,
+                        method: 'GET',
+                        ...route
+                    }
+                ];
+            }, 100);
+        };
+    }
+}
+
 export default {
     getDomain() {
         try {

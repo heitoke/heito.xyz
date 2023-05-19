@@ -32,31 +32,10 @@
                 <div style="margin: auto 0 0 0; width: 100%;">
                     <div class="line"></div>
                     <ul class="buttons">
-                        <li @click="createWindow({ component: 'Message', data: {
-                            title: 'Сообщение',
-                            text: 'Этот сообщение нужно чтобы протестировать как работает само сообщение. Если вас не затрудник то можете нажать на любую кнопку чтобы понять как она работает.',
-                            buttons: [
-                                {
-                                    label: 'Да',
-                                    color: 'green',
-                                    icon: 'like',
-                                    click: () => {
-                                        $log('yes')
-                                    }
-                                },
-                                {
-                                    label: 'Нет',
-                                    color: 'red',
-                                    icon: 'dislike',
-                                    click: () => {
-                                        $log('no')
-                                    }
-                                }
-                            ]
-                        } })">
+                        <li @click="createWindow({ component: 'Setting' })">
                             <Icon name="settings"/>
                         </li>
-                        <li>
+                        <li @click="setActiveNotifications(true)">
                             <Icon name="notification"/>
                         </li>
                     </ul>
@@ -101,7 +80,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['createWindow']),
+        ...mapActions(['createWindow', 'setActiveNotifications']),
         goTop(scrollProps: any) {
             scrollProps?.toScroll(0, scrollProps?.scrollY + 50);
             setTimeout(() => scrollProps?.toScroll(0, 0), 500)

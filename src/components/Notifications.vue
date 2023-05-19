@@ -6,6 +6,10 @@
         <Transition name="panel">
             <div class="panel" v-if="getActiveNotifications">
                 <ScrollBar>
+                    <header>
+                        <span>Notifications</span>
+                        <Icon name="close" @click="setActiveNotifications(false)"/>
+                    </header>
                     <ul class="list menu">
                         <Notification v-for="notification of getListNotifications" :key="notification" :id="notification.id"
                             :notification="notification"
@@ -121,6 +125,26 @@ export default defineComponent({
         &-leave-active {
             right: -25%;
             opacity: 0;
+        }
+    }
+
+    header {
+        display: flex;
+        margin: 0 12px;
+        padding: 12px;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 1px solid var(--background-secondary-alt);
+        box-sizing: border-box;
+
+        span {
+            font-size: 20px;
+        }
+
+        i.i-close {
+            cursor: pointer;
+            color: var(--red);
+            font-size: 18px;
         }
     }
 

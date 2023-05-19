@@ -13,6 +13,7 @@
 import { defineComponent, PropType } from 'vue';
 
 import $api from '../../libs/api';
+import Users from '../../libs/api/routes/users';
 
 import * as THREE from 'three';
 // import { Mesh } from 'three';
@@ -156,6 +157,21 @@ export default defineComponent({
             let raycaster = new THREE.Raycaster(),
                 mouse = new THREE.Vector2();
 
+            window.addEventListener('pointerenter', (event: MouseEvent) => {
+                event.preventDefault();
+
+                mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+                mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+                raycaster.setFromCamera(mouse, camera);
+                let intersects = raycaster.intersectObjects(scene.children, true);
+
+                if (intersects.length < 1) return;
+
+                console.log('hover');
+                
+            });
+
             window.addEventListener('pointerdown', (event: MouseEvent) => {
                 event.preventDefault();
 
@@ -177,7 +193,46 @@ export default defineComponent({
                 this.left = event.clientX;
 
                 this.user = user;
-                this.profileOpen = true;
+                // this.profileOpen = true;
+
+                let obj = intersects[0].object.parent!;
+                let pos = obj?.position;
+                let scale = obj?.scale;
+
+                console.log(scale, obj);
+                
+                
+                // controls.object.position.set(pos.x + 1, pos.y + 1, pos.z + 1);
+                // controls.object.position.set(pos.x + 1.5, pos.y + 1.5, pos.z + 7);
+                // controls.object.lookAt(pos);
+
+                new Promise(res => {
+                    let x = controls.object.position.x;
+
+                    let timer = setInterval(async () => {
+                        x += .5;
+
+                        controls.object.position.set(x, pos.y + 1.5, pos.z + 7);
+                        controls.object.lookAt(pos);
+
+                        if (x >= (pos.x + 1.5)) {
+                            clearInterval(timer);
+                            return res(1);
+                        }
+                    }, Math.round(1000 / (pos.z + 7)));
+                }).then(() => {
+                    let x = controls.object.position.x + 4;
+
+                    let timer = setInterval(() => {
+                        controls.object.position.x += .5;
+
+                        if (controls.object.position.x >= x) {
+                            clearInterval(timer);
+                            return this.profileOpen = true;
+                        }
+                    });
+                })
+
 
                 // setTimeout(() => {
                 //     window.addEventListener('click', () => {
@@ -196,11 +251,11 @@ export default defineComponent({
             function rendering() {
                 requestAnimationFrame(rendering);
 
-                if (!self.profileOpen) {
-                    scene.rotation.x += 0.0009;
-                    scene.rotation.y += 0.0009;
-                    scene.rotation.z += 0.0009;
-                }
+                // if (!self.profileOpen) {
+                //     scene.rotation.x += 0.0009;
+                //     scene.rotation.y += 0.0009;
+                //     scene.rotation.z += 0.0009;
+                // }
 
                 render();
             }
@@ -514,7 +569,7 @@ export default defineComponent({
         }
     },
     async mounted() {
-        let [users, status] = await $api.fetch('/users/ids?limit=500', {});
+        let [users, status] = await Users.userIds();
         
         if (status !== 200) return;
         

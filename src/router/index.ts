@@ -18,7 +18,11 @@ const routes: RouteRecordRaw[] = [
         name: 'ProjectsPage',
         path: '/projects',
         component: () => import('../pages/projects/Main.vue'),
-        props: { type: 'projects' }
+        props: { type: 'projects' },
+        meta: {
+            title: 'Projects',
+            icon: 'images'
+        }
     },
     {
         name: 'RepositoriesPage',
@@ -32,7 +36,11 @@ const routes: RouteRecordRaw[] = [
         props: ({ query, params }) => ({
             login: params?.login || query?.login || 'heitoke',
             type: 'repos'
-        })
+        }),
+        meta: {
+            title: 'Repositories',
+            icon: 'repo'
+        }
     },
     // {
     //     name: 'ProjectPage',
@@ -85,14 +93,23 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/Ref.vue'),
         meta: {
             hide: ['page']
-        } // referral
+        }
+    },
+    {
+        name: 'APIPage',
+        path: '/api',
+        component: () => import('../pages/api/Main.vue'),
+        meta: {
+            title: 'API',
+            icon: 'filter'
+        }
     },
     {
         path: '/:catchAll(.*)',
         name: 'ErrorPage',
         component: () => import('../pages/Error.vue'),
         meta: {
-            hide: ['page']
+            hide: ['page', 'footer']
         }
     }
 ];

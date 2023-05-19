@@ -32,7 +32,7 @@ import type { TIcon } from '../../libs/types';
 
 export interface IButton {
     label: string;
-    icon?: TIcon;
+    icon?: string;
     color?: string;
     img?: string;
     value?: string;

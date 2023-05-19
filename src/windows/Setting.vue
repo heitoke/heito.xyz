@@ -10,9 +10,12 @@
                 { name: 'about', component: about }
             ]"
         />
+
         <!-- <Transition :name="`slide-${swipe}`">
             <component :is="sections[section.value]"/>
         </Transition> -->
+
+        <Text text="Beta" style="margin: 12px 0 0 0; color: var(--text-secondary); font-size: 12px; text-align: center; user-select: none;"/>
     </div>
 </template>
 

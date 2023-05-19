@@ -94,9 +94,11 @@
                 <Transition name="account-username">
                     <div v-if="search.isActive" ref="search">
                         <Textbox :label="'Search'" :autofocus="true"
-                            @input="search.text = $event.target?.value"
+                            @input="search.text = $event.target?.value; searchUsers()"
                         />
-                        <div class="result blur"></div>
+                        <div class="result blur">
+                            <User v-for="user of search.users" :key="user._id" :user="user"/>
+                        </div>
                     </div>
                 </Transition>
             </div>
@@ -143,15 +145,15 @@
                             <div :style="{ '--avatar': `url('${getAvatar({ nameId: getUser?._id })}')` }"></div>
                         </div>
                     </div>
-                    <div class="level" v-if="menu">
+                    <!-- <div class="level" v-if="menu">
                         <div class="bar" :style="{ '--p': '90%' }"></div>
                         <div class="text">
                             <span>9 lvl</span>
                             <span>10 lvl</span>
                         </div>
-                    </div>
+                    </div> -->
                     <Transition name="account-menu">
-                        <Menu :menu="getProfileMenu" v-if="menu"/>
+                        <Menu :menu="getProfileMenu" style="margin: 12px 0 0 0;" v-if="menu"/>
                     </Transition>
                 </div>
             </div>
@@ -177,7 +179,7 @@ import Activity, { type IContent } from './content/Activity.vue';
 
 import ScrollBar from './ScrollBar.vue';
 
-import { type IUser } from '../libs/api/routes/users';
+import Users, { type IUser } from '../libs/api/routes/users';
 import User from './cards/User.vue';
 
 import { getAvatar, timeago, createHex } from '../libs/functions';
@@ -213,6 +215,7 @@ interface IData {
     search: {
         isActive: boolean;
         text: string;
+        users: Array<IUser>;
     }
     online: {
         isActive: boolean;
@@ -285,31 +288,29 @@ export default defineComponent({
                             }))
                         }
                     },
-                    !this.getUser?.isRegistered ? {
-                        separator: true,
-                    } : {},
-                    !this.getUser?.isRegistered ? {
-                        label: this.getLang.global.sign.in,
-                        icon: 'hand',
-                        click: () => {
-                            this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth' });
+                    ...(!this.getUser?.isRegistered ? [
+                        { separator: true },
+                        {
+                            label: this.getLang.global.sign.in,
+                            icon: 'hand',
+                            click: () => {
+                                this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth' });
+                            }
+                        },
+                        {
+                            label: this.getLang.user.create.title[0],
+                            icon: 'user-circle',
+                            click: () => {
+                                this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
+                            }
+                        },
+                        { separator: true },
+                        {
+                            label: this.getLang.global.exit[1],
+                            icon: 'exit',
+                            class: 'exit'
                         }
-                    } : {},
-                    !this.getUser?.isRegistered ? {
-                        label: this.getLang.user.create.title[0],
-                        icon: 'user-circle',
-                        click: () => {
-                            this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
-                        }
-                    } : {},
-                    {
-                        separator: true
-                    },
-                    {
-                        label: this.getLang.global.exit[1],
-                        icon: 'exit',
-                        class: 'exit'
-                    }
+                    ] : [])
                 ]
             } as IContextMenu;
         }
@@ -330,7 +331,8 @@ export default defineComponent({
             },
             search: {
                 isActive: false,
-                text: ''
+                text: '',
+                users: []
             },
             superMenu: false
         }
@@ -398,6 +400,16 @@ export default defineComponent({
             if (boolean || this.online.list?.length > 1) return;
 
             this.$socket.emit('users:online', 'list');
+        },
+        async searchUsers() {
+            let [result, status] = await Users.list();
+
+            if (status !== 200) return;
+
+            console.log(result);
+            this.search.users = (result as any).results;
+
+            
         }
     },
     mounted() {

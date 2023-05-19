@@ -1,4 +1,4 @@
-import $api from '../';
+import $api, { descriptors, categories } from '../';
 
 export interface IEMail {
     email: string;
@@ -44,23 +44,55 @@ export interface IUser {
 
 export type TMargeScopes = 'stats';
 
-export default {
+@descriptors.addCategory({ label: 'Users', name: 'users', icon: 'user-circle', path: '/users' })
+class Route {
+    constructor() {}
+
+    @descriptors.addRoute('users', { label: 'Get Me', icon: 'username', description: 'Learn more about yourself' })
     me(showTokens: boolean = false): [IUser, number, any] {
         return $api.get(`/users/me${showTokens ? '?token=true' : ''}`) as any;
-    },
+    }
+
+    @descriptors.addRoute('users', { label: 'Get list users', path: '' })
     list(): [IUser[], number, any] {
         return $api.get('/users') as any;
-    },
+    }
+
+    @descriptors.addRoute('users', { label: 'User ids', path: '/ids', queries: [{ name: 'limit' }] })
+    userIds(limit: number = 500) {
+        return $api.fetch(`/users/ids?limit=${limit}`, {});
+    }
+
+    @descriptors.addRoute('users', { label: 'Get user', icon: 'id-card', path: '/:userId' })
     get(userId: string): [IUser, number, any] {
         return $api.get(`/users/${userId}`) as any;
-    },
+    }
+
+    @descriptors.addRoute('users', { label: 'User authorization', icon: 'hand', path: '', method: 'POST' })
     create(body: { login: string, email: string, password: string, repeatPassword: string }) {
         return $api.post('/users', { body });
-    },
+    }
+
+    @descriptors.addRoute('users', { label: 'Merge accounts', path: '/merge', method: 'PUT' })
     merge(body: { old: string, now: string, select: string, password?: string, scopes: Array<TMargeScopes> }) {
         return $api.put('/users/merge', { body });
-    },
+    }
+
+    @descriptors.addRoute('users', {
+        label: 'Update user account',
+        icon: 'pencil',
+        path: '/:userId',
+        queries: [{
+            name: 'type',
+            enum: {
+                default: {},
+                person: {}
+            }
+        }]
+    })
     update(userId: string, body: IUser, type: 'person' | 'default' = 'default') {
         return $api.patch(`/users/${userId}?type=${type}`, { body });
     }
 }
+
+export default new Route();

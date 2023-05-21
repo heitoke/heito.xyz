@@ -6,8 +6,8 @@
             <li v-for="(btn, idx) of menu" :key="btn.label"
                 :class="{ active: id === idx }"
                 :style="{ '--color': btn?.color }"
-                @click="id = idx"
-                @mouseenter="id === idx ? null : hoverId = idx"
+                @click="selected ? id = idx : $emit('select', btn)"
+                @mouseenter="selected ? null : (id === idx ? null : hoverId = idx)"
                 @mouseleave="hoverId = -1"
             >
                 <img :src="btn?.img" v-if="btn?.img">
@@ -28,14 +28,13 @@
 
 import { defineComponent, PropType } from 'vue';
 
-import type { TIcon } from '../../libs/types';
-
 export interface IButton {
     label: string;
     icon?: string;
     color?: string;
     img?: string;
     value?: string;
+    [key: string]: any;
 }
 
 export default defineComponent({
@@ -52,16 +51,20 @@ export default defineComponent({
         orientation: {
             type: String as PropType<'vertical' | 'horizontal'>,
             default: 'horizontal'
+        },
+        selected: {
+            type: Boolean,
+            default: true
         }
     },
     emits: {
-        select(a: IButton): IButton {
-            return a;
+        select(btn: IButton): IButton {
+            return btn;
         }
     },
     data() {
         return {
-            id: 0,
+            id: -1,
             width: 0,
             height: 0,
             top: 0,
@@ -81,10 +84,6 @@ export default defineComponent({
         }
     },
     methods: {
-        log(...args: any) {
-            console.log(...args);
-            
-        },
         setScroll(e: WheelEvent) {
             let el = this.$el as Element;
             
@@ -94,7 +93,11 @@ export default defineComponent({
             });
         },
         set(position: number = 0) {
+            if (this.selected) return;
+
             let el: Element | any = (this.$el as Element)?.querySelector(`ul li:nth-child(${position})`);
+
+            if (!el) return;
 
             this.width = el.clientWidth;
             this.height = el.clientHeight;

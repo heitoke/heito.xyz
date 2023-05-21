@@ -4,17 +4,23 @@
             <div class="images">
                 <div class="large" v-if="content.largeImage?.url"
                     :style="{ '--image': `url(${content.largeImage?.url})` }"
+                    @mouseenter="content.largeImage?.label ? setToolpic({ text: content.largeImage?.label }) : null"
                 ></div>
-                <div class="small" v-if="content.smallImage?.url"
+                <div class="small" v-if="content.smallImage?.url || content?.smallImage?.icon"
                     :style="{ '--image': `url(${content.smallImage?.url})` }"
-                ></div>
+                    @mouseenter="content.smallImage?.label ? setToolpic({ text: content.smallImage?.label }) : null"
+                >
+                    <Icon :name="content?.smallImage?.icon" v-if="content?.smallImage?.icon"
+                        :style="{ color: content?.smallImage?.color }"
+                    />
+                </div>
             </div>
             <div class="content">
                 <Text class="label" :text="content.name"/>
-                <Text class="details" :text="content?.details" v-if="content.type !== 'mini' && content?.details"/>
+                <Text class="details" :text="content?.details" v-if="content?.details"/>
                 <Text class="state" :text="content?.state" v-if="content.type !== 'mini' && content?.state"/>
                 
-                <div class="progress">
+                <div class="progress" v-if="content.progressBar">
                     <span>{{ content.progressBar?.isTime ? getTrackStartInTime : '' }}</span>
                     <div class="bar">
                         <div :style="{ width: `${(content.progressBar?.value || 0) / (content.progressBar?.end || 0) * 100}%` }"></div>
@@ -23,7 +29,13 @@
                 </div>
             </div>
         </header>
-        <NavBar style="margin: 8px 0 0 0;" :menu="content.buttons" v-if="content?.buttons?.length as number > 0 && showButtons"/>
+        
+        <NavBar style="margin: 8px 0 0 0;" v-if="content?.buttons?.length as number > 0 && showButtons"
+            :selected="false"
+            :default-id="-1"
+            :menu="content.buttons"
+            @select="$event?.url ? openUrl($event?.url) : null; $log($event)"    
+        />
     </div>
 </template>
 
@@ -37,18 +49,24 @@ import NavBar from './NavBar.vue';
 
 import { defineComponent, PropType } from 'vue';
 
-import { TIcon } from '../../libs/types';
+import { mapActions } from 'vuex';
 
 type TTypeActivity = 'default' | 'mini';
 
-type TImage = {
+type TLargeImage = {
     url: string;
     label?: string;
+}
+type TSmallImage = {
+    url?: string;
+    label?: string;
+    icon?: string;
+    color?: string;
 }
 
 interface IButton {
     label: string;
-    icon?: TIcon;
+    icon?: string;
     url?: string;
 }
 
@@ -64,8 +82,8 @@ export interface IContent {
     name: string;
     details?: string;
     state?: string;
-    largeImage?: TImage;
-    smallImage?: TImage;
+    largeImage?: TLargeImage;
+    smallImage?: TSmallImage;
     buttons?: IButton[];
     progressBar?: TProgressBar;
 }
@@ -97,10 +115,14 @@ export default defineComponent({
         }
     },
     methods: {
+        ...mapActions(['setToolpic']),
         msInMin(ms: number) {
             let min = Math.floor((ms / 1000 / 60) << 0),
             sec = Math.floor((ms / 1000) % 60);
             return `${min}:${`${sec}`.length < 2 ? `0${sec}` : sec}`;
+        },
+        openUrl(url: string) {
+            window.open(url);
         }
     },
     mounted() {}
@@ -136,12 +158,19 @@ export default defineComponent({
             }
 
             .small {
+                display: flex;
                 min-width: 24px;
                 min-height: 24px;
                 position: absolute;
                 right: -6px;
                 bottom: -6px;
                 border-radius: 50%;
+                align-items: center;
+                justify-content: center;
+
+                i {
+                    font-size: 12px;
+                }
             }
         }
 

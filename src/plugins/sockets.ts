@@ -13,8 +13,9 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
     // ? Users
     'users:online'(type: 'count' | 'list'): void;
-    // ? Songs
-    'songs:track:playing'(): void;
+    // ? Activities
+    'activities:track:playing'(): void;
+    'activities:list'(): void;
 }
 
 export type TSocket = Socket<ServerToClientEvents, ClientToServerEvents>;

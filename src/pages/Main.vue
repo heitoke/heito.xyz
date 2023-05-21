@@ -5,7 +5,9 @@
                 <Text class="title" :text="getLang.page.main.title"/>
                 <Text class="text" :text="getLang.page.main.text"/>
             </div>
-            <SpaceOfStars/>
+            <Suspense>
+                <SpaceOfStars/>
+            </Suspense>
         </div>
     </div>
 </template>

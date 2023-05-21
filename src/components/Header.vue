@@ -31,49 +31,14 @@
                     <div class="data blur" v-if="activities?.list?.length > 0"
                         @click="open($event, 'activities', () => activities.isActive = true, () => activities.isActive = false)"
                     >
-                        <Activity :show-buttons="activities.isActive" :content="{
-                            ...activities.list[0],
-                            buttons: [
-                                {
-                                    label: '1'
-                                },
-                                {
-                                    label: '2'
-                                }
-                            ]
-                        }"/>
+                        <Activity :show-buttons="activities.isActive" :content="activities.list?.find(x => x.id === 'spotify:track') || activities.list[0]"/>
     
                         <Transition name="fadeHeight">
-                            <div class="list" v-if="activities.isActive">
+                            <div class="list" v-if="activities.isActive && activities.list?.length > 1">
                                 <ScrollBar :max-height="'256px'">
                                     <div>
-                                        <Activity v-for="(_, idx) in new Array(25)" :key="idx" :show-buttons="true"
-                                            :content="{
-                                                ...activities.list[0],
-                                                state: '123',
-                                                details: '123321',
-                                                type: idx % 2 === 1 ? 'mini' : 'default',
-                                                smallImage: {
-                                                    url: activities.list[0].largeImage?.url as string
-                                                },
-                                                buttons: [
-                                                    {
-                                                        label: 'Test'
-                                                    },
-                                                    {
-                                                        label: 'Test'
-                                                    },
-                                                    {
-                                                        label: 'Test'
-                                                    },
-                                                    {
-                                                        label: 'Collections'
-                                                    },
-                                                    {
-                                                        label: 'Authorization'
-                                                    }
-                                                ]
-                                            }"
+                                        <Activity v-for="(activity, idx) in activities.list.slice(1)" :key="idx" :show-buttons="true"
+                                            :content="activity"
                                         />
                                     </div>
                                 </ScrollBar>
@@ -346,7 +311,7 @@ export default defineComponent({
                 this.online.list = data?.list as IUser[];
             }
         },
-        'songs:track:playing'(data: { is_playing: boolean, track: TTrack }) {
+        'activities:track:playing'(data: { userId: string, track: TTrack, is_playing: boolean }) {
             if (!data.is_playing) return;
 
             let trackIndex = this.activities.list.findIndex((a: IContent) => a.id === 'spotify:track');
@@ -362,18 +327,122 @@ export default defineComponent({
                     value: data?.track?.start,
                     end: data?.track?.end,
                     isTime: true
-                }
+                },
+                buttons: [
+                    { label: 'Profile', icon: 'user-circle', url: `https://open.spotify.com/user/${data?.userId}` },
+                    { label: 'Open track', icon: 'music-note', url: data?.track?.url }
+                ]
             }
 
             if (trackIndex > -1) {
                 this.activities.list[trackIndex] = { ...activity };
             } else {
-                this.activities.list = [...this.activities.list || [], activity];
+                this.activities.list = [activity, ...this.activities.list || []];
             }
 
             setTimeout(() => {
-                this.$socket.emit('songs:track:playing');
+                this.$socket.emit('activities:track:playing');
             }, 5000);
+        },
+        'test'(text: string) {
+            console.log(text);
+            
+        },
+        'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr', [key: string]: any }>) {
+            for (let active of activitiesList) {
+                let activity: IContent = { name: 'Activity', type: 'default' },
+                    activityIndex: number = -1;
+
+                switch(active?.type) {
+                    case 'steam':
+                        let isGame = active?.game?.id,
+                            steamStatus = [
+                                { label: 'Offline', icon: 'circle-alt', color: 'var(--text-secondary)' }, 
+                                { label: 'Online', icon: 'circle', color: 'var(--green)' }, 
+                                { label: 'Busy', icon: 'quill', color: 'var(--background-secondsry-alt)' }, 
+                                { label: 'Away', icon: 'pacman', color: 'var(--blue)' }, 
+                                { label: 'Snooze', icon: 'clock', color: 'var(--yellow)' }, 
+                                { label: 'Looking to trade', icon: '', color: '' }, 
+                                { label: 'Looking to play', icon: 'play', color: 'var(--green)' }
+                            ],
+                            status = steamStatus[active?.status];
+
+                        activityIndex = this.activities.list.findIndex((a: IContent) => a.id === `steam:${active?.id}`) as number;
+
+                        activity = {
+                            id: `steam:${active?.id}`,
+                            name: active?.name,
+                            details: isGame ? `Playing` : (active?.realname ? `Realname: ${active?.realname}` : undefined),
+                            state: isGame ? status.label : undefined,
+                            type: isGame ? 'default' : 'mini',
+                            largeImage: {
+                                url: isGame ? active?.game?.capsule : active?.avatar,
+                                label: isGame ? active?.game?.name : 'Steam'
+                            },
+                            smallImage: isGame ? {
+                                url: active?.avatar,
+                                label: 'Steam'
+                            } : status,
+                            buttons: [
+                                { label: 'Profile', icon: 'user-circle', url: active?.url }
+                            ]
+                        };
+
+                        if (isGame) activity['buttons']?.push({ label: 'Game', icon: 'brush', url: active?.game?.store });
+                        break;
+                    case 'github':
+                        activityIndex = this.activities.list.findIndex((a: IContent) => a.id === `github:${active?.id}`) as number;
+
+                        activity = {
+                            id: `github:${active?.id}`,
+                            name: `${active?.name} (${active?.login})`,
+                            details: `Followers: ${active?.followers}`,
+                            state: `Public repos: ${active?.public_repos}`,
+                            largeImage: {
+                                url: active?.avatar_url,
+                                label: 'GitHub'
+                            },
+                            type: 'default',
+                            buttons: [
+                                { label: 'Profile', icon: 'user-circle', url: active?.html_url }
+                            ]
+                        };
+
+                        if (active?.blog) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.blog });
+                        break;
+                    case 'tetr':
+                        activityIndex = this.activities.list.findIndex((a: IContent) => a.id === `tetr:${active?._id}`) as number;
+
+                        activity = {
+                            id: `tetr:${active?._id}`,
+                            name: `${active?.username}`,
+                            details: `${active?.xp} XP`,
+                            state: `Tetra league: ${Number(active?.league?.rating).toFixed(2)} TR`,
+                            largeImage: {
+                                url: active?.avatar_url,
+                                label: 'Tetr.io'
+                            },
+                            // smallImage: {
+                            //     url: active?.country_flag,
+                            //     label: active?.country
+                            // },
+                            type: 'default',
+                            buttons: [
+                                { label: 'Profile', icon: 'user-circle', url: `https://ch.tetr.io/u/${active?.username}` }
+                            ]
+                        };
+
+                        if (active?.blog) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.blog });
+                        break;
+                }
+
+                if (activityIndex > -1) {
+                    this.activities.list[activityIndex] = { ...activity };
+                } else {
+                    this.activities.list = [...this.activities.list || [], activity];
+                }
+            }
+
         }
     },
     methods: {
@@ -406,10 +475,7 @@ export default defineComponent({
 
             if (status !== 200) return;
 
-            console.log(result);
             this.search.users = (result as any).results;
-
-            
         }
     },
     mounted() {
@@ -417,7 +483,8 @@ export default defineComponent({
 
         this.$socket.emit('users:online', 'count');
 
-        this.$socket.emit('songs:track:playing');
+        this.$socket.emit('activities:track:playing');
+        this.$socket.emit('activities:list');
     }
 });
 

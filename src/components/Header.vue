@@ -10,7 +10,9 @@
 
         <div class="left">
             <div class="logo">
-                <RouterLink to="/">heito.xyz</RouterLink>
+                <RouterLink to="/"
+                    @contextmenu="getUser?.permissions?.includes(EPermissions.Site) ? setContextMenu(getAdminContext) : null"
+                >heito.xyz</RouterLink>
                 <div class="online"
                     @click="open($event, 'online', () => getListOnlineUsers(online.isActive), () => online.isActive = false)"
                 >
@@ -144,7 +146,7 @@ import Activity, { type IContent } from './content/Activity.vue';
 
 import ScrollBar from './ScrollBar.vue';
 
-import Users, { type IUser } from '../libs/api/routes/users';
+import Users, { EPermissions, type IUser } from '../libs/api/routes/users';
 import User from './cards/User.vue';
 
 import { getAvatar, timeago, createHex } from '../libs/functions';
@@ -189,6 +191,7 @@ interface IData {
     };
     activities: {
         isActive: boolean;
+        track: IContent;
         list: IContent[];
     };
     superMenu: boolean;
@@ -278,6 +281,21 @@ export default defineComponent({
                     ] : [])
                 ]
             } as IContextMenu;
+        },
+        getAdminContext(): IContextMenu {
+            return {
+                name: 'admin:menu',
+                event: (this.$el as Element)?.querySelector('.logo .online') as any,
+                position: ['center', 'fixed-target', 'bottom'],
+                buttons: [
+                    {
+                        label: 'Configs',
+                        click: () => {
+                            this.createWindow({ component: 'Configs' });
+                        }
+                    }
+                ]
+            }
         }
     },
     data(): IData {
@@ -286,6 +304,7 @@ export default defineComponent({
             tabs: false,
             activities: {
                 isActive: false,
+                track: {} as IContent,
                 list: []
             },
             menu: false,
@@ -314,9 +333,7 @@ export default defineComponent({
         'activities:track:playing'(data: { userId: string, track: TTrack, is_playing: boolean }) {
             if (!data.is_playing) return;
 
-            let trackIndex = this.activities.list.findIndex((a: IContent) => a.id === 'spotify:track');
-
-            let activity: IContent = {
+            this.activities.track = {
                 id: 'spotify:track',
                 type: 'mini',
                 name: data?.track?.name as string,
@@ -333,25 +350,11 @@ export default defineComponent({
                     { label: 'Open track', icon: 'music-note', url: data?.track?.url }
                 ]
             }
-
-            if (trackIndex > -1) {
-                this.activities.list[trackIndex] = { ...activity };
-            } else {
-                this.activities.list = [activity, ...this.activities.list || []];
-            }
-
-            setTimeout(() => {
-                this.$socket.emit('activities:track:playing');
-            }, 5000);
-        },
-        'test'(text: string) {
-            console.log(text);
-            
         },
         'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr', [key: string]: any }>) {
+            this.activities.list = [];
             for (let active of activitiesList) {
-                let activity: IContent = { name: 'Activity', type: 'default' },
-                    activityIndex: number = -1;
+                let activity: IContent = { name: 'Activity', type: 'default' };
 
                 switch(active?.type) {
                     case 'steam':
@@ -366,8 +369,6 @@ export default defineComponent({
                                 { label: 'Looking to play', icon: 'play', color: 'var(--green)' }
                             ],
                             status = steamStatus[active?.status];
-
-                        activityIndex = this.activities.list.findIndex((a: IContent) => a.id === `steam:${active?.id}`) as number;
 
                         activity = {
                             id: `steam:${active?.id}`,
@@ -391,8 +392,6 @@ export default defineComponent({
                         if (isGame) activity['buttons']?.push({ label: 'Game', icon: 'brush', url: active?.game?.store });
                         break;
                     case 'github':
-                        activityIndex = this.activities.list.findIndex((a: IContent) => a.id === `github:${active?.id}`) as number;
-
                         activity = {
                             id: `github:${active?.id}`,
                             name: `${active?.name} (${active?.login})`,
@@ -411,8 +410,6 @@ export default defineComponent({
                         if (active?.blog) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.blog });
                         break;
                     case 'tetr':
-                        activityIndex = this.activities.list.findIndex((a: IContent) => a.id === `tetr:${active?._id}`) as number;
-
                         activity = {
                             id: `tetr:${active?._id}`,
                             name: `${active?.username}`,
@@ -436,17 +433,13 @@ export default defineComponent({
                         break;
                 }
 
-                if (activityIndex > -1) {
-                    this.activities.list[activityIndex] = { ...activity };
-                } else {
-                    this.activities.list = [...this.activities.list || [], activity];
-                }
+                this.activities.list = [...this.activities.list || [], activity];
             }
 
         }
     },
     methods: {
-        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow', 'sendBroadcastMessage']),
+        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow', 'sendBroadcastMessage', 'setContextMenu']),
         log(e: any) {
             console.log(e);
         },
@@ -481,10 +474,7 @@ export default defineComponent({
     mounted() {
         this.darkTheme = this.$local.get('theme') === 'dark';
 
-        this.$socket.emit('users:online', 'count');
-
-        this.$socket.emit('activities:track:playing');
-        this.$socket.emit('activities:list');
+        // this.$socket.emit('users:online', 'count');
     }
 });
 

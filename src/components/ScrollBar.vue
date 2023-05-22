@@ -44,7 +44,7 @@ export default defineComponent({
     props: {
         maxHeight: {
             type: String,
-            default: '100vh'
+            default: '100%'
         }
     },
     data: () => ({

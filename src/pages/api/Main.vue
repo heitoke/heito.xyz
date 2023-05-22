@@ -52,7 +52,8 @@ import { defineComponent, reactive } from 'vue';
 import { mapGetters } from 'vuex';
 
 import $api, { categories, ICategory, IRoute } from '../../libs/api';
-import Logs from '../../libs/api/routes/logs'
+import Logs from '../../libs/api/routes/logs';
+import Configs from '../../libs/api/routes/configs';
 
 interface Route extends IRoute {
     open: boolean;
@@ -93,11 +94,9 @@ export default defineComponent({
     methods: {},
     mounted() {
         this.type = categories[0].name;
-
-        console.log(categories);
         
         console.log(Logs);
-        
+        console.log(Configs);
     }
 });
 

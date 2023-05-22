@@ -7,7 +7,7 @@
                 :class="{ active: id === idx }"
                 :style="{ '--color': btn?.color }"
                 @click="selected ? id = idx : $emit('select', btn)"
-                @mouseenter="selected ? null : (id === idx ? null : hoverId = idx)"
+                @mouseenter="selected ? (id === idx ? null : hoverId = idx) : null"
                 @mouseleave="hoverId = -1"
             >
                 <img :src="btn?.img" v-if="btn?.img">
@@ -93,7 +93,7 @@ export default defineComponent({
             });
         },
         set(position: number = 0) {
-            if (this.selected) return;
+            if (!this.selected) return;
 
             let el: Element | any = (this.$el as Element)?.querySelector(`ul li:nth-child(${position})`);
 

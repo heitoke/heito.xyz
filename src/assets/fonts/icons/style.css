@@ -39,11 +39,9 @@
 }
 .i-trash:before {
   content: "\e936";
-  color: #323232;
 }
 .i-trash-alt:before {
   content: "\e95f";
-  color: #323232;
 }
 .i-level:before {
   content: "\e942";
@@ -83,7 +81,6 @@
 }
 .i-search:before {
   content: "\e940";
-  color: #323232;
 }
 .i-file:before {
   content: "\e908";
@@ -126,7 +123,6 @@
 }
 .i-desktop:before {
   content: "\e909";
-  color: #323232;
 }
 .i-desktop-alt:before {
   content: "\e90a";
@@ -139,11 +135,9 @@
 }
 .i-comment-svgrepo-com-1:before {
   content: "\e90d";
-  color: #323232;
 }
 .i-comment-alt:before {
   content: "\e90e";
-  color: #323232;
 }
 .i-arrow-up:before {
   content: "\e90f";
@@ -183,7 +177,6 @@
 }
 .i-tag:before {
   content: "\e920";
-  color: #323232;
 }
 .i-cube:before {
   content: "\e921";
@@ -232,24 +225,20 @@
 }
 .i-color-picker:before {
   content: "\e931";
-  color: #323232;
 }
 .i-colors:before {
   content: "\e932";
 }
 .i-color-swatch .path1:before {
   content: "\e933";
-  color: rgb(50, 50, 50);
 }
 .i-color-swatch .path2:before {
   content: "\e934";
   margin-left: -1em;
-  color: rgb(50, 50, 50);
 }
 .i-color-swatch .path3:before {
   content: "\e935";
   margin-left: -1em;
-  color: rgb(50, 50, 50);
 }
 .i-brush-solid:before {
   content: "\e937";
@@ -280,12 +269,10 @@
 }
 .i-mail-svgrepo-com .path1:before {
   content: "\e944";
-  color: rgb(255, 255, 255);
 }
 .i-mail-svgrepo-com .path2:before {
   content: "\e945";
   margin-left: -1em;
-  color: rgb(50, 50, 50);
 }
 .i-ellipsis:before {
   content: "\e946";

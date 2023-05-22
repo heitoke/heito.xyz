@@ -51,10 +51,10 @@ interface IComponent {
     }
 }
 
-interface IMessage {
+export interface IMessage {
     title?: string;
     icon?: string;
-    text: string;
+    text?: string;
     buttons?: IButton[];
     components?: IComponent[];
 }

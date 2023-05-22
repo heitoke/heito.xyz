@@ -29,7 +29,11 @@ export default defineComponent({
     data: () => ({
         modelValue: false
     }),
-    watch: {},
+    watch: {
+        'value'(newValue: boolean) {
+            this.modelValue = newValue;
+        }
+    },
     methods: {},
     mounted() {
         this.modelValue = this.value;

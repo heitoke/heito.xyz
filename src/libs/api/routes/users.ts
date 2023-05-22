@@ -60,7 +60,7 @@ class Route {
 
     @descriptors.addRoute('users', { label: 'User ids', icon: 'id-card', path: '/ids', queries: [{ name: 'limit' }] })
     userIds(limit: number = 500) {
-        return $api.fetch(`/users/ids?limit=${limit}`, {});
+        return $api.get(`/users/ids?limit=${limit}`, {});
     }
 
     @descriptors.addRoute('users', { label: 'Get user', icon: 'id-card', path: '/:userId' })
@@ -88,7 +88,8 @@ class Route {
                 default: {},
                 person: {}
             }
-        }]
+        }],
+        method: 'PATCH'
     })
     update(userId: string, body: IUser, type: 'person' | 'default' = 'default') {
         return $api.patch(`/users/${userId}?type=${type}`, { body });

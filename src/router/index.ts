@@ -98,11 +98,18 @@ const routes: RouteRecordRaw[] = [
     {
         name: 'APIPage',
         path: '/api',
-        component: () => import('../pages/api/Main.vue'),
+        redirect: '/api/users',
         meta: {
             title: 'API',
             icon: 'filter'
-        }
+        },
+        children: [
+            {
+                name: 'APIPage',
+                path: ':routerName',
+                component: () => import('../pages/api/Main.vue')
+            }
+        ]
     },
     {
         path: '/:catchAll(.*)',

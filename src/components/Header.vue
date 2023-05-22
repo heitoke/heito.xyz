@@ -39,7 +39,7 @@
                             <div class="list" v-if="activities.isActive && activities.list?.length > 1">
                                 <ScrollBar :max-height="'256px'">
                                     <div>
-                                        <Activity v-for="(activity, idx) in activities.list.slice(1)" :key="idx" :show-buttons="true"
+                                        <Activity v-for="(activity, idx) in activities.list.slice(activities.track ? 0 : 1)" :key="idx" :show-buttons="true"
                                             :content="activity"
                                         />
                                     </div>

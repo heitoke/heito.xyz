@@ -11,7 +11,7 @@
             </li>
         </ul>
 
-        <Select :menu="menu"
+        <Select :menu="listPermissions"
             @select="permissions.find(per => $event.value === per) ? null : permissions = [...permissions, $event.value]"
         />
 
@@ -25,54 +25,14 @@
 
 import { defineComponent, PropType } from 'vue';
 
-import { EPermissions } from '../libs/api/routes/users';
-
-export interface IPer {
-    label: string;
-    text: string;
-    value: EPermissions;
-    icon: string;
-}
-
-export const menu = [
-    {
-        label: 'Self',
-        text: 'Manage yourself',
-        value: EPermissions.Self,
-        icon: 'heart'
-    },
-    {
-        label: 'Users',
-        text: 'Allows you to manage users',
-        value: EPermissions.Users,
-        icon: 'user-circle'
-    },
-    {
-        label: 'Projects',
-        text: 'Allows you to manage projects',
-        value: EPermissions.Projects,
-        icon: 'lab'
-    },
-    {
-        label: 'Blogs',
-        text: 'Allows you to manage blogs',
-        value: EPermissions.Blogs,
-        icon: 'quill'
-    },
-    {
-        label: 'Site',
-        text: 'Allows you to manage the site',
-        value: EPermissions.Site,
-        icon: 'damage-void'
-    }
-] as Array<IPer>
+import { EPermissions, listPermissions, IButtonPermission } from '../libs/api/routes/users';
 
 export default defineComponent({
     name: 'WindowPermissons',
     components: {},
     computed: {
-        getListSelectPermissions(): Array<IPer> {
-            return this.menu.filter(per => this.permissions.find(p => p === per.value));
+        getListSelectPermissions(): Array<IButtonPermission> {
+            return this.listPermissions.filter((per: IButtonPermission) => this.permissions.find(p => p === per.value));
         }
     },
     props: {
@@ -83,7 +43,7 @@ export default defineComponent({
     },
     data: () => ({
         permissions: [] as Array<EPermissions>,
-        menu
+        listPermissions
     }),
     watch: {},
     methods: {},

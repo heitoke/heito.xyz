@@ -1,3 +1,5 @@
+import { EPermissions } from './routes/users';
+
 export type TMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export interface IFetch {
@@ -26,16 +28,19 @@ function getCookie(name: string) {
     return null;
 }
 
-
+type TTypes = 'string' | 'boolean' | 'number' | string;
 export interface IQuery {
     name: string;
+    type?: TTypes,
+    text?: string;
     enum?: {
         [key: string]: {
             label?: string;
             value?: string;
-            type?: 'string' | 'boolean' | 'number'
+            type?: TTypes;
         }
     };
+    required?: boolean;
 }
 export interface IRoute {
     label: string;
@@ -44,7 +49,13 @@ export interface IRoute {
     path?: string;
     params?: Array<IQuery>;
     queries?: Array<IQuery>;
+    body?: Array<IQuery>;
     method?: 'GET' | 'POST' | 'HEAD' | 'OPTIONS' | 'PATCH' | 'PUT' | 'DELETE';
+    statuses?: Array<{
+        code: number;
+        text: string;
+    }>;
+    permissions?: Array<EPermissions>;
 }
 export interface ICategory {
     label?: string;
@@ -52,7 +63,9 @@ export interface ICategory {
     icon?: string;
     description?: string;
     path: string;
-    routes?: Array<IRoute>
+    routes?: Array<IRoute>;
+    permissions?: Array<EPermissions>;
+    version?: 'stable' | 'beta' | 'disabled';
 }
 
 export let categories: Array<ICategory> = [];
@@ -63,6 +76,7 @@ export const descriptors = {
             if (!options.name || categories.find(c => c.name === options.name)) return;
 
             categories = [...categories || [], {
+                version: 'stable',
                 ...options,
                 routes: []
             }];
@@ -78,7 +92,7 @@ export const descriptors = {
                 categories[index].routes = [
                     ...categories[index].routes || [],
                     {
-                        path: `/${propertyKey}`,
+                        path: ``,
                         method: 'GET',
                         ...route
                     }

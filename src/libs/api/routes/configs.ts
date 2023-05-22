@@ -1,6 +1,6 @@
 import $api, { descriptors, categories } from '../';
 
-import { IUser } from './users';
+import { IUser, EPermissions } from './users';
 
 export enum EAccountType {
     Steam = 'steam',
@@ -24,7 +24,16 @@ export interface IConfig {
     createdAt: Date;
 }
 
-@descriptors.addCategory({ label: 'Configs', name: 'configs', icon: 'configs', path: '/configs' })
+@descriptors.addCategory({
+    label: 'Configs',
+    name: 'configs',
+    icon: 'configs',
+    path: '/configs',
+    permissions: [
+        EPermissions.Site
+    ],
+    version: 'beta'
+})
 class Route {
     constructor() {}
 
@@ -33,7 +42,7 @@ class Route {
         return $api.get(`/configs`) as any;
     }
 
-    @descriptors.addRoute('configs', { label: 'Get config', icon: 'settings-alt' })
+    @descriptors.addRoute('configs', { label: 'Get config', icon: 'settings-alt', path: '/:configId' })
     get(configId: string): [IConfig, number, any] {
         return $api.get(`/configs/${configId}`) as any;
     }
@@ -43,12 +52,12 @@ class Route {
         return $api.post(`/configs`, { body }) as any;
     }
 
-    @descriptors.addRoute('configs', { label: 'Enable config', icon: 'settings-check', method: 'PUT' })
+    @descriptors.addRoute('configs', { label: 'Enable config', icon: 'settings-check', path: '/:configId', method: 'PUT' })
     enable(configId: string): [IConfig, number, any] {
         return $api.put(`/configs/${configId}`) as any;
     }
 
-    @descriptors.addRoute('configs', { label: 'Update config', icon: 'pencil', method: 'PATCH' })
+    @descriptors.addRoute('configs', { label: 'Update config', icon: 'pencil', path: '/:configId', method: 'PATCH' })
     update(configId: string, body: IConfig): [IConfig, number, any] {
         return $api.patch(`/configs/${configId}`, { body }) as any;
     }

@@ -84,9 +84,7 @@ import { defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
 
-import Users, { type IUser, EPermissions } from '../../libs/api/routes/users';
-
-import { menu, type IPer } from '../Permissions.vue';
+import Users, { type IUser, EPermissions, listPermissions, type IButtonPermission } from '../../libs/api/routes/users';
 
 export default defineComponent({
     name: 'WindowProfileUser',
@@ -102,9 +100,9 @@ export default defineComponent({
         getLengthChanges(): number {
             return Object.keys(this.changes).length;
         },
-        getUserPermissions(): Array<IPer> {
+        getUserPermissions(): Array<IButtonPermission> {
             let list = this.user.permissions?.filter(per => per !== EPermissions.Self) || [];
-            return menu.filter(p => list.includes(p.value));
+            return listPermissions.filter(p => list.includes(p.value));
         }
     },
     props: {

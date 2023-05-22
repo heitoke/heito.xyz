@@ -13,7 +13,13 @@ export interface ILog {
     createdAt: Date;
 }
 
-@descriptors.addCategory({ label: 'Logs', name: 'logs', icon: 'book', path: '/logs' })
+@descriptors.addCategory({
+    label: 'Logs',
+    name: 'logs',
+    icon: 'book',
+    path: '/logs',
+    version: 'disabled'
+})
 class Route {
     constructor() {}
 }

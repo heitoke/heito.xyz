@@ -182,3 +182,19 @@ export function getCookie(name: string) {
     }
     return null;
 }
+
+
+
+export function copy(content: string) {
+    try {
+        const input = document.createElement('textarea');
+        input.innerHTML = content;
+        document.body.appendChild(input);
+        input.select();
+        const result = document.execCommand('copy');
+        document.body.removeChild(input);
+        return result;
+    } catch (error) {
+        return false;
+    }
+}

@@ -28,22 +28,22 @@ export interface IConfig {
 class Route {
     constructor() {}
 
-    @descriptors.addRoute('configs', { label: 'Get list configs' })
+    @descriptors.addRoute('configs', { label: 'Get list configs', icon: 'configs' })
     list(): [Array<IConfig>, number, any] {
         return $api.get(`/configs`) as any;
     }
 
-    @descriptors.addRoute('configs', { label: 'Get config' })
+    @descriptors.addRoute('configs', { label: 'Get config', icon: 'settings-alt' })
     get(configId: string): [IConfig, number, any] {
         return $api.get(`/configs/${configId}`) as any;
     }
 
-    @descriptors.addRoute('configs', { label: 'Create new config', method: 'POST' })
+    @descriptors.addRoute('configs', { label: 'Create new config', icon: 'settings-plus', method: 'POST' })
     create(body: IConfig): [IConfig, number, any] {
         return $api.post(`/configs`, { body }) as any;
     }
 
-    @descriptors.addRoute('configs', { label: 'Enable config', method: 'PUT' })
+    @descriptors.addRoute('configs', { label: 'Enable config', icon: 'settings-check', method: 'PUT' })
     enable(configId: string): [IConfig, number, any] {
         return $api.put(`/configs/${configId}`) as any;
     }

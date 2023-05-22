@@ -24,7 +24,7 @@ export interface IConfig {
     createdAt: Date;
 }
 
-@descriptors.addCategory({ label: 'Configs', name: 'configs', icon: 'book', path: '/configs' })
+@descriptors.addCategory({ label: 'Configs', name: 'configs', icon: 'configs', path: '/configs' })
 class Route {
     constructor() {}
 

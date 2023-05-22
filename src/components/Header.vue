@@ -33,7 +33,7 @@
                     <div class="data blur" v-if="activities?.list?.length > 0"
                         @click="open($event, 'activities', () => activities.isActive = true, () => activities.isActive = false)"
                     >
-                        <Activity :show-buttons="activities.isActive" :content="activities.list?.find(x => x.id === 'spotify:track') || activities.list[0]"/>
+                        <Activity :show-buttons="activities.isActive" :content="activities.track ? activities.track : activities.list[0]"/>
     
                         <Transition name="fadeHeight">
                             <div class="list" v-if="activities.isActive && activities.list?.length > 1">
@@ -290,6 +290,7 @@ export default defineComponent({
                 buttons: [
                     {
                         label: 'Configs',
+                        icon: 'configs',
                         click: () => {
                             this.createWindow({ component: 'Configs' });
                         }

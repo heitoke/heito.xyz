@@ -8,7 +8,7 @@ export type TPosition = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'fixed-
 export interface IContextMenuButton {
     label: string;
     text?: string;
-    icon?: TIcon;
+    icon?: string;
     color?: string;
     component?: Component;
     separator?: boolean;

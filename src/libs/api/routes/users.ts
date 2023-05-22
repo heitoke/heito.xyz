@@ -44,7 +44,7 @@ export interface IUser {
 
 export type TMargeScopes = 'stats';
 
-@descriptors.addCategory({ label: 'Users', name: 'users', icon: 'user-circle', path: '/users' })
+@descriptors.addCategory({ label: 'Users', name: 'users', icon: 'users', path: '/users' })
 class Route {
     constructor() {}
 
@@ -53,12 +53,12 @@ class Route {
         return $api.get(`/users/me${showTokens ? '?token=true' : ''}`) as any;
     }
 
-    @descriptors.addRoute('users', { label: 'Get list users', path: '' })
+    @descriptors.addRoute('users', { label: 'Get list users', path: '', icon: 'users' })
     list(): [IUser[], number, any] {
         return $api.get('/users') as any;
     }
 
-    @descriptors.addRoute('users', { label: 'User ids', path: '/ids', queries: [{ name: 'limit' }] })
+    @descriptors.addRoute('users', { label: 'User ids', icon: 'id-card', path: '/ids', queries: [{ name: 'limit' }] })
     userIds(limit: number = 500) {
         return $api.fetch(`/users/ids?limit=${limit}`, {});
     }
@@ -73,7 +73,7 @@ class Route {
         return $api.post('/users', { body });
     }
 
-    @descriptors.addRoute('users', { label: 'Merge accounts', path: '/merge', method: 'PUT' })
+    @descriptors.addRoute('users', { label: 'Merge accounts', icon: 'merge', path: '/merge', method: 'PUT' })
     merge(body: { old: string, now: string, select: string, password?: string, scopes: Array<TMargeScopes> }) {
         return $api.put('/users/merge', { body });
     }

@@ -108,7 +108,7 @@ export default defineComponent({
             menu: [
                 { label: 'Steam', icon: 'steam', value: EAccountType.Steam, name: 'User ID' },
                 { label: 'GitHub', icon: 'github', value: EAccountType.GitHub, name: 'Username' },
-                { label: 'Tetr.io', value: EAccountType.Tetr, name: 'Username' }
+                { label: 'Tetr.io', icon: 'tetris-solid', value: EAccountType.Tetr, name: 'Username' }
             ]
         },
         config: {} as IConfig,

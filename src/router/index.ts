@@ -9,7 +9,7 @@ const routes: RouteRecordRaw[] = [
         component: () => import('../pages/Main.vue'),
         meta: {
             title: 'Main',
-            icon: 'search-alt',
+            icon: 'earth',
             description: '',
             hide: ['footer']
         }

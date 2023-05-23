@@ -95,7 +95,7 @@
 
 import NavBar from '../../components/content/NavBar.vue';
 
-import APIRouteData from '../../components/other/APIRouteData.vue';
+import APIRouteData from '../../components/other/api/APIRouteData.vue';
 
 import { listPermissions } from '../../libs/api/routes/users';
 

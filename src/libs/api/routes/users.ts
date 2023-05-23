@@ -94,12 +94,37 @@ export type TMargeScopes = 'stats';
 class Route {
     constructor() {}
 
-    @descriptors.addRoute('users', { label: 'Get Me', icon: 'username', path: '/me', description: 'Learn more about yourself' })
+    @descriptors.addRoute('users', {
+        label: 'Get Me',
+        icon: 'username',
+        path: '/me',
+        description: 'Learn more about yourself',
+        queries: [
+            {
+                name: 'token',
+                type: 'boolean',
+                text: 'Should I show you access and refresh tokens if they have changed?',
+                default: 'false'
+            }
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
     me(showTokens: boolean = false): [IUser, number, any] {
         return $api.get(`/users/me${showTokens ? '?token=true' : ''}`) as any;
     }
 
-    @descriptors.addRoute('users', { label: 'Get list users', icon: 'users' })
+    @descriptors.addRoute('users', {
+        label: 'Get list users',
+        icon: 'users',
+        description: 'Get a list of users (Filters for easy search will appear soon)',
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
     list(): [IUser[], number, any] {
         return $api.get('/users') as any;
     }
@@ -108,21 +133,58 @@ class Route {
         label: 'User ids',
         icon: 'id-card',
         path: '/ids',
-        queries: [{
-            name: 'limit',
-            type: 'number'
-        }]
+        description: 'Shows a list of userIds, needed in order to show the planets on the main page. (May be deleted soon)',
+        queries: [
+            { name: 'skip', type: 'number', default: '0' },
+            { name: 'limit', type: 'number', default: 500 }
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 501, text: 'Server error' }
+        ]
     })
     userIds(limit: number = 500) {
         return $api.get(`/users/ids?limit=${limit}`, {});
     }
 
-    @descriptors.addRoute('users', { label: 'Get user', icon: 'id-card', path: '/:userId' })
+    @descriptors.addRoute('users', {
+        label: 'Get user',
+        icon: 'id-card',
+        path: '/:userId',
+        description: 'Find out information about a specific user',
+        params: [
+            { name: 'userId', text: 'Username, user Id, or mail linked to the user' }
+        ],
+        permissions: [EPermissions.Users],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 404, text: 'Not found' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
     get(userId: string): [IUser, number, any] {
         return $api.get(`/users/${userId}`) as any;
     }
 
-    @descriptors.addRoute('users', { label: 'User authorization', icon: 'hand', method: 'POST' })
+    @descriptors.addRoute('users', {
+        label: 'User authorization',
+        icon: 'hand',
+        method: 'POST',
+        description: 'Log in or register in order not to lose data in the future',
+        body: [
+            { name: 'login', type: 'string', required: true },
+            { name: 'email', type: 'string', required: true },
+            { name: 'password', type: 'string', required: true },
+            { name: 'repeatPassword', type: 'string', required: true },
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 400, text: 'You have not filled in all the required fields' },
+            { code: 401, text: 'Password and repeat password do not match' },
+            { code: 409, text: 'You already registered' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
     create(body: { login: string, email: string, password: string, repeatPassword: string }) {
         return $api.post('/users', { body });
     }
@@ -131,24 +193,22 @@ class Route {
         label: 'Merge accounts',
         icon: 'merge',
         path: '/merge',
+        description: 'Merge two accounts into one and merge their data into a single whole',
         body: [
-            { name: 'old', type: 'string', text: 'User ID' },
-            { name: 'now', type: 'string', text: 'User ID' },
-            { name: 'select', type: 'string', text: 'User ID', required: true },
-            { name: 'password', type: 'string', text: 'User password' },
-            { name: 'scopes', type: 'string', text: 'Scopes' }
-        ],
-        params: [
-            { name: 'username', type: 'string', text: 'User username' }
-        ],
-        queries: [
-            { name: 'type', type: 'string', text: 'Param', enum: { test: { type: 'string' } } }
+            { name: 'old', type: 'string', text: 'UserId', required: true },
+            { name: 'now', type: 'string', text: 'UserId', required: true },
+            { name: 'select', type: 'string', text: 'The User Id that was selected as the main one from old or now', required: true },
+            { name: 'password', type: 'string', text: 'The password from the user who will be the main one in the future (If there is one)' },
+            { name: 'scopes', type: 'array', text: 'Scopes' }
         ],
         statuses: [
             { code: 200, text: 'OK' },
-            { code: 201, text: 'kdkj asdjas kdljasd jasldkjas ldkjasdlj askldjas ' }
+            { code: 400, text: 'You have not filled in all the required fields' },
+            { code: 401, text: 'Not one of the provided users is equal to the select field' },
+            { code: 403, text: 'The password and password repetition do not match' },
+            { code: 404, text: 'One of the two was not found by the user' },
+            { code: 501, text: 'Server error' }
         ],
-        permissions: [EPermissions.Users, EPermissions.Projects],
         method: 'PUT'
     })
     merge(body: { old: string, now: string, select: string, password?: string, scopes: Array<TMargeScopes> }) {
@@ -159,13 +219,28 @@ class Route {
         label: 'Update user account',
         icon: 'pencil',
         path: '/:userId',
-        queries: [{
-            name: 'type',
-            enum: {
-                default: { type: 'string' },
-                person: { type: 'string' }
-            }
-        }],
+        description: 'If you want to change another user, not yourself, then you need the right to change other users (Users permission)',
+        params: [
+            { name: 'userId', text: 'Username, user Id, or mail linked to the user' }
+        ],
+        queries: [
+            { name: 'type', type: 'string', enum: { person: {}, default: {} }, default: 'default' }
+        ],
+        body: [
+            { name: 'private', type: 'boolean', text: '' },
+            { name: 'username', type: 'string', text: '' },
+            { name: 'nickname', type: 'string', text: '' },
+            { name: 'color', type: 'string', text: '' },
+            { name: 'verified', type: 'boolean', text: '', permissions: [EPermissions.Users] },
+            { name: 'permissions', type: 'string', text: '', permissions: [EPermissions.Users] },
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 401, text: 'You don\'t have editing rights' },
+            { code: 404, text: 'There is no such user' },
+            { code: 501, text: 'Server error' }
+        ],
+        permissions: [EPermissions.Users],
         method: 'PATCH'
     })
     update(userId: string, body: IUser, type: 'person' | 'default' = 'default') {

@@ -33,6 +33,7 @@ export interface IQuery {
     name: string;
     type?: TTypes,
     text?: string;
+    default?: any;
     enum?: {
         [key: string]: {
             label?: string;
@@ -40,6 +41,7 @@ export interface IQuery {
             type?: TTypes;
         }
     };
+    permissions?: Array<EPermissions>;
     required?: boolean;
 }
 export interface IRoute {

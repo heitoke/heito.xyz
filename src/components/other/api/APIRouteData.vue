@@ -4,49 +4,19 @@
             <div v-if="route?.params" style="margin: 0 0 12px 0;">
                 <div class="subtitle" @click="hideBlock('params')">Path parameters</div>
 
-                <ul class="queries" v-if="!hide.includes('params')">
-                    <li v-for="query of route?.params" :key="query.name">
-                        <div class="name">
-                            <span>{{ query.name }}</span>
-                            - {{ query?.type }}
-                            <div>Required</div>
-                        </div>
-                        
-                        <div class="text">{{ query?.text }}</div>
-                    </li>
-                </ul>
+                <RouteQueries :queries="route?.params" :all-required="true" v-if="!hide.includes('params')"/>
             </div>
 
-            <div v-if="route?.body" style="margin: 0 0 12px 0;">
+            <div v-if="route?.queries" style="margin: 0 0 12px 0;">
                 <div class="subtitle" @click="hideBlock('queries')">Query parameters</div>
 
-                <ul class="queries" v-if="!hide.includes('queries')">
-                    <li v-for="query of route?.queries" :key="query.name">
-                        <div class="name">
-                            <span>{{ query.name }}</span>
-                            - {{ query?.type }}
-                            <div v-if="query?.required">Required</div>
-                        </div>
-                        
-                        <div class="text">{{ query?.text }}</div>
-                    </li>
-                </ul>
+                <RouteQueries :queries="route?.queries" v-if="!hide.includes('queries')"/>
             </div>
 
             <div v-if="route?.body">
                 <div class="subtitle" @click="hideBlock('body')">Body</div>
 
-                <ul class="queries" v-if="!hide.includes('body')">
-                    <li v-for="query of route?.body" :key="query.name">
-                        <div class="name">
-                            <span>{{ query.name }}</span>
-                            - {{ query?.type }}
-                            <div v-if="query?.required">Required</div>
-                        </div>
-                        
-                        <div class="text">{{ query?.text }}</div>
-                    </li>
-                </ul>
+                <RouteQueries :queries="route?.body" v-if="!hide.includes('body')"/>
             </div>
         </div>
 
@@ -54,7 +24,7 @@
             <div v-if="route?.statuses" style="margin: 0 0 12px 0;">
                 <div class="subtitle" @click="hideBlock('statuses')">Status codes</div>
 
-                <ul class="queries" v-if="!hide.includes('statuses')">
+                <ul class="statuses" v-if="!hide.includes('statuses')">
                     <li v-for="status of route.statuses" :key="status.code">
                         <div class="code">{{ status.code }}</div>
                         <div class="text">{{ status.text }}</div>
@@ -78,14 +48,20 @@
     </div>
 </template>
 
+<script lang="ts" setup>
+
+import RouteQueries from './RouteQueries.vue';
+
+</script>
+
 <script lang="ts">
 
 import { defineComponent, PropType } from 'vue';
 
 import { mapActions } from 'vuex';
 
-import type { ICategory, IRoute } from '../../libs/api';
-import { listPermissions } from '../../libs/api/routes/users';
+import type { ICategory, IRoute } from '../../../libs/api';
+import { listPermissions } from '../../../libs/api/routes/users';
 
 export default defineComponent({
     name: 'APIRouteData',
@@ -126,7 +102,7 @@ export default defineComponent({
         user-select: none;
     }
 
-    ul.queries {
+    .statuses {
         padding: 12px;
         border-radius: 5px;
         border: 1px solid var(--background-secondary);
@@ -155,27 +131,36 @@ export default defineComponent({
                 color: var(--text-secondary);
                 font-size: 13px;
             }
+        }
 
-            .name {
+        ul.permissions {
+            display: flex;
+            margin: 8px 0 0 0;
+            align-items: center;
+            flex-wrap: wrap;
+
+            li {
                 display: flex;
+                margin: 0 8px 0 0;
+                padding: 6px 12px;
+                position: relative;
                 color: var(--text-secondary);
+                border-radius: 5px;
+                border: 1px solid var(--background-secondary);
                 align-items: center;
+                user-select: none;
+
+                &:last-child {
+                    margin: 0;
+                }
+
+                i {
+                    margin: 0 8px 0 0;
+                    font-size: 14px;
+                }
 
                 span {
-                    margin: 0 4px 0 0;
-                    color: var(--text-primary);
-                    font-weight: 700;
-                }
-            
-                div {
-                    margin: 0 0 0 8px;
-                    padding: 4px 8px;
-                    color: var(--yellow);
-                    font-size: 10px;
-                    font-weight: 700;
-                    text-transform: uppercase;
-                    border-radius: 5px;
-                    background-color: var(--yellow-alpha);
+                    font-size: 12px;
                 }
             }
         }

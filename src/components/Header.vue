@@ -275,7 +275,9 @@ export default defineComponent({
                             click: () => {
                                 this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
                             }
-                        },
+                        }
+                    ] : []),
+                    ...(this.getUser?.isRegistered ? [
                         { separator: true },
                         {
                             label: this.getLang.global.exit[1],

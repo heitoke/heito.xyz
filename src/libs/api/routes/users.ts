@@ -171,29 +171,6 @@ class Route {
     }
 
     @descriptors.addRoute('users', {
-        label: 'User authorization',
-        icon: 'hand',
-        method: 'POST',
-        description: 'Log in or register in order not to lose data in the future',
-        body: [
-            { name: 'login', type: 'string', required: true },
-            { name: 'email', type: 'string', required: true },
-            { name: 'password', type: 'string', required: true },
-            { name: 'repeatPassword', type: 'string', required: true },
-        ],
-        statuses: [
-            { code: 200, text: 'OK' },
-            { code: 400, text: 'You have not filled in all the required fields' },
-            { code: 401, text: 'Password and repeat password do not match' },
-            { code: 409, text: 'You already registered' },
-            { code: 501, text: 'Server error' }
-        ]
-    })
-    create(body: { login: string, email: string, password: string, repeatPassword: string }) {
-        return $api.post('/users', { body });
-    }
-
-    @descriptors.addRoute('users', {
         label: 'Merge accounts',
         icon: 'merge',
         path: '/merge',

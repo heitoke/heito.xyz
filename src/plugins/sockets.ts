@@ -37,7 +37,7 @@ const plugin: Plugin = {
             
         }
         
-        let cookies = parse(document.cookie);
+        const cookies = parse(document.cookie);
         
         const socket: TSocket = io(options.connection, {
             reconnection: true,
@@ -45,7 +45,7 @@ const plugin: Plugin = {
             reconnectionDelay: 3000,
             ...options.options,
             auth: {
-                token: cookies?.HX_AT
+                token: cookies?.HX_AT || cookies?.HX_GUAST || ''
             }
         });
 

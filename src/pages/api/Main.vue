@@ -114,7 +114,7 @@ import Logs from '../../libs/api/routes/logs';
 import Configs from '../../libs/api/routes/configs';
 import Blogs from '../../libs/api/routes/blogs';
 import Projects from '../../libs/api/routes/projects';
-import { title } from 'process';
+import Auth from '../../libs/api/routes/auth';
 
 interface Route extends IRoute {
     open: boolean;
@@ -171,7 +171,7 @@ export default defineComponent({
         ...mapActions(['setToolpic'])
     },
     mounted() {
-        console.log(Logs, Configs, Projects, Blogs);
+        console.log(Auth, Logs, Configs, Projects, Blogs);
     }
 });
 

@@ -23,9 +23,7 @@
                 @input="repeatPassword = $event?.target?.value"
             />
     
-            <Button @click="type === 'login' ? null : create()"
-                :disabled="getValid"
-            >
+            <Button @click="auth()" :disabled="getValid">
                 {{ type === 'login' ? getLang.global.sign.in : getLang.user.create.title[1] }}
             </Button>
 
@@ -44,7 +42,8 @@ import { PropType, defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
 
-import Users from '../../libs/api/routes/users';
+import Auth from '../../libs/api/routes/auth';
+import { setCookie } from '../../libs/functions';
 
 export default defineComponent({
     name: 'WindowCreateAccount',
@@ -66,11 +65,11 @@ export default defineComponent({
             type: Function,
             default: () => 1
         },
-        data: { type: String },
+        data: { type: String as PropType<'login' | 'register'> },
         refCode: { type: String, default: '' }
     },
     data: () => ({
-        type: 'login',
+        type: 'login' as 'login' | 'register',
         login: '',
         email: '',
         password: '',
@@ -102,7 +101,7 @@ export default defineComponent({
         isValid(key: string) {
             return !key || key.trim() === '';
         },
-        async create() {
+        async auth() {
             if (this.getValid) {
                 return this.pushNotification({
                     title: 'Missing fields',
@@ -112,9 +111,12 @@ export default defineComponent({
                 });
             }
 
-            let [newUser, status] = await Users.create({ login: this.login, email: this.email, password: this.password, repeatPassword: this.repeatPassword });
+            let [newUser, status, props] = await Auth[this.type]({ login: this.login, email: this.email, password: this.password, repeatPassword: this.repeatPassword });
 
             if (status !== 200) return;
+
+            if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, 365);
+            if (props?.token?.access) setCookie('HX_AT', props?.token?.access, 7);
 
             this.setUser(newUser);
 

@@ -1,3 +1,5 @@
+import { getCookie, setCookie } from '../functions';
+
 import { EPermissions } from './routes/users';
 
 export type TMethod = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
@@ -12,20 +14,6 @@ export interface IFetch {
         [key: string | symbol]: string;
     };
     token?: string;
-}
-
-function getCookie(name: string) {
-    let nameEQ = name + '=',
-        ca = document.cookie.split(';');
-
-    for (let i = 0; i < ca.length; i++) {
-        let c = ca[i];
-        
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-    }
-    return null;
 }
 
 type TTypes = 'string' | 'boolean' | 'number' | string;
@@ -117,7 +105,7 @@ export default {
     getAccessToken() {
         try {
             if (window) {
-                return getCookie('HX_AT') || '';
+                return getCookie('HX_AT') || getCookie('HX_GUAST') || '';
             }
         } catch (err) {
             return '';
@@ -136,6 +124,8 @@ export default {
             res = await fetch(this.getDomain() + (uri[0] !== '/' ? `/${uri}` : uri), options),
             result = await res.json(),
             props = { ...result };
+
+        if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, 365);
 
         delete props['result'];
 

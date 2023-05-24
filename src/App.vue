@@ -46,6 +46,8 @@ import { mapGetters, mapActions } from 'vuex';
 import { addAlpha, setCookie, getCookie } from './libs/functions';
 
 import Users from './libs/api/routes/users';
+import Auth from './libs/api/routes/auth';
+import { IMessage } from './windows/Message.vue';
 
 export default defineComponent({
     name: 'App',
@@ -71,7 +73,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel', 'createWindow']),
+        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel', 'createWindow', 'removeWindow']),
         setEffects() {
             let html = document.querySelector('html'),
                 style = document.documentElement.style;
@@ -106,8 +108,51 @@ export default defineComponent({
         async initUser() {
             let [user, _, props] = await Users.me(true);
             
+            if (props?.confirmation?.userId) {
+                let password = '';
+
+                this.createWindow({
+                    component: 'Message',
+                    close: false,
+                    data: {
+                        title: 'Account confirmation',
+                        text: 'Enter the password of the account that was previously authorized',
+                        components: [
+                            {
+                                name: 'password',
+                                component: 'Textbox',
+                                props: {
+                                    label: 'Password',
+                                    type: 'password'
+                                },
+                                events: {
+                                    input: (e: MouseEvent) => {
+                                        password = (e.target as any)?.value as string;
+                                    }
+                                }
+                            }
+                        ],
+                        buttons: [
+                            {
+                                label: 'Confirm',
+                                color: 'var(--green)',
+                                click: async (e: MouseEvent, data: any, windowId: number) => {
+                                    const [user, status] = await Auth.login({ login: props?.confirmation?.userId, password });
+
+                                    if (status !== 200) return;
+                                    
+                                    this.removeWindow(windowId);
+                                }
+                            }
+                        ]
+                    } as IMessage
+                });
+                return;
+            }
+
             if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, 365);
             if (props?.token?.access) setCookie('HX_AT', props?.token?.access, 7);
+            if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, 365);
 
             if (props?.merge) {
                 this.createWindow({

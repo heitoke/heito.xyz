@@ -28,18 +28,22 @@
                     </ul>
                 </Transition>
             </div>
+
             <div :class="['activities', { active: activities.isActive }]" ref="activities">
                 <Transition name="activities">
                     <div class="data blur" v-if="activities?.list?.length > 0"
                         @click="open($event, 'activities', () => activities.isActive = true, () => activities.isActive = false)"
                     >
-                        <Activity :show-buttons="activities.isActive" :content="activities.track ? activities.track : activities.list[0]"/>
+                        <Activity :show-buttons="activities.isActive" :content="{
+                            ...(activities.track?.id ? activities.track : activities.list[0]),
+                            type: activities.isActive ? 'default' : 'mini'
+                        }"/>
     
                         <Transition name="fadeHeight">
                             <div class="list" v-if="activities.isActive && activities.list?.length > 1">
                                 <ScrollBar :max-height="'256px'">
                                     <div>
-                                        <Activity v-for="(activity, idx) in activities.list.slice(activities.track ? 0 : 1)" :key="idx" :show-buttons="true"
+                                        <Activity v-for="(activity, idx) in activities.list.slice(activities.track?.id ? 0 : 1)" :key="idx" :show-buttons="true"
                                             :content="activity"
                                         />
                                     </div>
@@ -354,6 +358,7 @@ export default defineComponent({
         },
         'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr', [key: string]: any }>) {
             this.activities.list = [];
+
             for (let active of activitiesList) {
                 let activity: IContent = { name: 'Activity', type: 'default' };
 

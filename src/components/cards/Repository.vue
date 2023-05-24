@@ -220,6 +220,10 @@ export default defineComponent({
         align-items: center;
         overflow-y: hidden;
 
+        &::-webkit-scrollbar {
+            display: none;
+        }
+
         li {
             margin: 0 8px 0 0;
             padding: 4px 8px;

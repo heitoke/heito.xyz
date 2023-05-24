@@ -40,7 +40,7 @@ export interface IQuery {
             value?: string;
             type?: TTypes;
         }
-    };
+    } | Array<string>;
     permissions?: Array<EPermissions>;
     required?: boolean;
 }

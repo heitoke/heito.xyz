@@ -120,6 +120,10 @@ export default defineComponent({
     position: relative;
     overflow-y: hidden;
 
+    &::-webkit-scrollbar {
+        display: none;
+    }
+
     &.vertical {
         width: 100%;
 

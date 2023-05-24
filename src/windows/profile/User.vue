@@ -11,6 +11,10 @@
                         <Icon name="eye-hide"/>
                         <span>Private</span>
                     </li>
+                    <li v-show="user.isDeleted">
+                        <Icon name="trash"/>
+                        <span>Deleted</span>
+                    </li>
                     <li class="permissions" v-show="getUserPermissions?.length > 0" style="cursor: pointer;"
                         @click="setContextMenu({
                             name: 'window:user:settings',
@@ -70,7 +74,7 @@
 
 <script lang="ts" setup>
 
-import { getAvatar } from '../../libs/functions';
+import { copy, getAvatar } from '../../libs/functions';
 
 // import NavBar, { IButton } from '../../components/content/NavBar.vue';
 
@@ -352,7 +356,10 @@ export default defineComponent({
                     ...(this.getUser?._id === this.user?._id || this.isAdmin ? [this.buttonUserSettings(), { separator: true }] : []),
                     {
                         label: 'Copy User ID',
-                        icon: 'user-circle'
+                        icon: 'user-circle',
+                        click: () => {
+                            copy(this.user?._id);
+                        }
                     }
                 ]
             });

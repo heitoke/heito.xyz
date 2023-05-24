@@ -50,7 +50,7 @@ const focusObj: { is: boolean; pos: THREE.Vector3, cb?: Function } = {
     pos: new THREE.Vector3()
 };
 
-let users: Array<{ _id: string, color: string }> = [];
+let users: Array<IUser> = [];
 
 const bloomParams = {
     exposure: 1,
@@ -60,11 +60,11 @@ const bloomParams = {
 };
 
 onMounted(async () => {
-    let [listUsers, status] = await Users.userIds();
+    let [listUsers, status] = await Users.list({ limit: 500, fields: ['_id', 'color'] });
         
     if (status !== 200) return;
     
-    users = listUsers;
+    users = listUsers.results;
     
     initRenderer();
     initControls();
@@ -192,7 +192,7 @@ scene.add(parts);
 //     return model;
 // }
 
-async function getCorePlanet(user: { _id: string, color: string }) {
+async function getCorePlanet(user: IUser) {
     let id = user._id.slice(4),
         idNumbers = id.split('').reverse().join('').match(/\d+/g)?.join(''),
         idStrings = id.match(/[a-zA-Z]/g)?.join('');
@@ -268,7 +268,7 @@ async function getCorePlanet(user: { _id: string, color: string }) {
         return planet;
     }
 }
-function getTrashPlanet(user: { _id: string, color: string }) {
+function getTrashPlanet(user: IUser) {
     let id = user._id.slice(4),
         idNumbers = id.split('').reverse().join('').match(/\d+/g)?.join(''),
         n = (index: number) => Number(idNumbers![index]) || 0;

@@ -14,7 +14,7 @@
             </div>
 
             <div v-if="route?.body">
-                <div class="subtitle" @click="hideBlock('body')">Body</div>
+                <div class="subtitle" @click="hideBlock('body')">Body [JSON]</div>
 
                 <RouteQueries :queries="route?.body" v-if="!hide.includes('body')"/>
             </div>
@@ -91,7 +91,8 @@ export default defineComponent({
 
 .api-route-data {
     display: grid;
-    grid-template-columns: 1fr 1fr;
+    position: relative;
+    grid-template-columns: 50% 50%;
 
     .subtitle {
         cursor: pointer;

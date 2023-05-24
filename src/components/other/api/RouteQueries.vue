@@ -10,14 +10,15 @@
             <div v-if="Object.keys(query?.enum || {})?.length > 0">
                 <div class="subtitle">Enum</div>
 
-                <ol class="enum" v-if="Object.keys(query?.enum || {})?.length > 0">
+                <NavBar :menu="(Array.isArray(query?.enum) ? query?.enum : Object.keys(query?.enum!)).map(x => ({ label: x }))"/>
 
-                    <li v-for="e of Object.keys(query?.enum!)">
+                <!-- <ol class="enum" v-if="Object.keys(query?.enum || {})?.length > 0">
+                    <li v-for="e of ((query?.enum?.length as any) > 0 ? query?.enum : Object.keys(query?.enum!))">
                         <div class="name">
                             <span>{{ e }}</span>
                         </div>
                     </li>
-                </ol>
+                </ol> -->
             </div>
 
             <div class="default" v-if="query?.default">{{ query.default }}</div>
@@ -48,9 +49,10 @@ import { mapActions } from 'vuex';
 
 import type { ICategory, IQuery, IRoute } from '../../../libs/api';
 import { listPermissions } from '../../../libs/api/routes/users';
+import NavBar from '../../content/NavBar.vue';
 
 export default defineComponent({
-    name: 'RouteQueries',
+    name: "RouteQueries",
     computed: {},
     props: {
         queries: {
@@ -68,9 +70,10 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['setToolpic'])
+        ...mapActions(["setToolpic"])
     },
-    mounted() {}
+    mounted() { },
+    components: { NavBar }
 });
 
 </script>
@@ -144,6 +147,15 @@ export default defineComponent({
                 content: "Default: ";
                 color: var(--text-secondary);
                 font-size: 12px;
+            }
+        }
+
+        :deep(.nav-bar) {
+            padding: 2px 0;
+
+            div {
+                border: 1px solid var(--background-secondary);
+                background-color: var(--T);
             }
         }
 

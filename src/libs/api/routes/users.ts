@@ -78,11 +78,24 @@ export interface IUser {
         refresh: string;
         access: string;
     };
+    isDeleted?: boolean;
     updatedAt?: Date;
     createdAt?: Date;
 }
 
 export type TMargeScopes = 'stats';
+
+export interface IUserFilters {
+    skip?: number;
+    limit?: number;
+    fields?: Array<string>;
+    by?: Array<string>;
+    text?: string;
+    sort?: 'date' | 'name';
+    order?: boolean;
+}
+
+const enumForBy = ['_id', 'private', 'isRegistered', 'username', 'nickname', 'color', 'verified', 'permissions', 'isDeleted', 'updatedAt', 'createdAt'];
 
 @descriptors.addCategory({
     label: 'Users',
@@ -120,31 +133,22 @@ class Route {
         label: 'Get list users',
         icon: 'users',
         description: 'Get a list of users (Filters for easy search will appear soon)',
-        statuses: [
-            { code: 200, text: 'OK' },
-            { code: 501, text: 'Server error' }
-        ]
-    })
-    list(): [IUser[], number, any] {
-        return $api.get('/users') as any;
-    }
-
-    @descriptors.addRoute('users', {
-        label: 'User ids',
-        icon: 'id-card',
-        path: '/ids',
-        description: 'Shows a list of userIds, needed in order to show the planets on the main page. (May be deleted soon)',
         queries: [
-            { name: 'skip', type: 'number', default: '0' },
-            { name: 'limit', type: 'number', default: 500 }
+            { name: 'skip', type: 'number', text: '', default: '0' },
+            { name: 'limit', type: 'number', text: '', default: '16' },
+            { name: 'fields', type: 'string', text: '', enum: enumForBy },
+            { name: 'by', type: 'string', text: '', default: 'username,nickname', enum: enumForBy },
+            { name: 'text', type: 'string', text: '' },
+            { name: 'sort', type: 'string', text: '', default: 'date', enum: { date: {}, name: {} } },
+            { name: 'order', type: 'boolean', text: '', default: true }
         ],
         statuses: [
             { code: 200, text: 'OK' },
             { code: 501, text: 'Server error' }
         ]
     })
-    userIds(limit: number = 500) {
-        return $api.get(`/users/ids?limit=${limit}`, {});
+    list({ skip = 0, limit = 16, fields = [], by = ['username', 'nickname'], text = '', sort = 'date', order = true }: IUserFilters = {}): [{ count: number, results: IUser[] }, number, any] {
+        return $api.get(`/users?skip=${skip || 0}&limit=${limit || 0}&fields=${fields.join(',')}&by=${by.join(',')}&text=${text || ''}&sort=${sort || 'date'}&order=${order}`) as any;
     }
 
     @descriptors.addRoute('users', {

@@ -64,7 +64,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel', 'createWindow', 'removeWindow']),
+        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel']),
         setEffects() {
             let html = document.querySelector('html'),
                 style = document.documentElement.style;
@@ -108,7 +108,7 @@ export default defineComponent({
             if (props?.confirmation?.userId) {
                 let password = '';
 
-                this.createWindow({
+                this.$windows.create({
                     component: 'Message',
                     close: false,
                     data: {
@@ -138,7 +138,7 @@ export default defineComponent({
 
                                     if (status !== 200) return;
                                     
-                                    this.removeWindow(windowId);
+                                    this.$windows.close(windowId);
                                 }
                             },
                             {
@@ -155,7 +155,7 @@ export default defineComponent({
 
                                     this.setUser(user);
 
-                                    this.removeWindow(windowId);
+                                    this.$windows.close(windowId);
                                 }
                             }
                         ]
@@ -167,7 +167,7 @@ export default defineComponent({
             setTokens(props);
 
             if (props?.merge) {
-                this.createWindow({
+                this.$windows.create({
                     component: 'Merge',
                     close: false,
                     data: props.merge

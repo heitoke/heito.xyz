@@ -116,7 +116,7 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['createWindow', 'removeWindow', 'setToolpic', 'setContextMenu']),
+        ...mapActions(['setToolpic', 'setContextMenu']),
         async loadConfig(configId: string) {
             const [result, status] = await Configs.get(configId);
 
@@ -161,13 +161,13 @@ export default defineComponent({
                         click: (e: MouseEvent, data: IMessage, windowId: number) => {
                             this.config.accounts = [...this.config.accounts || [], newAccount];
 
-                            this.removeWindow(windowId);
+                            this.$windows.close(windowId);
                         }
                     }
                 ]
             };
 
-            this.createWindow({ component: 'Message', data });
+            this.$windows.create({ component: 'Message', data });
         }
     },
     async mounted() {

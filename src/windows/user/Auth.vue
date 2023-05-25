@@ -98,7 +98,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setUser', 'createWindow']),
+        ...mapActions(['setUser']),
         isValid(key: string) {
             return !key || key.trim() === '';
         },
@@ -133,7 +133,7 @@ export default defineComponent({
 
 
             if (props?.merge) {
-                this.createWindow({
+                this.$windows.create({
                     component: 'Merge',
                     close: false,
                     data: {

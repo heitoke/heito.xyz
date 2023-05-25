@@ -26,7 +26,7 @@ import { mapGetters } from 'vuex';
 export default defineComponent({
     name: 'MainScrollBar',
     computed: {
-        ...mapGetters(['getScrollY', 'getWinHeight']),
+        ...mapGetters(['getWinHeight']),
         scrollHeight(): number {
             if (this.show) {
                 let el = (this.$el as Element).querySelector('[scrollbar-block]');

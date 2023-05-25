@@ -1,4 +1,4 @@
-import { App, Plugin, Ref, reactive, ref } from "vue";
+import { App, Plugin, reactive } from "vue";
 
 type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
@@ -70,11 +70,11 @@ export class Notifications implements INotifications {
     }
 
     remove(notificationId: number) {
-        const notifIndex = this.list.findIndex(notification => notification.id === notificationId);
+        const notificationIndex = this.list.findIndex(notification => notification.id === notificationId);
 
-        if (notifIndex < 0) return;
+        if (notificationIndex < 0) return;
 
-        delete this.list[notifIndex];
+        this.list.splice(notificationIndex, 1);
     }
 }
 

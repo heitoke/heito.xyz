@@ -105,13 +105,13 @@
             <div :class="['account', { active: menu }]" ref="account">
                 <div class="data blur">
                     <div class="header" :style="{ '--color': getUser?.color || 'var(--main-color)' }"
-                        @click="menu ? createWindow({ component: 'User', data: getUser?._id }) : false"
+                        @click="menu ? $windows.create({ component: 'User', data: getUser?._id }) : false"
                     >
                         <Transition name="account-username">
                             <div class="username" v-show="menu">{{ getUser?.nickname || getUser?.username || getUser?._id || 'Guest' }}</div>
                         </Transition>
                         <div class="avatar"
-                            @click.prevent.stop="menu ? createWindow({ component: 'User', data: getUser?._id }) : open($event, 'account', () => menu = true, () => menu = false)"
+                            @click.prevent.stop="menu ? $windows.create({ component: 'User', data: getUser?._id }) : open($event, 'account', () => menu = true, () => menu = false)"
                         >
                             <div :style="{ '--avatar': `url('${getAvatar({ nameId: getUser?._id })}')` }"></div>
                         </div>
@@ -222,7 +222,7 @@ export default defineComponent({
                         label: this.getLang.global.settings,
                         icon: 'settings',
                         click: () => {
-                            this.createWindow({ title: 'Setting', component: 'Setting' });
+                            this.$windows.create({ title: 'Setting', component: 'Setting' });
                         }
                     },
                     {
@@ -263,7 +263,7 @@ export default defineComponent({
                         label: 'Sessions',
                         icon: 'users',
                         click: () => {
-                            this.createWindow({
+                            this.$windows.create({
                                 component: 'Sessions',
                                 data: {
                                     userId: this.getUser?._id,
@@ -278,14 +278,14 @@ export default defineComponent({
                             label: this.getLang.global.sign.in,
                             icon: 'hand',
                             click: () => {
-                                this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth' });
+                                this.$windows.create({ title: this.getLang.user.create.title[0], component: 'Auth' });
                             }
                         },
                         {
                             label: this.getLang.user.create.title[0],
                             icon: 'user-circle',
                             click: () => {
-                                this.createWindow({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
+                                this.$windows.create({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
                             }
                         }
                     ] : []),
@@ -321,7 +321,7 @@ export default defineComponent({
                         label: 'Configs',
                         icon: 'configs',
                         click: () => {
-                            this.createWindow({ component: 'Configs' });
+                            this.$windows.create({ component: 'Configs' });
                         }
                     }
                 ]
@@ -470,7 +470,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow', 'sendBroadcastMessage', 'setContextMenu', 'setUser']),
+        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'sendBroadcastMessage', 'setContextMenu', 'setUser']),
         log(e: any) {
             console.log(e);
         },

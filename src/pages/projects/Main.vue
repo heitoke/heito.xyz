@@ -47,7 +47,7 @@
 
             <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'projects'">
                 <Project v-for="(project, idx) in projects" :key="idx" :project="project"
-                    @click="createWindow({ title: `Project ${project.title}`, component: 'Project' });"
+                    @click="$windows.create({ title: `Project ${project.title}`, component: 'Project' });"
                     :style="{ 'transition-delay': `${.05 * idx}s` }"
                 />
             </TransitionGroup>
@@ -75,8 +75,6 @@ import NavBar from '../../components/content/NavBar.vue';
 <script lang="ts">
 
 import { PropType, defineComponent } from 'vue';
-
-import { mapActions } from 'vuex';
 
 export default defineComponent({
     name: 'ProjectsPage',
@@ -142,7 +140,6 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['createWindow']),
         async loadRepos(page: number = 1) {
             this.loading = true;
 

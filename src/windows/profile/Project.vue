@@ -69,7 +69,7 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['setContextMenu', 'addWindowButtons'])
+        ...mapActions(['setContextMenu'])
     },
     mounted() {
     }

@@ -38,8 +38,6 @@ import { colors, time, device, type INameIcon } from '../../libs/utils';
 
 import { PropType, defineComponent } from 'vue';
 
-import { mapActions, mapGetters } from 'vuex';
-
 import Auth, { type ISession } from '../../libs/api/routes/auth';
 
 interface Session extends ISession {
@@ -52,9 +50,7 @@ interface Session extends ISession {
 export default defineComponent({
     name: 'WindowSessions',
     components: {},
-    computed: {
-        ...mapGetters([]),
-    },
+    computed: {},
     props: {
         windowId: { type: Number },
         closeWindow: {
@@ -68,7 +64,6 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['createWindow', 'removeWindow']),
         async loadSessions() {
             const [sessions, status] = await Auth.sessions();
 
@@ -84,7 +79,7 @@ export default defineComponent({
             });
         },
         openSession(sessionId: string) {
-            this.createWindow({
+            this.$windows.create({
                 component: 'Session',
                 data: {
                     sessionId,

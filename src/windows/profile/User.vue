@@ -132,46 +132,38 @@ export default defineComponent({
     watch: {
         'getLengthChanges'(newValue, oldValue) {
             if (oldValue < 1 && newValue > 0) {
-                this.addWindowButtons({
-                    windowId: this.windowId,
-                    buttons: [
-                        {
-                            id: 1,
-                            label: 'Back',
-                            icon: 'clock-alt',
-                            color: 'var(--red)',
-                            click: () => {
-                                this.changes = {} as IUser;
-                            }
-                        },
-                        {
-                            id: 2,
-                            label: 'Save changes',
-                            icon: 'quill',
-                            color: 'var(--green)',
-                            click: async () => {
-                                let [result, status] = await Users.update(this.selfUser?._id, this.changes);
-
-                                if (status !== 200) return;
-
-                                this.selfUser = this.user;
-                                this.changes = {} as IUser;
-
-                                if (this.selfUser?._id === this.getUser._id) this.setUser(this.selfUser);
-                            }
+                this.$windows.addButtons(this.windowId!, [
+                    {
+                        label: 'Back',
+                        icon: 'clock-alt',
+                        color: 'var(--red)',
+                        click: () => {
+                            this.changes = {} as IUser;
                         }
-                    ]
-                });
+                    },
+                    {
+                        label: 'Save changes',
+                        icon: 'quill',
+                        color: 'var(--green)',
+                        click: async () => {
+                            let [result, status] = await Users.update(this.selfUser?._id, this.changes);
+
+                            if (status !== 200) return;
+
+                            this.selfUser = this.user;
+                            this.changes = {} as IUser;
+
+                            if (this.selfUser?._id === this.getUser._id) this.setUser(this.selfUser);
+                        }
+                    }
+                ]);
             } else if (newValue < 1) {
-                this.removeWindowButtons({
-                    windowId: this.windowId,
-                    buttonIds: [1, 2]
-                });
+                this.$windows.removeButtons(this.windowId!, [2, 3]);
             }
         }
     },
     methods: {
-        ...mapActions(['createWindow', 'addWindowButtons', 'removeWindowButtons', 'setContextMenu', 'removeWindow', 'setUser']),
+        ...mapActions(['setContextMenu', 'setUser']),
         buttonAdmin() {
             return [
                 { separator: true },
@@ -186,12 +178,12 @@ export default defineComponent({
                                 label: 'Permissions',
                                 icon: 'clubs',
                                 click: () => {
-                                    this.createWindow({ component: 'Permissions', data: {
+                                    this.$windows.create({ component: 'Permissions', data: {
                                         list: this.user.permissions,
                                         save: (permissons: Array<EPermissions>, windowId: number) => {
                                             this.changes['permissions'] = permissons;
 
-                                            this.removeWindow(windowId)
+                                            this.$windows.close(windowId)
                                         }
                                     } });
                                 }
@@ -214,7 +206,7 @@ export default defineComponent({
                 label: 'Nickname',
                 icon: 'id-card',
                 click: () => {
-                    this.createWindow({
+                    this.$windows.create({
                         component: 'Message',
                         data: {
                             title: 'Change nickname',
@@ -237,7 +229,7 @@ export default defineComponent({
                                 {
                                     label: 'Submit',
                                     click: (e: MouseEvent, data: any, windowId: number) => {
-                                        this.removeWindow(windowId);
+                                        this.$windows.close(windowId);
                                     }
                                 }
                             ]
@@ -250,7 +242,7 @@ export default defineComponent({
                 label: 'Username',
                 icon: 'username',
                 click: () => {
-                    this.createWindow({
+                    this.$windows.create({
                         component: 'Message',
                         data: {
                             title: 'Change username',
@@ -273,7 +265,7 @@ export default defineComponent({
                                 {
                                     label: 'Submit',
                                     click: (e: MouseEvent, data: any, windowId: number) => {
-                                        this.removeWindow(windowId);
+                                        this.$windows.close(windowId);
                                     }
                                 }
                             ]
@@ -288,7 +280,7 @@ export default defineComponent({
                 icon: 'colors',
                 color: this.user.color,
                 click: () => {
-                    this.createWindow({
+                    this.$windows.create({
                         component: 'Message',
                         data: {
                             title: 'Change user color',
@@ -313,7 +305,7 @@ export default defineComponent({
                                 {
                                     label: 'Submit',
                                     click: (e: MouseEvent, data: any, windowId: number) => {
-                                        this.removeWindow(windowId);
+                                        this.$windows.close(windowId);
                                     }
                                 }
                             ]
@@ -364,19 +356,15 @@ export default defineComponent({
                 ]
             });
 
-            this.addWindowButtons({
-                windowId: this.windowId,
-                buttons: [
-                    {
-                        id: 0,
-                        label: 'Settings',
-                        icon: 'ellipsis',
-                        click: (e: Event) => {
-                            contextMenuUserSettings(e);
-                        }
+            this.$windows.addButtons(this.windowId!, [
+                {
+                    label: 'Settings',
+                    icon: 'ellipsis',
+                    click: (e: Event) => {
+                        contextMenuUserSettings(e);
                     }
-                ]
-            });
+                }
+            ]);
         },
         async loadUser(userId: string) {
             let [result, status] = await Users.get(userId);

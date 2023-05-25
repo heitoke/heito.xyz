@@ -36,7 +36,7 @@
 
                         <div class="user" :style="{ 'background-image': `url(${getAvatar({ nameId: config.user?._id })})` }"
                             @mouseenter="setToolpic({ text: config?.user?.nickname || config?.user?.username || config?.user?._id })"
-                            @click="createWindow({ component: 'User', data: config?.user?._id })"
+                            @click="$windows.create({ component: 'User', data: config?.user?._id })"
                         ></div>
 
                         <div class="l"></div>
@@ -93,7 +93,7 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['createWindow', 'removeWindow', 'setToolpic', 'setContextMenu']),
+        ...mapActions(['setToolpic', 'setContextMenu']),
         async create() {
             const body = <IConfig>{};
 
@@ -128,7 +128,7 @@ export default defineComponent({
                 ]
             };
 
-            this.createWindow({
+            this.$windows.create({
                 component: 'Message',
                 data
             });
@@ -147,7 +147,7 @@ export default defineComponent({
 
             if (configIndex < 0) return;
             
-            this.createWindow({
+            this.$windows.create({
                 component: 'ChangeConfig',
                 data: {
                     id: this.configs[configIndex]._id,
@@ -158,7 +158,7 @@ export default defineComponent({
 
                         this.configs[configIndex] = newConfig;
 
-                        this.removeWindow(windowId);
+                        this.$windows.close(windowId);
                     }
                 }
             });

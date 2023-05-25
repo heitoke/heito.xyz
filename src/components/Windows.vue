@@ -1,12 +1,15 @@
 <template>
     <div class="windows">
         <TransitionGroup name="window">
-            <div :class="['window', window.position]" v-for="window of (getListWindows as IWindow[])" :key="window.id" v-show="!window.hide">
-                <div class="bg" @click="window?.close ? removeWindow(window.id) : null"></div>
+            <div v-for="window of $windows.list" :key="window?.id"
+                v-show="!window?.hide"
+                :class="['window', window?.position]" 
+            >
+                <div class="bg" @click="window?.close ? $windows.close(window?.id!) : null"></div>
                 <div class="blur">
-                    <component :is="window.component" class="block" :windowId="window.id" :data="window.data" v-if="!window.error"
-                        :closeWindow="() => removeWindow(window.id)"
-                        v-bind="window.props"
+                    <component :is="window?.component" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
+                        :closeWindow="() => $windows.close(window?.id!)"
+                        v-bind="window?.props"
                         @error="window.error = true"
                     ></component>
 
@@ -35,30 +38,29 @@ import { defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
 
-import type { IWindow, IButton } from '../store/modules/windows';
+import type { IWindow, IButton } from '../plugins/windows';
 
 export default defineComponent({
     name: 'Windows',
     components: {},
     computed: {
-        ...mapGetters(['getWinWidth', 'getListWindows'])
+        ...mapGetters(['getWinWidth'])
     },
     data: () => ({}),
     watch: {},
     methods: {
-        ...mapActions(['setToolpic', 'removeWindow']),
+        ...mapActions(['setToolpic']),
         getWindowButtons(window: IWindow): IButton[] {
             let closeButton: IButton = {
-                id: -1,
                 label: 'Close',
                 icon: 'close',
                 color: 'red',
                 click: () => {
-                    this.removeWindow(window.id);
+                    this.$windows.close(window?.id!);
                 }
             }
 
-            return [window?.close ? closeButton : {} as IWindow, ...window.buttons || []];
+            return [window?.close ? closeButton : {} as IButton, ...(window?.buttons || [])];
         }
     },
     mounted() { }

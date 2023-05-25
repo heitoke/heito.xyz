@@ -32,7 +32,7 @@
                 <div style="margin: auto 0 0 0; width: 100%;">
                     <div class="line"></div>
                     <ul class="buttons">
-                        <li @click="createWindow({ component: 'Setting' })">
+                        <li @click="$windows.create({ component: 'Setting' })">
                             <Icon name="settings"/>
                         </li>
                         <li @click="$notifications.setActive(true)">
@@ -56,8 +56,6 @@ import ScrollBar from '../ScrollBar.vue';
 
 import { type Component, PropType, defineComponent } from 'vue';
 
-import { mapGetters, mapActions } from 'vuex';
-
 export default defineComponent({
     name: 'VerticalSuperMode',
     computed: {
@@ -79,7 +77,6 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['createWindow']),
         goTop(scrollProps: any) {
             scrollProps?.toScroll(0, scrollProps?.scrollY + 50);
 

@@ -29,7 +29,7 @@
                             label: 'Delete link',
                             icon: 'link',
                             click: () => {
-                                createWindow({
+                                $windows.create({
                                     component: 'Message',
                                     data: {
                                         title: 'Deleting a link',
@@ -102,7 +102,7 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['createWindow', 'removeWindow', 'setContextMenu']),
+        ...mapActions(['setContextMenu']),
         redirect(url: string) {
             window.open(url, '');
         },
@@ -118,7 +118,7 @@ export default defineComponent({
 
             if (link) newLink = { ...link };
             
-            this.createWindow({
+            this.$windows.create({
                 component: 'Message',
                 data: {
                     title: link?.label ? 'Changing the link' : 'Creating a new link',
@@ -175,7 +175,7 @@ export default defineComponent({
                                     this.list = [...this.list || [], newLink];
                                 }
 
-                                this.removeWindow(windowId);
+                                this.$windows.close(windowId);
 
                                 this.$emit('update', this.list);
                             }

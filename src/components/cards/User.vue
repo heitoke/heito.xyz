@@ -1,6 +1,6 @@
 <template>
     <div :class="['user', { hover: hovered }]"
-        @click="clicked ? createWindow({ component: 'User', data: user?._id }) : null"
+        @click="clicked ? $windows.create({ component: 'User', data: user?._id }) : null"
     >
         <div class="avatar" :style="{ '--avatar': `url('${getAvatar({ nameId: user?._id })}')` }"></div>
         <div style="max-width: 100%; width: 100%;">
@@ -21,7 +21,6 @@ import { getAvatar } from '../../libs/utils';
 import { defineComponent, PropType } from 'vue';
 
 import { IUser } from '../../libs/api/routes/users';
-import { mapActions } from 'vuex';
 
 export default defineComponent({
     name: 'CardUser',
@@ -42,9 +41,7 @@ export default defineComponent({
             default: true
         }
     },
-    methods: {
-        ...mapActions(['createWindow'])
-    },
+    methods: {},
     mounted() {}
 });
 

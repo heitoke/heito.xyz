@@ -15,7 +15,7 @@
             <Text class="text" text="You have followed the referral link, do you want to register using it? You can also refuse in this case you will not lose anything, maybe only that the user who owns this referral link will be sad, so do you want to please him or not? :D"/>
             
             <ul class="buttons">
-                <Button color="var(--green)" @click="createWindow({ component: 'Auth', data: 'register', props: { refCode: $route.params?.refId } })">
+                <Button color="var(--green)" @click="$windows.create({ component: 'Auth', data: 'register', props: { refCode: $route.params?.refId } })">
                     <span>To agree</span>
                 </Button>
                 <Button color="var(--red)"
@@ -51,7 +51,6 @@ export default defineComponent({
     data: () => ({}),
     watch: {},
     methods: {
-        ...mapActions(['createWindow']),
         getAvatar
     },
     mounted() {

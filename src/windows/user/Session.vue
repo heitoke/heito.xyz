@@ -46,8 +46,6 @@ import { colors, time, device, type INameIcon } from '../../libs/utils';
 
 import { defineComponent, PropType } from 'vue';
 
-import { mapActions } from 'vuex';
-
 import Auth, { type ISession } from '../../libs/api/routes/auth';
 
 interface IDevice {
@@ -78,7 +76,6 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        ...mapActions(['removeWindow']),
         async loadSession(sessionId: string) {
             const [session, status] = await Auth.session(sessionId);
 
@@ -97,7 +94,7 @@ export default defineComponent({
 
             if (this.data?.close) this.data?.close(this.session._id);
 
-            this.removeWindow(this.windowId);
+            this.$windows.close(this.windowId!);
         }
     },
     mounted() {

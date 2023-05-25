@@ -261,7 +261,16 @@ export default defineComponent({
                     { separator: true },
                     {
                         label: 'Sessions',
-                        icon: 'users'
+                        icon: 'users',
+                        click: () => {
+                            this.createWindow({
+                                component: 'Sessions',
+                                data: {
+                                    userId: this.getUser?._id,
+                                    token: ''
+                                }
+                            })
+                        }
                     },
                     ...(!this.getUser?.isRegistered ? [
                         { separator: true },

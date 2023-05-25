@@ -66,6 +66,22 @@ export function getAltColor(color: string): string {
     return `#${luma < 40 ? 'ffffff' : '000000'}`;
 }
 
+export function stringToHexColor(str: string) {
+    let hash = 0,
+        color = '#';
+
+    for (let i = 0; i < str.length; i++) {
+        hash = str.charCodeAt(i) + ((hash << 5) - hash);
+    }
+
+    for (let i = 0; i < 3; i++) {
+        let value = (hash >> (i * 8)) & 0xFF;
+        color += ('00' + value.toString(16)).substr(-2);
+    }
+
+    return color;
+}
+
 export function addAlpha(color: string, opacity: number) {
     let _opacity = Math.round(Math.min(Math.max(opacity || 1, 0), 1) * 255);
 
@@ -159,29 +175,6 @@ export function timeago(time: number = Date.now()) {
 
 
 
-// export function setCookie(name: string, value: string, days: number) {
-//     let expires = '';
-
-//     if (days) {
-//         let date = new Date();
-
-//         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-//         expires = '; expires=' + date.toUTCString();
-//     }
-    
-//     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-// }
-
-// export function getCookie(name: string) {
-//     var nameEQ = name + "=";
-//     var ca = document.cookie.split(';');
-//     for(var i=0;i < ca.length;i++) {
-//         var c = ca[i];
-//         while (c.charAt(0)==' ') c = c.substring(1,c.length);
-//         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-//     }
-//     return null;
-// }
 export interface ICookieOptions {
     secure?: boolean;
     'max-age'?: number;

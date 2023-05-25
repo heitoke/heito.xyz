@@ -40,7 +40,7 @@ import { defineComponent } from 'vue';
 
 import { mapGetters, mapActions } from 'vuex';
 
-import { getAvatar } from '../libs/functions';
+import { getAvatar } from '../libs/utils';
 
 export default defineComponent({
     name: 'RefPage',

@@ -1,7 +1,7 @@
 <template>
     <div class="project">
         <div class="image" :style="{ '--image': `url('${project.image}')` }">
-            <div class="date">{{ unixFormat(project.createdAt, 'dd MMM YYYY') }}</div>
+            <div class="date">{{ time.format(project.createdAt, 'dd MMM YYYY') }}</div>
         </div>
 
         <header>
@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 
-import { unixFormat } from '../../libs/functions';
+import { time } from '../../libs/utils';
 
 import NavBar from '../../components/content/NavBar.vue';
 

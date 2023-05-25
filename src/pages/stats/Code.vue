@@ -12,7 +12,7 @@
                             </div>
                         </Skeleton>
                         <Skeleton :show="!isLoading.languages && data?.createdAt?.length > 0" style="width: 96px; height: 16px;">
-                            <div>from {{ unixFormat(data?.createdAt) }}</div>
+                            <div>from {{ time.format(data?.createdAt) }}</div>
                         </Skeleton>
                     </header>
                     <div class="bar" style="display: flex;">
@@ -85,6 +85,8 @@ import StatsProject, { IProject } from '../../components/stats/Project.vue';
 import StatsLang, { ILang } from '../../components/stats/Lang.vue';
 // import PieChart from '../../components/content/PieChart.vue';
 
+import { time } from '../../libs/utils';
+
 </script>
 
 <script lang="ts">
@@ -94,7 +96,6 @@ import { defineComponent } from 'vue';
 import { mapActions } from 'vuex';
 
 import $api from '../../libs/api';
-import { unixFormat } from '../../libs/functions';
 
 interface IEditor {
     decimal: string;

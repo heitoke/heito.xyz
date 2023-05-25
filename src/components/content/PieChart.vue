@@ -16,8 +16,6 @@
 
 import { defineComponent, PropType } from 'vue';
 
-import { createHex } from '../../libs/functions';
-
 interface IData {
     totalData: number;
     listData: Array<{ value: number; offset: number; color: string; }>;

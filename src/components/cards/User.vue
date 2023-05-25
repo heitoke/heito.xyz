@@ -12,7 +12,7 @@
 
 <script setup lang="ts">
 
-import { getAvatar } from '../../libs/functions';
+import { getAvatar } from '../../libs/utils';
 
 </script>
 

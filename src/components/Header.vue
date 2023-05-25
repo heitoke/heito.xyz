@@ -82,13 +82,13 @@
                 <Transition name="tabs">
                     <ul class="blur" ref="tabs" v-if="tabs">
                         <li v-for="window of getBroadcastWindows" :key="window"
-                            :style="{ '--color': createHex() }"
+                            :style="{ '--color': colors.createHex() }"
                             @click="sendBroadcastMessage({ cmd: 'focus', to: window.id })"
                         >
                             <div class="image"></div>
                             <div>
                                 <div>{{ window.id }}</div>
-                                <div>{{ timeago(window.createdAt) }}</div>
+                                <div>{{ time.timeago(window.createdAt) }}</div>
                             </div>
                         </li>
                     </ul>
@@ -153,7 +153,7 @@ import ScrollBar from './ScrollBar.vue';
 import Users, { EPermissions, type IUser } from '../libs/api/routes/users';
 import User from './cards/User.vue';
 
-import { getAvatar, timeago, createHex, deleteCookie, setCookie } from '../libs/functions';
+import { getAvatar, colors, time } from '../libs/utils';
 
 </script>
 
@@ -163,7 +163,7 @@ import { defineComponent, Ref } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
 
-import type { IContextMenu, IContextMenuButton } from '../store/modules/contextMenu';
+import type { IContextMenu } from '../store/modules/contextMenu';
 
 import Langs from '../libs/langs';
 

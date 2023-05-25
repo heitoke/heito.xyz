@@ -74,7 +74,7 @@
 
 <script lang="ts" setup>
 
-import { copy, getAvatar } from '../../libs/functions';
+import { copy, getAvatar } from '../../libs/utils';
 
 // import NavBar, { IButton } from '../../components/content/NavBar.vue';
 

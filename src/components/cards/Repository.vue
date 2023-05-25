@@ -42,14 +42,14 @@
         </ul>
 
         <footer>
-            <div class="created-at">created {{ unixFormat(repository?.created_at) }}</div>
+            <div class="created-at">created {{ time.format(repository?.created_at) }}</div>
         </footer>
     </div>
 </template>
 
 <script setup lang="ts">
 
-import { getAvatar, unixFormat } from '../../libs/functions';
+import { time } from '../../libs/utils';
 
 </script>
 

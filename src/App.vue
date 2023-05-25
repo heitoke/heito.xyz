@@ -34,7 +34,7 @@ import VerticalSuper from './components/super/Vertical.vue';
 import { defineComponent } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 
-import { addAlpha, setCookie, getCookie, deleteCookie } from './libs/functions';
+import { colors, cookies } from './libs/utils';
 
 import Users from './libs/api/routes/users';
 import Auth from './libs/api/routes/auth';
@@ -60,7 +60,7 @@ export default defineComponent({
     watch: {},
     sockets: {
         'server:cookie'({ name, value, days }) {
-            setCookie(name, value, days);
+            cookies.set(name, value, days);
         }
     },
     methods: {
@@ -72,7 +72,7 @@ export default defineComponent({
             html?.classList[this.$local.params?.effect === 'transparent' ? 'add' : 'remove']('no-blur');
         
             style.setProperty('--blur', `${this.$local.params?.blur || 5}px`);
-            style.setProperty('--transparent', addAlpha('#010101', this.$local.params?.transparent as number));
+            style.setProperty('--transparent', colors.addAlpha('#010101', this.$local.params?.transparent as number));
         },
         initCustomization() {
             let html = document.querySelector('html');
@@ -91,7 +91,7 @@ export default defineComponent({
             if (color) {
                 let style = document.documentElement.style;
                 style.setProperty('--main-color', color);
-                style.setProperty('--main-color-alt', addAlpha(color, .35));
+                style.setProperty('--main-color-alt', colors.addAlpha(color, .35));
             }
 
             this.setEffects();
@@ -100,9 +100,9 @@ export default defineComponent({
             const [user, _, props] = await Users.me();
 
             function setTokens(props: any) {
-                if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, { days: 365 });
-                if (props?.token?.access) setCookie('HX_AT', props?.token?.access, { days: 7 });
-                if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+                if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });
+                if (props?.token?.access) cookies.set('HX_AT', props?.token?.access, { days: 7 });
+                if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
             }
             
             if (props?.confirmation?.userId) {
@@ -151,7 +151,7 @@ export default defineComponent({
 
                                     setTokens(props);
 
-                                    deleteCookie(['HX_RT', 'HX_AT']);
+                                    cookies.delete(['HX_RT', 'HX_AT']);
 
                                     this.setUser(user);
 

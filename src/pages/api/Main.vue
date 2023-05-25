@@ -99,7 +99,7 @@ import APIRouteData from '../../components/other/api/APIRouteData.vue';
 
 import { listPermissions } from '../../libs/api/routes/users';
 
-import { copy } from '../../libs/functions';
+import { copy } from '../../libs/utils';
 
 </script>
 

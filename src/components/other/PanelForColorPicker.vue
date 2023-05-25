@@ -46,9 +46,8 @@
 
 import { defineComponent, PropType } from 'vue';
 
-import { randomHexList, rgbToHex, getAltColor, hexToRgb } from '../../libs/functions';
+import { colors } from '../../libs/utils';
 import { mapActions } from 'vuex';
-import { numberLiteralTypeAnnotation } from '@babel/types';
 
 export default defineComponent({
     name: 'PanelForColorPicker',
@@ -84,9 +83,8 @@ export default defineComponent({
     },
     methods: {
         ...mapActions(['setToolpic']),
-        getAltColor,
         rollRandomColors() {
-            this.colors = randomHexList(5);
+            this.colors = colors.randomHexList(5);
         },
         initPalette() {
             const canvasShare: HTMLCanvasElement = (this.$el as Element).querySelector('canvas#shade')!;
@@ -116,33 +114,33 @@ export default defineComponent({
             ctxPalette.fillStyle = grd1;
             ctxPalette.fill();
 
-            function findPositionColor(ctx: CanvasRenderingContext2D, r: number, g: number, b: number): [number, number] {
-                let x, y;
+            // function findPositionColor(ctx: CanvasRenderingContext2D, r: number, g: number, b: number): [number, number] {
+            //     let x, y;
 
-                for (let i = 0; i < ctx.canvas.height; i++) {
-                    for (let j = 0; j < ctx.canvas.width; j++) {
-                        const color = ctx.getImageData(j, i, 1, 1).data;
-                        if (color[0] === r && color[1] === g && color[2] === b) {
-                            x = j;
-                            y = i;
-                            return [x, y];
-                        }
-                    }
-                }
+            //     for (let i = 0; i < ctx.canvas.height; i++) {
+            //         for (let j = 0; j < ctx.canvas.width; j++) {
+            //             const color = ctx.getImageData(j, i, 1, 1).data;
+            //             if (color[0] === r && color[1] === g && color[2] === b) {
+            //                 x = j;
+            //                 y = i;
+            //                 return [x, y];
+            //             }
+            //         }
+            //     }
 
-                return [-1, -1];
-            }
+            //     return [-1, -1];
+            // }
 
-            let [r, g, b] = hexToRgb(this.value);
-            console.log('a', r, g, b);
+            // let [r, g, b] = colors.hexToRgb(this.value);
+            // console.log('a', r, g, b);
             
-            let [x, y] = findPositionColor(ctxPalette, r, g, b);
-            console.log('c', x, y);
+            // let [x, y] = findPositionColor(ctxPalette, r, g, b);
+            // console.log('c', x, y);
             
-            let a = ctxPalette.getImageData(x, y, 1, 1).data;
-            console.log('b', a[0], a[1], a[2]);
+            // let a = ctxPalette.getImageData(x, y, 1, 1).data;
+            // console.log('b', a[0], a[1], a[2]);
             
-            console.log(rgbToHex(a[0], a[1], a[2]));
+            // console.log(rgbToHex(a[0], a[1], a[2]));
             
 
             function fillGradient() {
@@ -174,7 +172,7 @@ export default defineComponent({
                 var imageData = ctxShare.getImageData(this.shade.x, this.shade.y, 1, 1).data;
                 rgbaColor = 'rgba(' + imageData[0] + ',' + imageData[1] + ',' + imageData[2] + ',1)';
 
-                this.value = rgbToHex(imageData[0], imageData[1], imageData[2]);
+                this.value = colors.rgbToHex(imageData[0], imageData[1], imageData[2]);
             }
 
             const changePaletteColor = (e: MouseEvent) => {

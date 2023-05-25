@@ -4,14 +4,21 @@
 
         <ScrollBar :max-height="'256px'">
             <ul>
-                <li v-for="session of sessions" :key="session._id">
-                    <Icon name="linux" :style="{ color: getAltColor(stringToHexColor(session._id)), 'background-color': stringToHexColor(session._id) }"/>
+                <li v-for="session of sessions" :key="session._id"
+                    @click="openSession(session._id)"
+                >
+                    <Icon :name="session.device.os.icon || 'pacman'"
+                        :style="{
+                            color: colors.altColor(colors.stringToHexColor(session._id)),
+                            'background-color': colors.stringToHexColor(session._id)
+                        }"
+                    />
                     <div>
                         <div class="name">
-                            <div>Firefox 106</div>
-                            <div>25.05.2023</div>
+                            <div>{{ session.device.browser.name }}</div>
+                            <div>{{ time.format(String(session.createdAt)) }}</div>
                         </div>
-                        <div class="ip">97.132.45.143</div>
+                        <div class="ip">{{ session.ip }}</div>
                     </div>
                 </li>
             </ul>
@@ -23,7 +30,7 @@
 
 import ScrollBar from '../../components/ScrollBar.vue';
 
-import { stringToHexColor, getAltColor } from '../../libs/functions';
+import { colors, time, device, type INameIcon } from '../../libs/utils';
 
 </script>
 
@@ -33,10 +40,17 @@ import { PropType, defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
 
-import Auth from '../../libs/api/routes/auth';
+import Auth, { type ISession } from '../../libs/api/routes/auth';
+
+interface Session extends ISession {
+    device: {
+        os: INameIcon;
+        browser: INameIcon;
+    }
+}
 
 export default defineComponent({
-    name: 'WindowCreateAccount',
+    name: 'WindowSessions',
     components: {},
     computed: {
         ...mapGetters([]),
@@ -50,11 +64,40 @@ export default defineComponent({
         data: { type: Object as PropType<{ userId: string, token: string }> }
     },
     data: () => ({
-        sessions: new Array(10).fill({ _id: 'ddw' })
+        sessions: [] as Array<Session>
     }),
     watch: {},
-    methods: {},
-    mounted() {}
+    methods: {
+        ...mapActions(['createWindow', 'removeWindow']),
+        async loadSessions() {
+            const [sessions, status] = await Auth.sessions();
+
+            if (status !== 200) return;
+
+            this.sessions = <Array<Session>>sessions.map(session => {
+                const _device = device.setUserAgent(session.userAgent);
+
+                return {
+                    ...session,
+                    device: _device
+                }
+            });
+        },
+        openSession(sessionId: string) {
+            this.createWindow({
+                component: 'Session',
+                data: {
+                    sessionId,
+                    close: (id: string) => {
+                        this.sessions = this.sessions.filter(session => session._id !== id);
+                    }
+                }
+            })
+        }
+    },
+    mounted() {
+        this.loadSessions();
+    }
 });
 
 </script>
@@ -97,8 +140,9 @@ export default defineComponent({
 
             i {
                 display: flex;
-                min-width: 28px;
-                height: 28px;
+                min-width: 32px;
+                height: 32px;
+                font-size: 20px;
                 border-radius: 5px;
                 align-items: center;
                 justify-content: center;

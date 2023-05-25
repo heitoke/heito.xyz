@@ -63,7 +63,7 @@
 
 import ScrollBar from '../../components/ScrollBar.vue';
 
-import { getAvatar } from '../../libs/functions';
+import { getAvatar } from '../../libs/utils';
 
 </script>
 

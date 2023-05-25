@@ -19,7 +19,7 @@
                     +{{ members?.length - 5 }}
                 </li>
             </ul>
-            <div class="date">{{ unixFormat(Date.now(), 'dd MMM YYYY') }}</div>
+            <div class="date">{{ time.format(Date.now(), 'dd MMM YYYY') }}</div>
             <ul class="tags">
                 <li>New 1</li>
                 <li>New 2</li>
@@ -35,7 +35,7 @@
 
 <script setup lang="ts">
 
-import { getAvatar, unixFormat } from '../../libs/functions';
+import { getAvatar, time } from '../../libs/utils';
 
 </script>
 

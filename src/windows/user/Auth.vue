@@ -43,10 +43,11 @@ import { PropType, defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 
 import Auth from '../../libs/api/routes/auth';
-import { setCookie, deleteCookie } from '../../libs/functions';
+
+import { cookies } from '../../libs/utils';
 
 export default defineComponent({
-    name: 'WindowCreateAccount',
+    name: 'WindowAuth',
     components: {},
     computed: {
         ...mapGetters(['getLang']),
@@ -116,10 +117,10 @@ export default defineComponent({
             if (status !== 200) return;
 
             const save = () => {
-                if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, { days: 365 });
-                if (props?.token?.access) setCookie('HX_AT', props?.token?.access, { days: 7 });
+                if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });
+                if (props?.token?.access) cookies.set('HX_AT', props?.token?.access, { days: 7 });
     
-                deleteCookie(['HX_GUAST']);
+                cookies.delete(['HX_GUAST']);
 
                 this.setUser(newUser);
 

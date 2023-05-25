@@ -150,8 +150,8 @@ class Route {
         ],
         method: 'DELETE'
     })
-    delete(configsIds: string | Array<string>): [{ deleted: Array<string>, notFound: Array<string> }, number, any] {
-        return $api.delete(`/configs?ids=${(typeof configsIds === 'string' ? [configsIds] : configsIds).join(',')}`) as any;
+    delete(ids: string | Array<string>): [{ deleted: Array<string>, notFound: Array<string> }, number, any] {
+        return $api.delete(`/configs?ids=${(Array.isArray(ids) ? ids : [ids]).join(',')}`) as any;
     }
 }
 

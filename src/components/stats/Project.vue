@@ -8,7 +8,7 @@
             <div class="name">{{ project?.name }}</div>
             <div class="date">
                 {{ project?.last_heartbeat_at ? 'changed' : 'created' }}
-                {{ timeago(new Date((project?.last_heartbeat_at || project?.created_at) as string).valueOf()) }}
+                {{ time.timeago(new Date((project?.last_heartbeat_at || project?.created_at) as string).valueOf()) }}
             </div>
             <Icon name="arrow-left"/>
         </header>
@@ -25,6 +25,8 @@
 
 import StatsLang, { ILang } from './Lang.vue';
 
+import { getAvatar, time } from '../../libs/utils';
+
 </script>
 
 <script lang="ts">
@@ -32,8 +34,6 @@ import StatsLang, { ILang } from './Lang.vue';
 import { defineComponent, PropType } from 'vue';
 
 import $api from '../../libs/api';
-
-import { getAvatar, timeago } from '../../libs/functions';
 
 export interface IProject {
     badge: null;
@@ -68,7 +68,6 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
-        getAvatar, timeago,
         async open() {
             this.isActive = !this.isActive;
 

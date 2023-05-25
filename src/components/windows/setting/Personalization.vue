@@ -81,7 +81,7 @@
                         :style="{
                             '--image': `url('${effectFilter.image}')`,
                             '--blur': `${$local.params?.blur}px`,
-                            '--transparent': addAlpha('#010101', $local.params?.transparent as number)
+                            '--transparent': colors.addAlpha('#010101', $local.params?.transparent as number)
                         }">
                     </div>
                 </div>
@@ -90,13 +90,17 @@
     </section>
 </template>
 
+<script lang="ts" setup>
+
+import { colors } from '../../../libs/utils';
+
+</script>
+
 <script lang="ts">
 
 import { defineComponent } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
-
-import { randomHexList, addAlpha } from '../../../libs/functions';
 
 export default defineComponent({
     name: 'SettingPersonalization',
@@ -117,7 +121,7 @@ export default defineComponent({
     },
     props: {},
     data: () => ({
-        randomColors: randomHexList(30),
+        randomColors: colors.randomHexList(30),
         hide: true,
         effectFilter: {
             image: '',
@@ -131,7 +135,6 @@ export default defineComponent({
     watch: {},
     methods: {
         ...mapActions(['setToolpic']),
-        addAlpha,
         setScroll(e: WheelEvent) {
             let el = (this.$el as Element).querySelector('ul.colors');
             
@@ -152,7 +155,7 @@ export default defineComponent({
 
             this.setStyles({
                 '--main-color': color,
-                '--main-color-alt': addAlpha(color, .35)
+                '--main-color-alt': colors.addAlpha(color, .35)
             });
         },
         setBlur(value: string | number, type: 'blur' | 'transparent' = 'blur') {
@@ -162,7 +165,7 @@ export default defineComponent({
             document.querySelector('html')?.classList[type === 'blur' ? 'remove' : 'add']('no-blur');
 
             this.setStyles({
-                [type === 'blur' ? '--blur' : '--transparent']: type === 'blur' ? `${value}px` : addAlpha('#010101', value as number)
+                [type === 'blur' ? '--blur' : '--transparent']: type === 'blur' ? `${value}px` : colors.addAlpha('#010101', value as number)
             });
         }
     },

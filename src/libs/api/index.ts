@@ -1,4 +1,4 @@
-import { getCookie, setCookie } from '../functions';
+import { cookies } from '../utils';
 
 import { EPermissions } from './routes/users';
 
@@ -105,7 +105,7 @@ export default {
     getAccessToken() {
         try {
             if (window) {
-                return getCookie('HX_AT') || getCookie('HX_GUAST') || '';
+                return cookies.get('HX_AT') || cookies.get('HX_GUAST') || '';
             }
         } catch (err) {
             return '';
@@ -125,7 +125,7 @@ export default {
             result = await res.json(),
             props = { ...result };
 
-        if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+        if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
 
         delete props['result'];
 

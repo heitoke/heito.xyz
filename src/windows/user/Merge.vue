@@ -58,6 +58,7 @@ import Users, { type IUser, type TMargeScopes } from '../../libs/api/routes/user
 export type IMergeData = {
     main: string;
     now: string;
+    save(): void;
 }
 
 export default defineComponent({
@@ -101,9 +102,9 @@ export default defineComponent({
 
             let [result, status] = await Users.merge({ old: this.mainUser?._id, now: this.nowUser?._id, select: this.main, password: this.password, scopes: this.scopes });
 
-            console.log(result, status);
-
             if (status !== 200) return;
+
+            if (this.data?.save) this.data?.save();
 
             this.closeWindow();
         }

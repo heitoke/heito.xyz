@@ -125,7 +125,7 @@ export default {
             result = await res.json(),
             props = { ...result };
 
-        if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, 365);
+        if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
 
         delete props['result'];
 

@@ -153,7 +153,7 @@ import ScrollBar from './ScrollBar.vue';
 import Users, { EPermissions, type IUser } from '../libs/api/routes/users';
 import User from './cards/User.vue';
 
-import { getAvatar, timeago, createHex } from '../libs/functions';
+import { getAvatar, timeago, createHex, deleteCookie, setCookie } from '../libs/functions';
 
 </script>
 
@@ -282,7 +282,18 @@ export default defineComponent({
                         {
                             label: this.getLang.global.exit[1],
                             icon: 'exit',
-                            class: 'exit'
+                            class: 'exit',
+                            click: async () => {
+                                const [user, status, props] = await Users.me('exit');
+
+                                if (status !== 200) return;
+
+                                deleteCookie(['HX_AT', 'HX_RT']);
+
+                                if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+
+                                this.setUser(user);
+                            }
                         }
                     ] : [])
                 ]
@@ -447,7 +458,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow', 'sendBroadcastMessage', 'setContextMenu']),
+        ...mapActions(['setLang', 'setActiveNotifications', 'setToolpic', 'createWindow', 'sendBroadcastMessage', 'setContextMenu', 'setUser']),
         log(e: any) {
             console.log(e);
         },

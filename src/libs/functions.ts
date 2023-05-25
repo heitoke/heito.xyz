@@ -159,28 +159,76 @@ export function timeago(time: number = Date.now()) {
 
 
 
-export function setCookie(name: string, value: string, days: number) {
-    let expires = '';
+// export function setCookie(name: string, value: string, days: number) {
+//     let expires = '';
 
-    if (days) {
-        let date = new Date();
+//     if (days) {
+//         let date = new Date();
 
-        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
-        expires = '; expires=' + date.toUTCString();
-    }
+//         date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+//         expires = '; expires=' + date.toUTCString();
+//     }
     
-    document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+//     document.cookie = name + "=" + (value || "")  + expires + "; path=/";
+// }
+
+// export function getCookie(name: string) {
+//     var nameEQ = name + "=";
+//     var ca = document.cookie.split(';');
+//     for(var i=0;i < ca.length;i++) {
+//         var c = ca[i];
+//         while (c.charAt(0)==' ') c = c.substring(1,c.length);
+//         if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+//     }
+//     return null;
+// }
+export interface ICookieOptions {
+    secure?: boolean;
+    'max-age'?: number;
+    expires?: Date | string;
+    path?: string;
+    days?: number;
+}
+export function setCookie(name: string, value: string, options: ICookieOptions = {}) {
+    options = { path: '/', ...options };
+  
+    if (options.expires instanceof Date) {
+        options['expires'] = options.expires.toUTCString();
+    }
+
+    if (options.days) {
+        const date = new Date();
+
+        date.setTime(date.getTime() + (options.days * 24 * 60 * 60 * 1000));
+        options['expires'] = date.toUTCString();
+    }
+  
+    let updatedCookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
+  
+    for (let optionKey in options) {
+        updatedCookie += "; " + optionKey;
+
+        // @ts-ignore
+        const optionValue = options[optionKey];
+
+        if (optionValue !== true) {
+            updatedCookie += "=" + optionValue;
+        }
+    }
+  
+    document.cookie = updatedCookie;
 }
 
 export function getCookie(name: string) {
-    var nameEQ = name + "=";
-    var ca = document.cookie.split(';');
-    for(var i=0;i < ca.length;i++) {
-        var c = ca[i];
-        while (c.charAt(0)==' ') c = c.substring(1,c.length);
-        if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+    const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
+
+    return matches ? decodeURIComponent(matches[1]) : undefined;
+}
+
+export function deleteCookie(names: Array<string>) {
+    for (const name of names) {
+        setCookie(name, '', { 'max-age': -1 });
     }
-    return null;
 }
 
 

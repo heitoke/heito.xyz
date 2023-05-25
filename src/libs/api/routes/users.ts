@@ -112,21 +112,13 @@ class Route {
         icon: 'username',
         path: '/me',
         description: 'Learn more about yourself',
-        queries: [
-            {
-                name: 'token',
-                type: 'boolean',
-                text: 'Should I show you access and refresh tokens if they have changed?',
-                default: 'false'
-            }
-        ],
         statuses: [
             { code: 200, text: 'OK' },
             { code: 501, text: 'Server error' }
         ]
     })
-    me(showTokens: boolean = false): [IUser, number, any] {
-        return $api.get(`/users/me${showTokens ? '?token=true' : ''}`) as any;
+    me(token: string = ''): [IUser, number, any] {
+        return $api.get(`/users/me`, { token }) as any;
     }
 
     @descriptors.addRoute('users', {

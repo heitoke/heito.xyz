@@ -43,7 +43,7 @@ import VerticalSuper from './components/super/Vertical.vue';
 import { defineComponent } from 'vue';
 import { mapGetters, mapActions } from 'vuex';
 
-import { addAlpha, setCookie, getCookie } from './libs/functions';
+import { addAlpha, setCookie, getCookie, deleteCookie } from './libs/functions';
 
 import Users from './libs/api/routes/users';
 import Auth from './libs/api/routes/auth';
@@ -106,7 +106,13 @@ export default defineComponent({
             this.setEffects();
         },
         async initUser() {
-            let [user, _, props] = await Users.me(true);
+            const [user, _, props] = await Users.me();
+
+            function setTokens(props: any) {
+                if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, { days: 365 });
+                if (props?.token?.access) setCookie('HX_AT', props?.token?.access, { days: 7 });
+                if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+            }
             
             if (props?.confirmation?.userId) {
                 let password = '';
@@ -116,7 +122,7 @@ export default defineComponent({
                     close: false,
                     data: {
                         title: 'Account confirmation',
-                        text: 'Enter the password of the account that was previously authorized',
+                        text: 'Enter the password of the account that was previously authorized. If you don\'t want to log in or don\'t know the password, you can just skip it.',
                         components: [
                             {
                                 name: 'password',
@@ -143,6 +149,23 @@ export default defineComponent({
                                     
                                     this.removeWindow(windowId);
                                 }
+                            },
+                            {
+                                label: 'Leave it as it is',
+                                color: 'var(--red)',
+                                click: async (e: MouseEvent, data: any, windowId: number) => {
+                                    const [user, status, props] = await Users.me('none');
+
+                                    if (status !== 200) return;
+
+                                    setTokens(props);
+
+                                    deleteCookie(['HX_RT', 'HX_AT']);
+
+                                    this.setUser(user);
+
+                                    this.removeWindow(windowId);
+                                }
                             }
                         ]
                     } as IMessage
@@ -150,9 +173,7 @@ export default defineComponent({
                 return;
             }
 
-            if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, 365);
-            if (props?.token?.access) setCookie('HX_AT', props?.token?.access, 7);
-            if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, 365);
+            setTokens(props);
 
             if (props?.merge) {
                 this.createWindow({

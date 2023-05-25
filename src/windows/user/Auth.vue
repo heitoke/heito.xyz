@@ -43,7 +43,7 @@ import { PropType, defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 
 import Auth from '../../libs/api/routes/auth';
-import { setCookie } from '../../libs/functions';
+import { setCookie, deleteCookie } from '../../libs/functions';
 
 export default defineComponent({
     name: 'WindowCreateAccount',
@@ -97,7 +97,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['pushNotification', 'setUser']),
+        ...mapActions(['pushNotification', 'setUser', 'createWindow']),
         isValid(key: string) {
             return !key || key.trim() === '';
         },
@@ -115,16 +115,34 @@ export default defineComponent({
 
             if (status !== 200) return;
 
-            if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, 365);
-            if (props?.token?.access) setCookie('HX_AT', props?.token?.access, 7);
+            const save = () => {
+                if (props?.token?.refresh) setCookie('HX_RT', props?.token?.refresh, { days: 365 });
+                if (props?.token?.access) setCookie('HX_AT', props?.token?.access, { days: 7 });
+    
+                deleteCookie(['HX_GUAST']);
 
-            this.setUser(newUser);
+                this.setUser(newUser);
 
-            this.pushNotification({
-                title: 'Welcome',
-                color: 'green',
-                icon: 'like'
-            });
+                this.pushNotification({
+                    title: 'Welcome',
+                    color: 'green',
+                    icon: 'like'
+                });
+            }
+
+
+            if (props?.merge) {
+                this.createWindow({
+                    component: 'Merge',
+                    close: false,
+                    data: {
+                        ...props.merge,
+                        save: () => {
+                            save();
+                        }
+                    }
+                });
+            } else save();
 
             this.closeWindow();
         },

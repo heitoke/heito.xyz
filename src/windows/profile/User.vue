@@ -158,7 +158,7 @@ export default defineComponent({
                     }
                 ]);
             } else if (newValue < 1) {
-                this.$windows.removeButtons(this.windowId!, [2, 3]);
+                this.$windows.removeButtons(this.windowId!, [1, 2]);
             }
         }
     },
@@ -192,6 +192,7 @@ export default defineComponent({
                             {
                                 label: 'Verify',
                                 icon: 'verify',
+                                text: this.selfUser.verified ? 'Enabled' : 'Disabled',
                                 click: () => {
                                     this.changes['verified'] = !this.user.verified;
                                 }
@@ -202,7 +203,7 @@ export default defineComponent({
             ]
         },
         buttonUserSettings() {
-            let buttonNickname = {
+            const buttonNickname = {
                 label: 'Nickname',
                 icon: 'id-card',
                 click: () => {
@@ -216,7 +217,9 @@ export default defineComponent({
                                     component: 'Textbox',
                                     name: 'nickname',
                                     props: {
-                                        label: 'New nickname'
+                                        label: 'New nickname',
+                                        text: this.user.nickname || '',
+                                        autofocus: true
                                     },
                                     events: {
                                         input: (e: InputEvent) => {
@@ -238,7 +241,7 @@ export default defineComponent({
                 }
             };
 
-            let buttonUsername = {
+            const buttonUsername = {
                 label: 'Username',
                 icon: 'username',
                 click: () => {
@@ -252,7 +255,9 @@ export default defineComponent({
                                     component: 'Textbox',
                                     name: 'username',
                                     props: {
-                                        label: 'New username'
+                                        label: 'New username',
+                                        text: this.user.nickname || '',
+                                        autofocus: true
                                     },
                                     events: {
                                         input: (e: InputEvent) => {
@@ -275,7 +280,7 @@ export default defineComponent({
             };
 
             let color = '';
-            let buttonColor = {
+            const buttonColor = {
                 label: 'Color',
                 icon: 'colors',
                 color: this.user.color,
@@ -340,7 +345,7 @@ export default defineComponent({
             };
         },
         setButtons() {
-            let contextMenuUserSettings = (e: Event) => this.setContextMenu({
+            const contextMenuUserSettings = (e: Event) => this.setContextMenu({
                 name: 'window:user:settings',
                 position: ['left', 'fixed-target'],
                 event: e,
@@ -367,7 +372,7 @@ export default defineComponent({
             ]);
         },
         async loadUser(userId: string) {
-            let [result, status] = await Users.get(userId);
+            const [result, status] = await Users.get(userId);
 
             if (status !== 200) {
                 return this.$emit('error');

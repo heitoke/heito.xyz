@@ -3,7 +3,8 @@
         :style="{ '--left': `${isValid ? labelWidth : 0}px` }"
         @click="($event.target as any).focus()"
     >
-        <input :type="type" :placeholder="labelType === 'input' ? label : ''" v-model="modelValue"
+        <input :type="type" :placeholder="labelType === 'input' ? label : text" v-model="modelValue"
+            :style="{ '--placeholder-color': focus ? 'var(--text-secondary)' : 'var(--T)' }"
             @focus="$emit('focus', $event); focus = true"    
             @blur="$emit('blur', $event); focus = false"
         >
@@ -67,6 +68,9 @@ export default defineComponent({
             default: 'block'
         },
         value: {
+            type: String
+        },
+        text: {
             type: String
         },
         type: {
@@ -232,6 +236,31 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
             top: -10px;
             font-size: 12px;
             color: var(--text-primary);
+        }
+
+        &::-webkit-input-placeholder {
+            color: var(--placeholder-color);
+        }
+        &:-moz-placeholder {
+            color: var(--placeholder-color);
+            opacity: 1;
+        }
+        &::-moz-placeholder {
+            color: var(--placeholder-color);
+            opacity: 1;
+        }
+        &:-ms-input-placeholder {
+            color: var(--placeholder-color);
+        }
+        &::-ms-input-placeholder {
+            color: var(--placeholder-color);
+        }
+        &::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        &[placeholder] {
+            transition: .2s;
         }
     }
 

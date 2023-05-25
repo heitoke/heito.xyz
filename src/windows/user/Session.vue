@@ -38,7 +38,7 @@
 
 <script lang="ts" setup>
 
-import { colors, time, device, type INameIcon } from '../../libs/utils';
+import { colors, time } from '../../libs/utils';
 
 </script>
 
@@ -47,6 +47,8 @@ import { colors, time, device, type INameIcon } from '../../libs/utils';
 import { defineComponent, PropType } from 'vue';
 
 import Auth, { type ISession } from '../../libs/api/routes/auth';
+
+import { device, type INameIcon } from '../../libs/utils';
 
 interface IDevice {
     os: INameIcon;
@@ -82,8 +84,13 @@ export default defineComponent({
             if (status !== 200) return;
 
             this.session = session;
+            
+            const info = device?.setUserAgent(this.session.userAgent || '');
 
-            this.device = device.setUserAgent(this.session.userAgent);
+            this.device = {
+                os: info?.os || {},
+                browser: info?.browser || {}
+            };
         },
         async close() {
             if (!this.session?._id) return;

@@ -3,11 +3,10 @@ import { App, Plugin, reactive, Component } from "vue";
 export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
 export interface IButton {
-    id?: number;
     label?: string;
     text?: string;
     color?: string;
-    icon?: string;
+    icon: string;
     click?(e: Event): void;
 }
 
@@ -86,10 +85,7 @@ export class Windows implements IWindows {
         if (windowIndex < 0) return;
 
         for (const button of buttons) {
-            this.list[windowIndex].buttons?.push({
-                ...button,
-                id: (this.list[windowIndex].buttons?.length || 0) + 1
-            });
+            this.list[windowIndex].buttons?.push(button);
         }
     }
 
@@ -99,8 +95,10 @@ export class Windows implements IWindows {
         if (windowIndex < 0 && (!ids || (ids as Array<number>).length < 1)) return;
 
         if (!Array.isArray(ids)) ids = [ids];
-
-        this.list[windowIndex].buttons = this.list[windowIndex].buttons?.filter(button => (ids as Array<number>).find(id => id === button.id));
+        
+        for (const id of ids.sort((a, b) => a > b ? 1 : -1).reverse()) {
+            this.list[windowIndex].buttons?.splice(id, 1);
+        }
     }
 }
 

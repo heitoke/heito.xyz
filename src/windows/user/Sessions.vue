@@ -30,7 +30,7 @@
 
 import ScrollBar from '../../components/ScrollBar.vue';
 
-import { colors, time, device, type INameIcon } from '../../libs/utils';
+import { colors, time } from '../../libs/utils';
 
 </script>
 
@@ -39,6 +39,8 @@ import { colors, time, device, type INameIcon } from '../../libs/utils';
 import { PropType, defineComponent } from 'vue';
 
 import Auth, { type ISession } from '../../libs/api/routes/auth';
+
+import { device, type INameIcon } from '../../libs/utils';
 
 interface Session extends ISession {
     device: {
@@ -70,11 +72,14 @@ export default defineComponent({
             if (status !== 200) return;
 
             this.sessions = <Array<Session>>sessions.map(session => {
-                const _device = device.setUserAgent(session.userAgent);
+                const info = device?.setUserAgent(session.userAgent);
 
                 return {
                     ...session,
-                    device: _device
+                    device: {
+                        os: info?.os || {},
+                        browser: info?.browser || {}
+                    }
                 }
             });
         },

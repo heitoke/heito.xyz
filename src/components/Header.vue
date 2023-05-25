@@ -108,7 +108,9 @@
                         @click="menu ? $windows.create({ component: 'User', data: getUser?._id }) : false"
                     >
                         <Transition name="account-username">
-                            <div class="username" v-show="menu">{{ getUser?.nickname || getUser?.username || getUser?._id || 'Guest' }}</div>
+                            <div class="username" v-show="menu"
+                                :style="{ color: getUser?.color ? colors.altColor(getUser?.color) : '' }"
+                            >{{ getUser?.nickname || getUser?.username || getUser?._id || 'Guest' }}</div>
                         </Transition>
                         <div class="avatar"
                             @click.prevent.stop="menu ? $windows.create({ component: 'User', data: getUser?._id }) : open($event, 'account', () => menu = true, () => menu = false)"

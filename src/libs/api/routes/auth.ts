@@ -95,6 +95,9 @@ class Route {
         icon: 'user-circle',
         path: '/sessions',
         description: 'View the data of a specific session',
+        params: [
+            { name: 'configId', text: 'ConfidId' }
+        ],
         statuses: [
             { code: 200, text: 'OK' },
             { code: 403, text: 'You don\'t have rights to view the session' },
@@ -112,6 +115,9 @@ class Route {
         path: '/sessions',
         method: 'DELETE',
         description: 'End and period.',
+        queries: [
+            { name: 'ids', type: 'array<string>', required: true }
+        ],
         statuses: [
             { code: 200, text: 'OK' },
             { code: 400, text: 'You did not specify the session ID' },

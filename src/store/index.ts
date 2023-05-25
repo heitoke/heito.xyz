@@ -4,7 +4,6 @@ import { createStore } from 'vuex';
 import langs from './modules/langs';
 import window from './modules/window';
 import toolpics from './modules/toolpics';
-// import windows from './modules/windows';
 import contextMenu from './modules/contextMenu';
 import header from './modules/header';
 import user from './modules/user';
@@ -14,7 +13,6 @@ let modules: any = {
     langs,
     window,
     toolpics,
-    // windows,
     contextMenu,
     header,
     user,

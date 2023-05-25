@@ -6,6 +6,7 @@
                 :class="['window', window?.position]" 
             >
                 <div class="bg" @click="window?.close ? $windows.close(window?.id!) : null"></div>
+                
                 <div class="blur">
                     <component :is="window?.component" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
                         :closeWindow="() => $windows.close(window?.id!)"
@@ -19,7 +20,8 @@
                     </div>
 
                     <ul class="buttons" v-show="getWindowButtons(window).length > 0">
-                        <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.id" :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
+                        <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.icon"
+                            :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                             @click="btn?.click ? btn?.click($event) : null;"
                             @mouseenter="btn?.label ? setToolpic({ title: btn.label, position: getWinWidth > 540 ? 'left' : 'right' }) : null"
                         >

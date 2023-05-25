@@ -96,7 +96,7 @@ class Route {
         path: '/sessions',
         description: 'View the data of a specific session',
         params: [
-            { name: 'configId', text: 'ConfidId' }
+            { name: 'sessionId', text: 'SessionId or Token' }
         ],
         statuses: [
             { code: 200, text: 'OK' },

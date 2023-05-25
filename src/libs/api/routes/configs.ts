@@ -5,7 +5,9 @@ import { IUser, EPermissions } from './users';
 export enum EAccountType {
     Steam = 'steam',
     GitHub = 'github',
-    Tetr = 'tetr'
+    Tetr = 'tetr',
+    Twitch = 'twitch',
+    OSU = 'osu'
 }
 export interface IAccount {
     key: string;

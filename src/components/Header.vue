@@ -383,7 +383,7 @@ export default defineComponent({
                 ]
             }
         },
-        'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr', [key: string]: any }>) {
+        'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr' | 'twitch' | 'osu', [key: string]: any }>) {
             this.activities.list = [];
 
             for (let active of activitiesList) {
@@ -461,8 +461,38 @@ export default defineComponent({
                                 { label: 'Profile', icon: 'user-circle', url: `https://ch.tetr.io/u/${active?.username}` }
                             ]
                         };
+                        break;
+                    case 'twitch':
+                        activity = {
+                            id: `twitch:${active?.id}`,
+                            name: `${active?.display_name} (${active?.login})`,
+                            details: active?.description,
+                            largeImage: {
+                                url: active?.profile_image_url,
+                                label: 'Twitch'
+                            },
+                            type: 'default',
+                            buttons: [
+                                { label: 'Profile', icon: 'user-circle', url: `https://www.twitch.tv/${active?.login}` }
+                            ]
+                        };
+                        break;
+                    case 'osu':
+                        activity = {
+                            id: `osu:${active?.id}`,
+                            name: `${active?.username}`,
+                            details: active?.is_online ? 'Online' : 'Offline',
+                            largeImage: {
+                                url: active?.avatar_url,
+                                label: 'osu!'
+                            },
+                            type: 'default',
+                            buttons: [
+                                { label: 'Profile', icon: 'user-circle', url: `https://www.twitch.tv/${active?.login}` }
+                            ]
+                        };
 
-                        if (active?.blog) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.blog });
+                        if (active?.website) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.website });
                         break;
                 }
 

@@ -95,8 +95,8 @@
                 </Transition>
             </div>
 
-            <div :class="['notifications', { 'new-message': getListNotifications.filter((n: any) => !n?.hide)?.length > 0 }]"
-                @click="setActiveNotifications(!getActiveNotifications)"
+            <div :class="['notifications', { 'new-message': $notifications?.list?.filter((n: any) => !n?.hide)?.length > 0 }]"
+                @click="$notifications.setActive(!$notifications?.options?.active)"
                 @mouseenter="setToolpic({ name: 'notification', title: getLang.global.notification[0], position: 'bottom' })"
             >
                 <Icon name="notification"/>
@@ -208,8 +208,6 @@ export default defineComponent({
         ...mapGetters([
             'getLangName',
             'getLang',
-            'getActiveNotifications',
-            'getListNotifications',
             'getHeaderLoading',
             'getHeaderOptions',
             'getUser',
@@ -260,6 +258,11 @@ export default defineComponent({
                             }))
                         }
                     },
+                    { separator: true },
+                    {
+                        label: 'Sessions',
+                        icon: 'users'
+                    },
                     ...(!this.getUser?.isRegistered ? [
                         { separator: true },
                         {
@@ -277,25 +280,25 @@ export default defineComponent({
                             }
                         }
                     ] : []),
-                    ...(this.getUser?.isRegistered ? [
-                        { separator: true },
-                        {
-                            label: this.getLang.global.exit[1],
-                            icon: 'exit',
-                            class: 'exit',
-                            click: async () => {
-                                const [user, status, props] = await Users.me('exit');
+                    // ...(this.getUser?.isRegistered ? [
+                    //     { separator: true },
+                    //     {
+                    //         label: this.getLang.global.exit[1],
+                    //         icon: 'exit',
+                    //         class: 'exit',
+                    //         click: async () => {
+                    //             const [user, status, props] = await Users.me('exit');
 
-                                if (status !== 200) return;
+                    //             if (status !== 200) return;
 
-                                deleteCookie(['HX_AT', 'HX_RT']);
+                    //             deleteCookie(['HX_AT', 'HX_RT']);
 
-                                if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+                    //             if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
 
-                                this.setUser(user);
-                            }
-                        }
-                    ] : [])
+                    //             this.setUser(user);
+                    //         }
+                    //     }
+                    // ] : [])
                 ]
             } as IContextMenu;
         },

@@ -110,8 +110,6 @@ export default defineComponent({
         }
     },
     mounted() {
-        console.log(this.data);
-        
         this.loadUser(this.data?.main!, 'mainUser');
         this.loadUser(this.data?.now!, 'nowUser');
     }

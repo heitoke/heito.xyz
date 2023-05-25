@@ -20,7 +20,7 @@
 
 <script lang="ts">
 
-import type { INotification } from '../../store/modules/notifications';
+import type { INotification } from '../../plugins/notifications';
 import { defineComponent, PropType } from 'vue';
 
 import { mapGetters } from 'vuex';

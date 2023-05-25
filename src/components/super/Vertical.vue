@@ -2,7 +2,7 @@
     <div :class="['super', { active }]">
         <ScrollBar v-slot="scrollProps">
             <Transition name="page">
-                <component :is="component" :class="['page', { 'to-left': getActiveNotifications }]"
+                <component :is="component" :class="['page', { 'to-left': $notifications?.options?.active }]"
                     :scrollProps="scrollProps"
                 ></component>
             </Transition>
@@ -35,7 +35,7 @@
                         <li @click="createWindow({ component: 'Setting' })">
                             <Icon name="settings"/>
                         </li>
-                        <li @click="setActiveNotifications(true)">
+                        <li @click="$notifications.setActive(true)">
                             <Icon name="notification"/>
                         </li>
                     </ul>
@@ -61,7 +61,6 @@ import { mapGetters, mapActions } from 'vuex';
 export default defineComponent({
     name: 'VerticalSuperMode',
     computed: {
-        ...mapGetters(['getActiveNotifications']),
         getRoutes() {
             return this.$router?.options.routes.filter(route => !(route.meta?.hide as any)?.includes('page'));
         }
@@ -80,9 +79,10 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['createWindow', 'setActiveNotifications']),
+        ...mapActions(['createWindow']),
         goTop(scrollProps: any) {
             scrollProps?.toScroll(0, scrollProps?.scrollY + 50);
+
             setTimeout(() => scrollProps?.toScroll(0, 0), 500)
         }
     },

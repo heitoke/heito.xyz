@@ -13,15 +13,6 @@
         <VerticalSuper v-if="getSuperMode === 'vertical'"
             :component="Component" :active="superMode"
         />
-        
-        <!-- <ScrollBar v-slot="scrollProps">
-                <Transition name="page">
-                    <component :is="Component" :class="['page', { 'to-left': getActiveNotifications }]"
-                        :scrollProps="scrollProps"
-                    ></component>
-                </Transition>
-                <Footer v-if="!($route.meta?.hide as any)?.includes('footer')"/>
-            </ScrollBar> -->
     </RouterView>
 </template>
 
@@ -53,7 +44,7 @@ export default defineComponent({
     name: 'App',
     components: {},
     computed: {
-        ...mapGetters(['getActiveNotifications']),
+        ...mapGetters([]),
         getSuperMode() {
             try {
                 if (!process) return this.$local.params?.super || 'vertical';

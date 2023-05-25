@@ -1,29 +1,33 @@
 <template>
     <div class="notifications">
         <Transition name="bg">
-            <div class="bg" v-if="getActiveNotifications" @click="setActiveNotifications(false)"></div>
+            <div class="bg" v-if="$notifications?.options?.active" @click="$notifications.setActive(false)"></div>
         </Transition>
+
         <Transition name="panel">
-            <div class="panel" v-if="getActiveNotifications">
+            <div class="panel" v-if="$notifications?.options?.active">
                 <ScrollBar>
                     <header>
                         <span>Notifications</span>
-                        <Icon name="close" @click="setActiveNotifications(false)"/>
+                        <Icon name="close" @click="$notifications.setActive(false)"/>
                     </header>
+
                     <ul class="list menu">
-                        <Notification v-for="notification of getListNotifications" :key="notification" :id="notification.id"
+                        <Notification v-for="notification of $notifications.list" :key="notification.id"
+                            :id="notification.id"
                             :notification="notification"
                         />
-                        <div style="padding: 12px; color: var(--text-secondary);" v-show="getListNotifications.length < 1">So far, it's empty</div>
+                        <div style="padding: 12px; color: var(--text-secondary);" v-show="$notifications.list.length < 1">So far, it's empty</div>
                     </ul>
                 </ScrollBar>
             </div>
         </Transition>
 
-        <ul :class="['list global', getPositionNotifications, { active: !getActiveNotifications }]">
+        <ul :class="['list global', $notifications?.options?.position, { active: !$notifications?.options?.active }]">
             <TransitionGroup name="notification" @enter="enterNotification($event)">
-                <Notification v-for="notification of getListNotifications.filter((n: any) => !n?.hide).slice(0, getMaxCountNotification)" :key="notification" :id="notification.id"
-                    :style="{ 'transform-origin': getPositionNotifications }"
+                <Notification v-for="notification of $notifications?.list.filter(n => !n.hide).slice(0, getMaxCountNotification)" :key="notification.id"
+                    :id="notification.id"
+                    :style="{ 'transform-origin': $notifications?.options?.position }"
                     :notification="notification"
                 />
             </TransitionGroup>
@@ -35,23 +39,21 @@
 
 import ScrollBar from './ScrollBar.vue';
 
+import Notification from './notifications/Notification.vue';
+
 </script>
 
 <script lang="ts">
 
 import { defineComponent } from 'vue';
 
-import { mapActions, mapGetters } from 'vuex';
-
-import Notification from './notifications/Notification.vue';
+import { mapGetters } from 'vuex';
 
 export default defineComponent({
     name: 'Notifications',
-    components: {
-        Notification
-    },
+    components: {},
     computed: {
-        ...mapGetters(['getActiveNotifications', 'getListNotifications', 'getPositionNotifications', 'getWinHeight']),
+        ...mapGetters(['getWinHeight']),
         getMaxCountNotification(): number {
             let count: number = Math.floor(this.getWinHeight / 70) - 2;
             return count > 7 ? 7 : count;
@@ -60,10 +62,12 @@ export default defineComponent({
     data: () => ({}),
     watch: {},
     methods: {
-        ...mapActions(['setActiveNotifications', 'pushNotification', 'hideNotification', 'removeNotification']),
         enterNotification(el: Element) {
             setTimeout(() => {
-                this.hideNotification(Number(el.id));
+                this.$notifications.hide(Number(el.id));
+
+                console.log(this.$notifications.list);
+                
             }, 7000);
         }
     },

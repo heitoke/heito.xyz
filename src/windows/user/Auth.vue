@@ -97,13 +97,13 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['pushNotification', 'setUser', 'createWindow']),
+        ...mapActions(['setUser', 'createWindow']),
         isValid(key: string) {
             return !key || key.trim() === '';
         },
         async auth() {
             if (this.getValid) {
-                return this.pushNotification({
+                return this.$notifications.push({
                     title: 'Missing fields',
                     message: 'You missed a field, or you entered too many spaces.',
                     color: 'red',
@@ -123,7 +123,7 @@ export default defineComponent({
 
                 this.setUser(newUser);
 
-                this.pushNotification({
+                this.$notifications.push({
                     title: 'Welcome',
                     color: 'green',
                     icon: 'like'

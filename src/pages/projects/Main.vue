@@ -1,20 +1,22 @@
 <template>
     <div class="projects">
-        <Menu :menu="{
-            name: 'projects',
-            buttons: [
-                {
-                    icon: 'images',
-                    label: 'Projects',
-                    click: () => $router.push(`/projects`)
-                },
-                {
-                    icon: 'repo',
-                    label: 'Repositories',
-                    click: () => $router.push(`/repositories`)
-                }
-            ]
-        }"/>
+        <NavBar orientation="vertical" :menu="[
+            {
+                icon: 'images',
+                label: 'Projects',
+                value: 'projects',
+                click: () => $router.push(`/projects`)
+            },
+            {
+                icon: 'repo',
+                label: 'Repositories',
+                value: 'repos',
+                click: () => $router.push(`/repositories`)
+            }
+        ]" style="margin: 0 12px 0 0; max-width: 196px;"
+            :default-id="['projects', 'repos'].findIndex(t => t === type)"
+            @select="$router.push(`/${$event.value}`)"
+        />
 
         <div style="width: 100%;">
             <div class="filters" style="display: flex; margin: 0 0 12px 0; align-items: center;">
@@ -47,10 +49,14 @@
                 />
             </div>
 
+            <Loading style="margin: 12px 0 0 0;" v-if="loading"/>
+
+            <Alert v-else-if="(type === 'repos' && getListRepos?.length < 1) || (type === 'projects' && getListProjects?.length < 1)"/>
+
             <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'projects'">
-                <Project v-for="(project, idx) in projects" :key="idx" :project="project"
+                <Project v-for="(project, idx) in getListProjects" :key="idx" :project="project"
                     @click="$windows.create({ title: `Project ${project.title}`, component: 'Project' });"
-                    :style="{ 'transition-delay': `${.05 * idx}s` }"
+                    :style="{ '--d': `${.05 * (idx & 5)}s` }"
                 />
             </TransitionGroup>
 
@@ -58,13 +64,9 @@
             
             <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'repos'">
                 <Repository v-for="(repo, idx) in getListRepos" :key="idx" :repository="repo"
-                    :style="{ 'transition-delay': `${.05 * (idx % 30)}s` }"
+                    :style="{ '--d': `${.05 * (idx % 30)}s` }"
                 />
             </TransitionGroup>
-
-            
-            <Loading style="margin: 12px 0 0 0;" v-if="loading"/>
-            <Alert v-else-if="getListRepos?.length < 1"/>
         </div>
     </div>
 </template>
@@ -74,7 +76,6 @@
 import Project from '../../components/cards/Project.vue';
 import Repository, { IRepository } from '../../components/cards/Repository.vue';
 
-import Menu from '../../components/content/Menu.vue';
 import NavBar from '../../components/content/NavBar.vue';
 
 </script>
@@ -87,6 +88,21 @@ export default defineComponent({
     name: 'ProjectsPage',
     components: {},
     computed: {
+        getListProjects() {
+            let projects = [...this.projects || []],
+                type = this.filters.type;
+
+            // let sort = projects.sort((a: any, b: any) => {
+            //     if (type === 'name') return (a.name > b.name) as any;
+            //     if (type === 'stars') return (a.stargazers_count < b.stargazers_count) as any;
+            //     if (type === 'watchers') return (a.watchers_count < b.watchers_count) as any;
+            //     if (type === 'forks') return (a.forks_count < b.forks_count) as any;
+            // });
+
+            let regex = new RegExp(this.filters.text.trim(), 'gi');
+
+            return projects.filter(({ title, description }) => regex.test(title) || regex.test(description));
+        },
         getListRepos() {
             let repos = [...this.repos || []],
                 type = this.filters.type;
@@ -180,7 +196,7 @@ export default defineComponent({
 .projects-leave-active {
     transform: scale(.9);
     transition: all .5s;
-    transition-delay: 5s;
+    transition-delay: var(--d);
     opacity: 0;
 }
 

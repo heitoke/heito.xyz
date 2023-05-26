@@ -145,7 +145,8 @@ export default defineComponent({
     transition: .2s;
 
     &:hover {
-        box-shadow: 0 0 0 2px var(--background-secondary);
+        border-color: var(--main-color-alt);
+        box-shadow: 0 0 0 3px var(--background-secondary);
     }
 
     header {

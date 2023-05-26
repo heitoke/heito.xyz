@@ -117,6 +117,7 @@ export default defineComponent({
     flex-direction: column;
     justify-content: space-between;
     box-sizing: border-box;
+    transition: .2s;
     overflow: hidden;
     
     &::after {

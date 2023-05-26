@@ -4,10 +4,12 @@
             name: 'projects',
             buttons: [
                 {
+                    icon: 'images',
                     label: 'Projects',
                     click: () => $router.push(`/projects`)
                 },
                 {
+                    icon: 'repo',
                     label: 'Repositories',
                     click: () => $router.push(`/repositories`)
                 }
@@ -51,13 +53,18 @@
                     :style="{ 'transition-delay': `${.05 * idx}s` }"
                 />
             </TransitionGroup>
+
+            <Alert v-if="projects?.length < 1"/>
+            
             <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'repos'">
                 <Repository v-for="(repo, idx) in getListRepos" :key="idx" :repository="repo"
                     :style="{ 'transition-delay': `${.05 * (idx % 30)}s` }"
                 />
             </TransitionGroup>
 
-            <Loading style="margin: 12px 0 0 0;" v-show="loading"/>
+            
+            <Loading style="margin: 12px 0 0 0;" v-if="loading"/>
+            <Alert v-else-if="getListRepos?.length < 1"/>
         </div>
     </div>
 </template>

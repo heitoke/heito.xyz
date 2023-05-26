@@ -82,7 +82,7 @@
                         </li>
                     </TransitionGroup>
                 </ul>
-                <div class="no" v-else>So far there is nothing here o_O</div>
+                <Alert v-else/>
             </Transition>
         </main>
         <main v-else>
@@ -440,17 +440,6 @@ export default defineComponent({
                     transition: .2s;
                 }
             }
-        }
-
-        .no {
-            padding: 48px;
-            font-size: 20px;
-            color: var(--text-secondary);
-            text-align: center;
-            text-transform: uppercase;
-            border-radius: 15px;
-            border: 5px dashed var(--text-primary);
-            background-color: var(--main-color-alt);
         }
     }
 }

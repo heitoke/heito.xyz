@@ -62,7 +62,7 @@
                         </ol>
                     </li>
                 </ul>
-                <div class="no" v-else>So far there is nothing here</div>
+                <Alert type="mini" v-else/>
             </ScrollBar>
         </section>
 
@@ -71,6 +71,10 @@
                 Playing spotify music
             </Checkbox>
         </section>
+
+        <Alert type="mini" style="margin: 12px 0 0 0;" v-if="section !== 'settings' && section !== 'accounts'">
+            There's nothing here yet
+        </Alert>
 
         <Button :disabled="!config.name" style="margin: 12px 0 0 0;"
             @click="data?.save ? data?.save(config, 'update', windowId as number) : null;"
@@ -111,7 +115,7 @@ export default defineComponent({
         }
     },
     data: () => ({
-        section: 'accounts',
+        section: 'accounts' as string,
         filters: {
             text: '',
             menu: [
@@ -284,23 +288,6 @@ export default defineComponent({
                     }
                 }
             }
-        }
-    }
-
-    .no {
-        margin: 0 0 12px 0;
-        padding: 12px 24px;
-        color: var(--text-secondary);
-        text-align: center;
-        border-radius: 5px;
-        border: 2px dashed var(--text-primary);
-        background-color: var(--main-color-alt);
-        transition: .2s;
-        user-select: none;
-        opacity: .5;
-
-        &:hover {
-            opacity: 1;
         }
     }
 }

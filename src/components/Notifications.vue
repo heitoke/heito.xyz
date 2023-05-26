@@ -6,19 +6,19 @@
 
         <Transition name="panel">
             <div class="panel" v-if="$notifications?.options?.active">
-                <ScrollBar>
-                    <header>
-                        <span>Notifications</span>
-                        <Icon name="close" @click="$notifications.setActive(false)"/>
-                    </header>
+                <header>
+                    <span>Notifications</span>
+                    <Icon name="close" @click="$notifications.setActive(false)"/>
+                </header>
 
-                    <ul class="list menu">
+                <ScrollBar>
+                    <ul class="list menu" v-if="$notifications.list.length > 0">
                         <Notification v-for="notification of $notifications.list" :key="notification.id"
                             :id="notification.id"
                             :notification="notification"
                         />
-                        <div style="padding: 12px; color: var(--text-secondary);" v-show="$notifications.list.length < 1">So far, it's empty</div>
                     </ul>
+                    <Alert style="margin: 12px;" type="mini"/>
                 </ScrollBar>
             </div>
         </Transition>

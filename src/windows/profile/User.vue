@@ -37,6 +37,8 @@
             </div>
         </header>
 
+        <Alert type="mini">Soon everything may appear :D</Alert>
+
         <!-- <NavBar style="margin: 0 0 12px 0;" :menu="navMenu" @select="block = $event.value || $event.label.toLocaleLowerCase()"/> -->
         
         <!-- <Links :links="[

@@ -10,9 +10,9 @@
         ]" @select="filters.type = $event.value!"/>
 
         <ScrollBar :max-height="'256px'">
-            <ul>
+            <ul v-if="!loading && getSessions?.length > 0">
                 <TransitionGroup name="fade">
-                    <li v-for="session of sessions.filter(session => filters.type === 'all' ? true : session.type === filters.type)" :key="session._id"
+                    <li v-for="session of getSessions" :key="session._id"
                         @click="openSession(session._id)"
                     >
                         <Icon :name="session.device.os.icon || 'pacman'"
@@ -31,6 +31,8 @@
                     </li>
                 </TransitionGroup>
             </ul>
+            <Loading v-if="loading"/>
+            <Alert v-if="getSessions.length < 1" type="mini"/>
         </ScrollBar>
     </div>
 </template>
@@ -63,7 +65,11 @@ interface Session extends ISession {
 export default defineComponent({
     name: 'WindowSessions',
     components: {},
-    computed: {},
+    computed: {
+        getSessions() {
+            return this.sessions.filter(session => this.filters.type === 'all' ? true : session.type === this.filters.type);
+        }
+    },
     props: {
         windowId: { type: Number },
         closeWindow: {
@@ -77,7 +83,8 @@ export default defineComponent({
         filters: {
             type: 'all'
         },
-        sessions: [] as Array<Session>
+        sessions: [] as Array<Session>,
+        loading: true
     }),
     watch: {},
     methods: {
@@ -85,6 +92,8 @@ export default defineComponent({
             const [sessions, status] = await Auth.sessions();
 
             if (status !== 200) return;
+
+            this.loading = false;
 
             this.sessions = <Array<Session>>sessions.map(session => {
                 const info = device?.setUserAgent(session.userAgent);

@@ -14,7 +14,7 @@
         </div>
 
         <ScrollBar>
-            <ul v-if="configs?.length > 0">
+            <ul v-if="!loading && configs?.length > 0">
                 <TransitionGroup name="config">
                     <li v-for="(config, idx) of configs.filter(c => new RegExp(filters.text, 'g').test(c.name))" :key="config._id"
                         :class="{ selected: selected?.includes(config._id) }"
@@ -54,7 +54,8 @@
                     </li>
                 </TransitionGroup>
             </ul>
-            <Loading style="margin: 12px 0 0 0;" v-else/>
+            <Loading style="margin: 12px 0 0 0;" v-if="loading"/>
+            <Alert style="margin: 12px 0 0 0;" type="mini" v-if="configs?.length < 1"/>
         </ScrollBar>
     </div>
 </template>
@@ -89,7 +90,8 @@ export default defineComponent({
             text: ''
         },
         configs: [] as Array<IConfig>,
-        selected: [] as Array<string>
+        selected: [] as Array<string>,
+        loading: true
     }),
     watch: {},
     methods: {
@@ -179,6 +181,8 @@ export default defineComponent({
         const [list, status] = await Configs.list();
 
         if (status !== 200) return;
+
+        this.loading = false;
 
         this.configs = list;
     }

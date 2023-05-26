@@ -107,6 +107,8 @@ const plugin: Plugin = {
         const windows = new Windows();
 
         app.config.globalProperties.$windows = windows;
+
+        app.provide('windows', { windows });
     }
 }
 

@@ -150,7 +150,11 @@ export default defineComponent({
                         click: async () => {
                             let [result, status] = await Users.update(this.selfUser?._id, this.changes);
 
-                            if (status !== 200) return;
+                            if (status !== 200) return this.$notifications.error({
+                                title: 'updated user',
+                                message: result?.message,
+                                status
+                            });
 
                             this.selfUser = this.user;
                             this.changes = {} as IUser;
@@ -195,7 +199,7 @@ export default defineComponent({
                                 label: 'Verify',
                                 icon: 'verify',
                                 text: this.selfUser.verified ? 'Enabled' : 'Disabled',
-                                click: () => {
+                                click: (): void => {
                                     this.changes['verified'] = !this.user.verified;
                                 }
                             }
@@ -332,7 +336,7 @@ export default defineComponent({
                             label: 'Private mode',
                             icon: 'eye',
                             text: this.user.private ? 'Enable' : 'Disable',
-                            click: () => {
+                            click: (): void => {
                                 this.changes['private'] = !this.user.private;
                             }
                         },
@@ -377,6 +381,12 @@ export default defineComponent({
             const [result, status] = await Users.get(userId);
 
             if (status !== 200) {
+                this.$notifications.error({
+                    title: 'user',
+                    message: (result as any)?.message,
+                    status
+                });
+
                 return this.$emit('error');
             }
 

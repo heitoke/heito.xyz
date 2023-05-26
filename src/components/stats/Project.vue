@@ -71,24 +71,27 @@ export default defineComponent({
         async open() {
             this.isActive = !this.isActive;
 
-            console.log(this.data);
-            
-
             if ((this?.data as any)?.languages) return;
 
             this.isLoading = true;
 
-            let [result, status] = await $api.get(`/stats/code/projects/${this.project?.name}?start=${new Date(Date.now() - 1209600000).toISOString()}&end=${new Date().toISOString()}`);
+            const [result, status] = await $api.get(`/stats/code/projects/${this.project?.name}?start=${new Date(Date.now() - 1209600000).toISOString()}&end=${new Date().toISOString()}`);
         
-            if (status !== 200) return this.data = { error: true };
+            if (status !== 200) {
+                this.$notifications.error({
+                    title: 'stats project',
+                    message: (result as any)?.message,
+                    status
+                });
+                return this.data = { error: true };
+            }
 
             this.data = result;
 
             this.isLoading = false;
         }
     },
-    async mounted() {
-    }
+    mounted() {}
 });
 
 </script>

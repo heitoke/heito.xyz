@@ -91,7 +91,11 @@ export default defineComponent({
         async loadSessions() {
             const [sessions, status] = await Auth.sessions();
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'sessions',
+                message: (sessions as any)?.message,
+                status
+            });
 
             this.loading = false;
 

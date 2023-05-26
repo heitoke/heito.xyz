@@ -97,7 +97,9 @@ export default defineComponent({
             this.setEffects();
         },
         async initUser() {
-            const [user, _, props] = await Users.me();
+            const [user, status, props] = await Users.me();
+
+            if (status !== 200) return this.$notifications.error({ message: 'Failed to load the user.' });
 
             function setTokens(props: any) {
                 if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });
@@ -136,7 +138,10 @@ export default defineComponent({
                                 click: async (e: MouseEvent, data: any, windowId: number) => {
                                     const [user, status] = await Auth.login({ login: props?.confirmation?.userId, password });
 
-                                    if (status !== 200) return;
+                                    if (status !== 200) return this.$notifications.error({
+                                        status,
+                                        message: user?.message
+                                    });
                                     
                                     this.$windows.close(windowId);
                                 }
@@ -147,7 +152,7 @@ export default defineComponent({
                                 click: async (e: MouseEvent, data: any, windowId: number) => {
                                     const [user, status, props] = await Users.me('none');
 
-                                    if (status !== 200) return;
+                                    if (status !== 200) return this.$notifications.push({ message: 'Failed to load the user.' });
 
                                     setTokens(props);
 

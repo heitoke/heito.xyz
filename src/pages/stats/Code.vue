@@ -138,9 +138,13 @@ export default defineComponent({
         async getStats() {
             this.isLoading.languages = true;
         
-            let [{ totalSeconds, todaySeconds, yesterdaySeconds, createdAt, editors, languages }, status] = await $api.get('/stats/code');
+            let [{ totalSeconds, todaySeconds, yesterdaySeconds, createdAt, editors, languages, message }, status] = await $api.get('/stats/code');
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'stats',
+                message: message,
+                status
+            });
 
             this.data = {
                 totalSeconds,
@@ -159,9 +163,13 @@ export default defineComponent({
         async getProjects() {
             this.isLoading.projects = true;
         
-            let [result, status] = await $api.get('/stats/code/projects');
+            const [result, status] = await $api.get('/stats/code/projects');
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'stats',
+                message: (result as any)?.message,
+                status
+            });
 
             this.projects = result.data;
 

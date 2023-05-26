@@ -91,18 +91,26 @@ export default defineComponent({
         async loadUser(userId: string, name: 'mainUser' | 'nowUser') {
             if (!userId) return;
 
-            let [user, status] = await Users.get(userId);
+            const [user, status] = await Users.get(userId);
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.push({
+                icon: 'users',
+                title: `Error load user (${status || 501})`,
+                message: (user as any)?.message || 'Server error'
+            });
 
             this[name] = user;
         },
         async merge() {
             if (!this.main) return;
 
-            let [result, status] = await Users.merge({ old: this.mainUser?._id, now: this.nowUser?._id, select: this.main, password: this.password, scopes: this.scopes });
+            const [result, status] = await Users.merge({ old: this.mainUser?._id, now: this.nowUser?._id, select: this.main, password: this.password, scopes: this.scopes });
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.push({
+                icon: 'users',
+                title: `Error merge (${status || 501})`,
+                message: result?.message || 'Server error'
+            });
 
             if (this.data?.save) this.data?.save();
 

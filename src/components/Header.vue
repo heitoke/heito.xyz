@@ -112,10 +112,11 @@
                                 :style="{ color: getUser?.color ? colors.altColor(getUser?.color) : '' }"
                             >{{ getUser?.nickname || getUser?.username || getUser?._id || 'Guest' }}</div>
                         </Transition>
-                        <div class="avatar"
+                        <div :class="['avatar', { 'a-loading': !getUser?._id }]"
                             @click.prevent.stop="menu ? $windows.create({ component: 'User', data: getUser?._id }) : open($event, 'account', () => menu = true, () => menu = false)"
                         >
-                            <div :style="{ '--avatar': `url('${getAvatar({ nameId: getUser?._id })}')` }"></div>
+                            <div :style="{ '--avatar': `url('${getAvatar({ nameId: getUser?._id })}')` }" v-if="getUser?._id"></div>
+                            <Loading type="circle" v-else/>
                         </div>
                     </div>
                     <!-- <div class="level" v-if="menu">
@@ -217,6 +218,59 @@ export default defineComponent({
             'getSocket'
         ]),
         getProfileMenu(): IContextMenu {
+            const userButtons = [
+                { separator: true },
+                {
+                    label: 'Sessions',
+                    icon: 'users',
+                    click: () => {
+                        this.$windows.create({
+                            component: 'Sessions',
+                            data: {
+                                userId: this.getUser?._id,
+                                token: ''
+                            }
+                        })
+                    }
+                },
+                ...(!this.getUser?.isRegistered ? [
+                    { separator: true },
+                    {
+                        label: this.getLang.global.sign.in,
+                        icon: 'hand',
+                        click: () => {
+                            this.$windows.create({ title: this.getLang.user.create.title[0], component: 'Auth' });
+                        }
+                    },
+                    {
+                        label: this.getLang.user.create.title[0],
+                        icon: 'user-circle',
+                        click: () => {
+                            this.$windows.create({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
+                        }
+                    }
+                ] : []),
+                // ...(this.getUser?.isRegistered ? [
+                //     { separator: true },
+                //     {
+                //         label: this.getLang.global.exit[1],
+                //         icon: 'exit',
+                //         class: 'exit',
+                //         click: async () => {
+                //             const [user, status, props] = await Users.me('exit');
+
+                //             if (status !== 200) return;
+
+                //             deleteCookie(['HX_AT', 'HX_RT']);
+
+                //             if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+
+                //             this.setUser(user);
+                //         }
+                //     }
+                // ] : [])
+            ];
+
             return {
                 name: 'header:profile:menu',
                 buttons: [
@@ -260,56 +314,7 @@ export default defineComponent({
                             }))
                         }
                     },
-                    { separator: true },
-                    {
-                        label: 'Sessions',
-                        icon: 'users',
-                        click: () => {
-                            this.$windows.create({
-                                component: 'Sessions',
-                                data: {
-                                    userId: this.getUser?._id,
-                                    token: ''
-                                }
-                            })
-                        }
-                    },
-                    ...(!this.getUser?.isRegistered ? [
-                        { separator: true },
-                        {
-                            label: this.getLang.global.sign.in,
-                            icon: 'hand',
-                            click: () => {
-                                this.$windows.create({ title: this.getLang.user.create.title[0], component: 'Auth' });
-                            }
-                        },
-                        {
-                            label: this.getLang.user.create.title[0],
-                            icon: 'user-circle',
-                            click: () => {
-                                this.$windows.create({ title: this.getLang.user.create.title[0], component: 'Auth', data: 'register' });
-                            }
-                        }
-                    ] : []),
-                    // ...(this.getUser?.isRegistered ? [
-                    //     { separator: true },
-                    //     {
-                    //         label: this.getLang.global.exit[1],
-                    //         icon: 'exit',
-                    //         class: 'exit',
-                    //         click: async () => {
-                    //             const [user, status, props] = await Users.me('exit');
-
-                    //             if (status !== 200) return;
-
-                    //             deleteCookie(['HX_AT', 'HX_RT']);
-
-                    //             if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
-
-                    //             this.setUser(user);
-                    //         }
-                    //     }
-                    // ] : [])
+                    ...(this.getUser?._id ? userButtons : [])
                 ]
             } as IContextMenu;
         },
@@ -537,17 +542,19 @@ export default defineComponent({
             this.$socket.emit('users:online', 'list');
         },
         async searchUsers() {
-            let [result, status] = await Users.list();
+            const [result, status] = await Users.list();
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'search users',
+                message: (result as any)?.message,
+                status
+            });
 
             this.search.users = (result as any).results;
         }
     },
     mounted() {
         this.darkTheme = this.$local.get('theme') === 'dark';
-
-        // this.$socket.emit('users:online', 'count');
     }
 });
 
@@ -1012,14 +1019,17 @@ header {
                 display: flex;
                 min-width: 42px;
                 min-height: 42px;
-                border-radius: 10px;
                 align-items: center;
                 justify-content: center;
-                transform: rotate(25deg);
-                transition: .2s;
-                overflow: hidden;
 
-                &:hover {
+                &:not(.a-loading) {
+                    border-radius: 10px;
+                    transform: rotate(25deg);
+                    transition: .2s;
+                    overflow: hidden;
+                }
+
+                &:not(.a-loading):hover {
                     border-radius: 50%;
                     transform: rotate(0) scale(1.3);
                     // box-shadow: 0 0 0 2px var(--background-secondary);
@@ -1029,7 +1039,7 @@ header {
                     }
                 }
 
-                div {
+                &:not(.a-loading) div {
                     width: 120%;
                     height: 120%;
                     position: absolute;

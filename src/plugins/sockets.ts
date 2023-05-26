@@ -51,6 +51,8 @@ const plugin: Plugin = {
 
         app.config.globalProperties.$socket = socket;
 
+        app.provide('sockets', { socket });
+
         app.mixin({
             mounted() {
                 let events = this.$options?.sockets || {},

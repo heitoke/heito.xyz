@@ -112,9 +112,14 @@ export default defineComponent({
                 });
             }
 
-            let [newUser, status, props] = await Auth[this.type]({ login: this.login, email: this.email, password: this.password, repeatPassword: this.repeatPassword });
+            const [newUser, status, props] = await Auth[this.type]({ login: this.login, email: this.email, password: this.password, repeatPassword: this.repeatPassword });
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.push({
+                icon: 'exit',
+                title: `Error (${status || 501})`,
+                message: newUser?.message || 'Server error',
+                color: 'var(--red)'
+            });
 
             const save = () => {
                 if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });

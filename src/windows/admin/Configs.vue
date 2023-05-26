@@ -119,12 +119,18 @@ export default defineComponent({
                     {
                         label: 'Create a miracle',
                         color: 'var(--green)',
-                        click: async () => {
+                        click: async (e: MouseEvent, data: any, windowId: number) => {
                             const [newConfig, status] = await Configs.create(<IConfig>{ name: body.name });
-                            
-                            if (status !== 200) return;
+
+                            if (status !== 200) return this.$notifications.error({
+                                title: 'creating config',
+                                message: (newConfig as any)?.message,
+                                status
+                            });
 
                             this.configs = [...this.configs || [], newConfig];
+
+                            this.$windows.close(windowId);
                         }
                     }
                 ]
@@ -138,7 +144,11 @@ export default defineComponent({
         async enable(configId: string) {
             const [result, status] = await Configs.enable(configId);
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'enabling config',
+                message: (result as any)?.message,
+                status
+            });
 
             for (let cfg of this.configs) {
                 cfg.enable = cfg._id === configId;
@@ -156,7 +166,11 @@ export default defineComponent({
                     save: async (newConfig: IConfig, type: 'update' | 'create', windowId: number) => {
                         const [result, status] = await Configs.update(this.configs[configIndex]._id, newConfig);
 
-                        if (status !== 200) return;
+                        if (status !== 200) return this.$notifications.error({
+                            title: 'updating config',
+                            message: (result as any)?.message,
+                            status
+                        });
 
                         this.configs[configIndex] = newConfig;
 
@@ -170,7 +184,11 @@ export default defineComponent({
 
             const [result, status] = await Configs.delete(this.selected);
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'deleting config',
+                message: (result as any)?.message,
+                status
+            });
 
             this.configs = this.configs.filter(c => !result.deleted.find(id => c._id === id));
 
@@ -180,7 +198,15 @@ export default defineComponent({
     async mounted() {
         const [list, status] = await Configs.list();
 
-        if (status !== 200) return;
+        if (status !== 200) {
+            this.$notifications.error({
+                title: 'loading configs',
+                message: (list as any)?.message,
+                status
+            });
+
+            this.loading = false;
+        }
 
         this.loading = false;
 

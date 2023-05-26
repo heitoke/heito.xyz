@@ -170,8 +170,13 @@ export default defineComponent({
                 repos = await res.json();
 
             if (res.status !== 200) {
-                this.loading = false;
-                return;
+                this.$notifications.error({
+                    title: 'loading repos',
+                    message: repos?.message,
+                    status: res.status
+                });
+
+                return this.loading = false;
             }
 
             this.repos = [...this.repos || [], ...repos];

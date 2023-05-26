@@ -18,7 +18,7 @@
                             :notification="notification"
                         />
                     </ul>
-                    <Alert style="margin: 12px;" type="mini"/>
+                    <Alert style="margin: 12px 12px 0 12px;" type="mini" v-else/>
                 </ScrollBar>
             </div>
         </Transition>

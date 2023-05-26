@@ -1,15 +1,15 @@
 <template>
-    <div class="ui-loading">
+    <div :class="['ui-loading', type]">
         <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
             <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
         </svg>
-        <Text :text="value"/>
+        <Text :text="value" v-if="type !== 'circle'"/>
     </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 export default defineComponent({
     name: 'UILoading',
@@ -18,6 +18,10 @@ export default defineComponent({
         size: {
             type: String,
             default: '48px'
+        },
+        type: {
+            type: String as PropType<'default' | 'circle'>,
+            default: () => 'default'
         }
     },
     data: () => ({
@@ -54,12 +58,18 @@ $offset: 187;
 $duration: 1.4s;
 
 .ui-loading {
-    display: flex;
-    padding: 24px;
-    border-radius: 5px;
-    align-items: center;
-    justify-content: center;
-    border: 1px solid var(--background-primary-alt);
+    &.default {
+        display: flex;
+        padding: 24px;
+        border-radius: 5px;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--background-primary-alt);
+
+        .spinner {
+            margin: 0 16px 0 0;
+        }
+    }
 
     @keyframes Rotator {
         0% {
@@ -93,7 +103,6 @@ $duration: 1.4s;
     }
 
     .spinner {
-        margin: 0 16px 0 0;
         width: 32px;
         height: 32px;
         animation: Rotator $duration linear infinite;

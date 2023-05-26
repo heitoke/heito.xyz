@@ -81,7 +81,11 @@ export default defineComponent({
         async loadSession(sessionId: string) {
             const [session, status] = await Auth.session(sessionId);
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'session',
+                message: (session as any)?.message,
+                status
+            });
 
             this.session = session;
             
@@ -97,7 +101,11 @@ export default defineComponent({
 
             const [session, status] = await Auth.closeSessions(this.session._id);
 
-            if (status !== 200) return;
+            if (status !== 200) return this.$notifications.error({
+                title: 'session',
+                message: (session as any)?.message,
+                status
+            });
 
             if (this.data?.close) this.data?.close(this.session._id);
 

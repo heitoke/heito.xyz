@@ -32,8 +32,16 @@ interface INotifications {
     setPotition(position: TPosition): void;
 
     push(notification: INotification): void;
+    error(options: INotificationError): void;
     hide(notificationId: number): void;
     remove(notificationId: number): void;
+}
+
+interface INotificationError {
+    title?: string;
+    message?: string;
+    icon?: string;
+    status?: number;
 }
 
 export class Notifications implements INotifications {
@@ -61,6 +69,15 @@ export class Notifications implements INotifications {
         });
     }
 
+    error({ title, message, icon = 'info-circle', status = 501 }: INotificationError) {
+        this.push({
+            title: `Error ${title || ''} (${status || 501})`,
+            message: message || 'Server error',
+            icon: icon,
+            color: 'var(--red)'
+        });
+    }
+
     hide(notificationId: number) {
         const notifIndex = this.list.findIndex(notification => notification.id === notificationId);
 
@@ -83,6 +100,8 @@ const plugin: Plugin = {
         const notifications = new Notifications();
 
         app.config.globalProperties.$notifications = notifications;
+
+        app.provide('notifications', { notifications });
     }
 }
 

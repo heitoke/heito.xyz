@@ -9,7 +9,7 @@
 
 <script lang="ts" setup>
 
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, inject } from 'vue';
 
 import Users, { IUser } from '../../libs/api/routes/users';
 
@@ -27,6 +27,9 @@ import { AnaglyphEffect } from 'three/examples/jsm/effects/AnaglyphEffect.js';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/examples/jsm/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/examples/jsm/postprocessing/UnrealBloomPass.js';
+
+const a = inject('notifications');
+const $notifications = (a as any)?.notifications;
 
 const
     root = ref<HTMLElement | null>(null),
@@ -60,9 +63,13 @@ const bloomParams = {
 };
 
 onMounted(async () => {
-    let [listUsers, status] = await Users.list({ limit: 500, fields: ['_id', 'color'] });
+    const [listUsers, status] = await Users.list({ limit: 500, fields: ['_id', 'color'] });
         
-    if (status !== 200) return;
+    if (status !== 200) return $notifications.error({
+        title: 'deleting config',
+        message: (listUsers as any)?.message,
+        status
+    });
     
     users = listUsers.results;
     

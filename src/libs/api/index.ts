@@ -112,24 +112,33 @@ export default {
         }
     },
     async fetch(uri: string = '', { body = {}, method = 'GET', json = true, headers = { 'Content-Type': `application/json` }, token = '' }: IFetch) {
-        let options: RequestInit = {
-                body: (method === 'GET' ? undefined : (json ? JSON.stringify(body) : body) as any),
-                headers: {
-                    Authorization: `Bearer ${token || this.getAccessToken()}`,
-                    ...headers
-                },
-                mode: 'cors',
-                method
+        const options: RequestInit = {
+            body: (method === 'GET' ? undefined : (json ? JSON.stringify(body) : body) as any),
+            headers: {
+                Authorization: `Bearer ${token || this.getAccessToken()}`,
+                ...headers
             },
-            res = await fetch(this.getDomain() + (uri[0] !== '/' ? `/${uri}` : uri), options),
-            result = await res.json(),
-            props = { ...result };
+            mode: 'cors',
+            method
+        };
 
-        if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+        try {
+            const res = await fetch(this.getDomain() + (uri[0] !== '/' ? `/${uri}` : uri), options);
 
-        delete props['result'];
+            const
+                result = await res.json(),
+                props = { ...result };
 
-        return [result?.result || result, await res.status, props];
+            if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+
+            delete props['result'];
+
+            return [result?.result || result, await res.status, props];
+        } catch (error) {
+            console.log(error);
+
+            return [{ message: 'Failed to connect to the server' }, 501, {}];
+        }
     },
     async get(uri: string = '', options?: IFetch) {
         return await this.fetch(uri, { ...options, method: 'GET' });

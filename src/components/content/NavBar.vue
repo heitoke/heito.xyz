@@ -1,6 +1,6 @@
 <template>
     <div :class="`nav-bar ${orientation}`"
-        @wheel.prevent.stop="setScroll"
+        @wheel.prevent.stop="orientation === 'vertical' ? null : setScroll($event)"
     >
         <ul>
             <li v-for="(btn, idx) of menu" :key="btn.label"
@@ -133,6 +133,7 @@ export default defineComponent({
 
             li {
                 margin: 0 0 12px 0;
+                padding: 8px 16px;
                 width: 100%;
             }
 

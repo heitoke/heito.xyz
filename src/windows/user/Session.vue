@@ -25,7 +25,7 @@
                 <div>User Agent</div>
             </li>
             <li>
-                <div>{{ session.type.toLocaleUpperCase() }}</div>
+                <div>{{ session.type.replace(/_/g, ' ').toLocaleUpperCase() }}</div>
                 <div>Token Type</div>
             </li>
         </ul>

@@ -32,7 +32,14 @@
                 <ul v-if="config.accounts?.length > 0">
                     <li v-for="(account, idx) of config.accounts.filter(a => new RegExp(filters.text, 'g').test(a.key) || new RegExp(filters.text, 'g').test(a.type))" :key="account.key">
                         <Icon :name="filters.menu.find(a => a.value === account.type)?.icon"/>
-                        <div class="name">{{ filters.menu.find(a => a.value === account.type)?.label }}</div>
+                        <div>
+                            <div class="name">{{ filters.menu.find(a => a.value === account.type)?.label }}</div>
+                            <div class="key"
+                                @click="($event.target as HTMLElement).textContent = account.key"
+                                @contextmenu.prevent.stop="copy(account.key)"
+                                @mouseenter="setToolpic({ text: 'Right-click to copy' })"
+                            >{{ '*'.repeat(account.key.length) }}</div>
+                        </div>
 
                         <div style="margin: 0 0 0 auto;"></div>
 
@@ -77,6 +84,8 @@
 import User from '../../components/cards/User.vue';
 import NavBar from '../../components/content/NavBar.vue';
 import ScrollBar from '../../components/ScrollBar.vue';
+
+import { copy } from '../../libs/utils';
 
 </script>
 
@@ -215,7 +224,7 @@ export default defineComponent({
         li {
             display: flex;
             margin: 0 0 12px 0;
-            padding: 12px;
+            padding: 8px 12px;
             max-width: 376px;
             border-radius: 5px;
             border: 1px solid var(--background-secondary);
@@ -234,17 +243,30 @@ export default defineComponent({
                 margin: 0 8px 0 0;
             }
 
+            i + div {
+                .name {
+                    max-width: 196px;
+                    text-overflow: ellipsis;
+                    white-space: nowrap;
+                    overflow: hidden;
+                }
+
+                .key {
+                    cursor: pointer;
+                    padding: 2px 8px;
+                    color: var(--text-secondary);
+                    font-size: 12px;
+                    border-radius: 5px;
+                    background-color: var(--background-secondary);
+                    transition: .2s;
+                    user-select: none;
+                }
+            }
+
             .l {
                 margin: 0 8px;
                 height: 16px;
                 border-left: 1px solid var(--background-secondary);
-            }
-
-            .name {
-                max-width: 196px;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                overflow: hidden;
             }
 
             ol {

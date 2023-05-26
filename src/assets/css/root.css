@@ -31,13 +31,14 @@ ul, ol, li {
     padding-inline-start: 0px;
 }
 
-html:not(.no-blur) .blur {
+/* html:not(.no-blur) .blur {
     backdrop-filter: blur(var(--blur));
     -webkit-backdrop-filter: blur(var(--blur));
-}
+} */
 
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
-    .html:not(.no-blur) .blur {
+    /* .html:not(.no-blur) */
+    .blur {
         backdrop-filter: blur(var(--blur));
         -webkit-backdrop-filter: blur(var(--blur));
     }

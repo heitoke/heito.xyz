@@ -481,14 +481,24 @@ export default defineComponent({
                         activity = {
                             id: `osu:${active?.id}`,
                             name: `${active?.username}`,
-                            details: active?.is_online ? 'Online' : 'Offline',
+                            details: `PP: ${active?.pp}`,
+                            state: `Global #${active?.global_rank}, Country #${active?.country_rank}`,
                             largeImage: {
                                 url: active?.avatar_url,
                                 label: 'osu!'
                             },
+                            smallImage: active?.is_online ? {
+                                icon: 'circle',
+                                color: 'var(--green)',
+                                label: `Online`
+                            } : {
+                                icon: 'circle-alt',
+                                color: 'var(--text-secondary)',
+                                label: `Offline (${time.format(active?.last_visit)})`
+                            },
                             type: 'default',
                             buttons: [
-                                { label: 'Profile', icon: 'user-circle', url: `https://www.twitch.tv/${active?.login}` }
+                                { label: 'Profile', icon: 'user-circle', url: `https://osu.ppy.sh/users/${active?.id}` }
                             ]
                         };
 
@@ -715,6 +725,16 @@ header {
                 }
             }
 
+            &.active {
+                .data {
+                    cursor: auto;
+
+                    &::before {
+                        opacity: .5;
+                    }
+                }
+            }
+
             .data {
                 cursor: pointer;
                 max-width: 256px;
@@ -725,6 +745,19 @@ header {
                 border-radius: 5px;
                 border: 1px solid var(--T);
                 transition: .3s;
+
+                &::before {
+                    content: " ";
+                    width: 100%;
+                    height: 100%;
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    border-radius: 5px;
+                    background: var(--background-secondary);
+                    opacity: 0;
+                    z-index: -1;
+                }
     
                 .list {
                     margin: 12px 0 0 0;

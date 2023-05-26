@@ -2,25 +2,34 @@
     <div class="sessions">
         <div class="title">Sessions</div>
 
+        <NavBar style="margin: 0 0 12px 0;" :menu="[
+            { label: 'All', icon: 'damage-void', value: 'all' },
+            { label: 'Guast token', icon: 'user-circle', value: ESessionType.GuastToken },
+            { label: 'Refresh token', icon: 'setting', value: ESessionType.Refresh },
+            { label: 'Access token', icon: 'exit', value: ESessionType.Access },
+        ]" @select="filters.type = $event.value!"/>
+
         <ScrollBar :max-height="'256px'">
             <ul>
-                <li v-for="session of sessions" :key="session._id"
-                    @click="openSession(session._id)"
-                >
-                    <Icon :name="session.device.os.icon || 'pacman'"
-                        :style="{
-                            color: colors.altColor(colors.stringToHexColor(session._id)),
-                            'background-color': colors.stringToHexColor(session._id)
-                        }"
-                    />
-                    <div>
-                        <div class="name">
-                            <div>{{ session.device.browser.name }}</div>
-                            <div>{{ time.format(String(session.createdAt)) }}</div>
+                <TransitionGroup name="fade">
+                    <li v-for="session of sessions.filter(session => filters.type === 'all' ? true : session.type === filters.type)" :key="session._id"
+                        @click="openSession(session._id)"
+                    >
+                        <Icon :name="session.device.os.icon || 'pacman'"
+                            :style="{
+                                color: colors.altColor(colors.stringToHexColor(session._id)),
+                                'background-color': colors.stringToHexColor(session._id)
+                            }"
+                        />
+                        <div>
+                            <div class="name">
+                                <div>{{ session.device.browser.name }}</div>
+                                <div>{{ time.format(String(session.createdAt)) }}</div>
+                            </div>
+                            <div class="ip">{{ session.ip }}</div>
                         </div>
-                        <div class="ip">{{ session.ip }}</div>
-                    </div>
-                </li>
+                    </li>
+                </TransitionGroup>
             </ul>
         </ScrollBar>
     </div>
@@ -30,6 +39,8 @@
 
 import ScrollBar from '../../components/ScrollBar.vue';
 
+import NavBar from '../../components/content/NavBar.vue';
+
 import { colors, time } from '../../libs/utils';
 
 </script>
@@ -38,7 +49,7 @@ import { colors, time } from '../../libs/utils';
 
 import { PropType, defineComponent } from 'vue';
 
-import Auth, { type ISession } from '../../libs/api/routes/auth';
+import Auth, { type ISession, ESessionType } from '../../libs/api/routes/auth';
 
 import { device, type INameIcon } from '../../libs/utils';
 
@@ -62,6 +73,10 @@ export default defineComponent({
         data: { type: Object as PropType<{ userId: string, token: string }> }
     },
     data: () => ({
+        ESessionType,
+        filters: {
+            type: 'all'
+        },
         sessions: [] as Array<Session>
     }),
     watch: {},
@@ -104,7 +119,15 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 
+.fade-enter-active,
+.fade-leave-active {
+    transition: .2s;
+    opacity: 0;
+}
+
 .block.sessions {
+    max-width: 256px;
+
     .title {
         margin: 0 0 12px 0;
         font-size: 18px;
@@ -112,7 +135,6 @@ export default defineComponent({
 
     ul {
         padding: 4px;
-        min-width: 256px;
 
         li {
             cursor: pointer;

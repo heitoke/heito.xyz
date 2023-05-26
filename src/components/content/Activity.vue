@@ -4,11 +4,11 @@
             <div class="images">
                 <div class="large" v-if="content.largeImage?.url"
                     :style="{ '--image': `url(${content.largeImage?.url})` }"
-                    @mouseenter="content.largeImage?.label ? setToolpic({ text: content.largeImage?.label }) : null"
+                    @mouseenter.prevent.stop="content.largeImage?.label ? setToolpic({ text: content.largeImage?.label, event: ($el as Element).querySelector('large') }) : null"
                 ></div>
                 <div class="small" v-if="content.smallImage?.url || content?.smallImage?.icon"
                     :style="{ '--image': `url(${content.smallImage?.url})` }"
-                    @mouseenter="content.smallImage?.label ? setToolpic({ text: content.smallImage?.label }) : null"
+                    @mouseenter.prevent.stop="content.smallImage?.label ? setToolpic({ text: content.smallImage?.label, event: ($el as Element).querySelector('small') }) : null"
                 >
                     <Icon :name="content?.smallImage?.icon" v-if="content?.smallImage?.icon"
                         :style="{ color: content?.smallImage?.color }"

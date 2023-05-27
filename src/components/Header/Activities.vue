@@ -58,7 +58,8 @@ export default defineComponent({
     data: () => ({
         active: false,
         track: {} as IContent,
-        list: [] as Array<IContent>
+        list: [] as Array<IContent>,
+        timer: {} as NodeJS.Timeout
     }),
     watch: {},
     sockets: {
@@ -82,6 +83,12 @@ export default defineComponent({
                     { label: 'Open track', icon: 'music-note', url: data?.track?.url }
                 ]
             }
+
+            clearTimeout(this.timer);
+
+            this.timer = setTimeout(() => {
+                this.track = {} as IContent;
+            }, 6000);
         },
         'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr' | 'twitch' | 'osu', [key: string]: any }>) {
             this.list = [];

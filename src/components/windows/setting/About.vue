@@ -1,6 +1,6 @@
 <template>
     <section class="about">
-        Version: 0.0.13
+        Version: 0.0.41
         <br>
         <a href="https://github.com/heitoke/heito.xyz">GitHub</a>
     </section>

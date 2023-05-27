@@ -37,8 +37,24 @@
                                         icon: 'link',
                                         text: 'Do you really want to delete the link?',
                                         buttons: [
-                                            { label: 'Out of sight' },
-                                            { label: 'Give another chance' }
+                                            {
+                                                label: 'Out of sight',
+                                                color: 'var(--red)',
+                                                click: (e: MouseEvent, data: any, windowId: number) => {
+                                                    list = list.filter((_, i) => i !== idx);
+
+                                                    $emit('update', { list });
+
+                                                    $windows.close(windowId);
+                                                }
+                                            },
+                                            {
+                                                label: 'Give another chance',
+                                                color: 'var(--green)',
+                                                click: (e: MouseEvent, data: any, windowId: number) => {
+                                                    $windows.close(windowId);
+                                                }
+                                            }
                                         ]
                                     }
                                 })
@@ -55,7 +71,10 @@
             </li>
         </ul>
 
-        <Alert type="mini" v-if="getListLink.length < 1"/>
+        <div v-if="getListLink.length < 1">
+            <slot name="void" v-if="isSlotVoid"></slot>
+            <Alert type="mini" v-else/>
+        </div>
     </div>
 </template>
 
@@ -76,6 +95,13 @@ export default defineComponent({
             const regex = new RegExp(this.filter.text.trim(), 'gi');
 
             return list.filter(({ label, text, url }) => regex.test(label) || regex.test(text || '') || regex.test(url));
+        },
+        isSlotVoid() {
+            try {
+                return (this.$slots as any)?.void();
+            } catch (err) {
+                return false;
+            }
         }
     },
     props: {

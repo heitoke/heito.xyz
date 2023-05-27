@@ -106,7 +106,7 @@
                 <div :class="['data', { blur: menu }]">
                     <div class="header"
                         :style="{
-                            padding: menu ? `${getUser?.banner ? 20 : 16}px 8px` : null,
+                            padding: menu ? `${getUser?.banner ? 20 : 16}px 8px` : undefined,
                             '--color': getUser?.color || 'var(--main-color)',
                             '--image': `url('${getUser?.banner || null}')`
                         }"

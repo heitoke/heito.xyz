@@ -29,6 +29,17 @@ export interface IButtonPermission {
     icon: string;
 }
 
+export interface ILink {
+    label: string;
+    text?: string;
+    icon?: string;
+    img?: string;
+    color?: string;
+    url: string;
+    updatedAt?: Date;
+    createdAt?: Date;
+}
+
 export const listPermissions = [
     {
         label: 'Self',
@@ -68,6 +79,8 @@ export interface IUser {
     isRegistered: boolean;
     username?: string;
     nickname?: string;
+    avatar?: string;
+    banner?: string;
     emails?: IEMail[];
     password?: string;
     ips?: IIp[];
@@ -79,6 +92,7 @@ export interface IUser {
         access: string;
     };
     isDeleted?: boolean;
+    links?: Array<ILink>;
     updatedAt?: Date;
     createdAt?: Date;
 }
@@ -197,7 +211,7 @@ class Route {
             { name: 'userId', text: 'Username, user Id, or mail linked to the user' }
         ],
         queries: [
-            { name: 'type', type: 'string', enum: { person: {}, default: {} }, default: 'default' }
+            { name: 'type', type: 'string', enum: { person: {}, default: {}, links: {} }, default: 'default' }
         ],
         body: [
             { name: 'private', type: 'boolean', text: '' },
@@ -216,7 +230,7 @@ class Route {
         permissions: [EPermissions.Users],
         method: 'PATCH'
     })
-    update(userId: string, body: IUser, type: 'person' | 'default' = 'default') {
+    update(userId: string, body: IUser, type: 'person' | 'default' | 'links' = 'default') {
         return $api.patch(`/users/${userId}?type=${type}`, { body });
     }
 }

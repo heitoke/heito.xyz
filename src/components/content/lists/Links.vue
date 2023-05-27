@@ -1,6 +1,6 @@
 <template>
     <div class="links">
-        <div class="filters">
+        <div class="filters" v-if="filters?.length > 0">
             <Textbox label="Search" v-show="filters.includes('search')"
                 @input="filter.text = ($event.target as any)?.value"
             />
@@ -9,6 +9,7 @@
                 @click="addNewLink()"
             >New link</Button>
         </div>
+
         <ul>
             <li v-for="(link, idx) of getListLink" :key="idx"
                 @click="redirect(link?.url)"
@@ -53,31 +54,26 @@
                 </div>
             </li>
         </ul>
+
+        <Alert type="mini" v-if="getListLink.length < 1"/>
     </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent, PropType, reactive } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 import { mapActions } from 'vuex';
 
-export interface ILink {
-    label: string;
-    text?: string;
-    icon?: string;
-    img?: string;
-    color?: string;
-    url: string;
-}
+import type { ILink } from '../../../libs/api/routes/users';
 
 export default defineComponent({
     name: 'ListLinks',
     computed: {
         getListLink() {
-            let list = [...this.list];
+            const list = [...this.list];
 
-            let regex = new RegExp(this.filter.text.trim(), 'gi');
+            const regex = new RegExp(this.filter.text.trim(), 'gi');
 
             return list.filter(({ label, text, url }) => regex.test(label) || regex.test(text || '') || regex.test(url));
         }
@@ -98,15 +94,27 @@ export default defineComponent({
         filter: {
             text: ''
         },
-        list: [] as ILink[]
+        list: [] as Array<ILink>
     }),
-    watch: {},
+    watch: {
+        'links'(newValue) {
+            this.list = newValue;
+        }
+    },
+    emits: {
+        add(a: Function): Function {
+            return a;
+        },
+        update(options: { list: Array<ILink> }): { list: Array<ILink> } {
+            return options;
+        }
+    },
     methods: {
         ...mapActions(['setContextMenu']),
         redirect(url: string) {
             window.open(url, '');
         },
-        addNewLink(link?: ILink, id?: number) {
+        addNewLink(link?: ILink, id: number = -1) {
             let newLink: ILink = {
                 label: '',
                 text: '',
@@ -169,7 +177,10 @@ export default defineComponent({
                             click: (e: MouseEvent, data: any, windowId: number) => {
                                 if (!newLink?.label || !newLink?.url) return;
 
-                                if (id) {
+                                console.log(link, id);
+                                
+
+                                if (id > -1) {
                                     this.list[id] = newLink;
                                 } else {
                                     this.list = [...this.list || [], newLink];
@@ -177,7 +188,9 @@ export default defineComponent({
 
                                 this.$windows.close(windowId);
 
-                                this.$emit('update', this.list);
+                                this.$emit('update', {
+                                    list: this.list
+                                });
                             }
                         }
                     ]
@@ -187,6 +200,8 @@ export default defineComponent({
     },
     mounted() {
         this.list = this.links;
+
+        this.$emit('add', this.addNewLink);
     }
 })
 

@@ -31,7 +31,7 @@
 
             <div :class="['activities', { active: activities.isActive }]" ref="activities">
                 <Transition name="activities">
-                    <div class="data blur" v-if="activities?.list?.length > 0"
+                    <div :class="['data', { blur: activities.isActive }]" v-if="activities?.list?.length > 0"
                         @click="open($event, 'activities', () => activities.isActive = true, () => activities.isActive = false)"
                     >
                         <Activity :show-buttons="activities.isActive" :content="{
@@ -103,19 +103,27 @@
             </div>
 
             <div :class="['account', { active: menu }]" ref="account">
-                <div class="data blur">
-                    <div class="header" :style="{ '--color': getUser?.color || 'var(--main-color)' }"
+                <div :class="['data', { blur: menu }]">
+                    <div class="header"
+                        :style="{
+                            padding: menu ? `${getUser?.banner ? 20 : 16}px 8px` : null,
+                            '--color': getUser?.color || 'var(--main-color)',
+                            '--image': `url('${getUser?.banner || null}')`
+                        }"
                         @click="menu ? $windows.create({ component: 'User', data: getUser?._id }) : false"
                     >
                         <Transition name="account-username">
                             <div class="username" v-show="menu"
-                                :style="{ color: getUser?.color ? colors.altColor(getUser?.color) : '' }"
+                                :style="{
+                                    color: getUser?.color && !getUser?.banner ? colors.altColor(getUser?.color) : '#fff'
+                                }"
                             >{{ getUser?.nickname || getUser?.username || getUser?._id || 'Guest' }}</div>
                         </Transition>
+
                         <div :class="['avatar', { 'a-loading': !getUser?._id }]"
                             @click.prevent.stop="menu ? $windows.create({ component: 'User', data: getUser?._id }) : open($event, 'account', () => menu = true, () => menu = false)"
                         >
-                            <div :style="{ '--avatar': `url('${getAvatar({ nameId: getUser?._id })}')` }" v-if="getUser?._id"></div>
+                            <div :style="{ '--avatar': `url('${getUser?.avatar || getAvatar({ nameId: getUser?._id })}')` }" v-if="getUser?._id"></div>
                             <Loading type="circle" v-else/>
                         </div>
                     </div>
@@ -955,7 +963,6 @@ header {
 
                 .header {
                     cursor: pointer;
-                    padding: 16px 8px;
                     border-radius: 5px;
                     // backdrop-filter: blur(5px);
                     overflow: hidden;
@@ -995,8 +1002,8 @@ header {
                     left: 0;
                     background-size: cover;
                     background-position: center;
-                    // background-image: url('https://avatars.mds.yandex.net/i?id=b5ed82d65587a3cd0a6818c4c02c16e15c046b92-8497600-images-thumbs&n=13');
                     background-color: var(--color);
+                    background-image: var(--image);
                     transform: scale(1.2);
                     transition: .2s;
                     filter: blur(2px);

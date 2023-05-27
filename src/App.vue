@@ -180,12 +180,25 @@ export default defineComponent({
             }
 
             if (user?._id) this.setUser(user);
+        },
+        getStyle(className: string) {
+            var cssText = "";
+            var classes = document.styleSheets[0].rules || document.styleSheets[0].cssRules;
+            for (var x = 0; x < classes.length; x++) {        
+                if ((classes[x] as any).selectorText == className) {
+                    cssText += classes[x].cssText || (classes[x] as any).style.cssText;
+                }         
+            }
+            return cssText;
         }
     },
     async mounted() {
         await this.initCustomization();
 
         await this.initUser();
+
+        console.log(this.getStyle('.ui-button'));
+        
 
         window.addEventListener('resize', () => {
             this.setWinSize([window.innerWidth, window.innerHeight]);

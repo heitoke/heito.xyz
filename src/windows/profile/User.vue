@@ -1,7 +1,13 @@
 <template>
     <div class="user">
         <header>
-            <div class="banner" :style="{ height: '96px', 'background-color': user?.color }">
+            <div class="banner"
+                :style="{
+                    height: user?.banner ? '128px' : '96px',
+                    'background-color': user?.color,
+                    'background-image': `url('${user?.banner || ''}')`
+                }"
+            >
                 <ul>
                     <li v-show="user.verified">
                         <Icon name="verify"/>
@@ -29,7 +35,7 @@
                 </ul>
             </div>
             <div>
-                <div class="avatar" :style="{ '--avatar': `url('${getAvatar({ nameId: user?._id })}')` }">
+                <div class="avatar" :style="{ '--avatar': `url('${user?.avatar || getAvatar({ nameId: user?._id })}')` }">
                     <!-- <div class="status"></div> -->
                 </div>
                 <Text class="username" :text="user?.nickname || user?.username || user?._id"/>
@@ -37,38 +43,22 @@
             </div>
         </header>
 
-        <Alert type="mini">Soon everything may appear :D</Alert>
-
         <!-- <NavBar style="margin: 0 0 12px 0;" :menu="navMenu" @select="block = $event.value || $event.label.toLocaleLowerCase()"/> -->
-        
-        <!-- <Links :links="[
-                {
-                    label: 'WebSite',
-                    text: 'Description',
-                    icon: 'ticket',
-                    color: '#759454',
-                    url: 'https://heito.xyz'
-                },
-                {
-                    label: 'GitHub',
-                    icon: 'github',
-                    color: '#000000',
-                    url: 'https://github.com/heitoke'
-                },
-                {
-                    label: 'GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub ',
-                    text: 'Kkd a;skd;l askd;laskd ;laskd;as kas;dk as;kda s;kdapodqopf jw ejg 9er fgjw9e- fw0e fw',
-                    icon: 'clock',
-                    color: 'black',
-                    url: 'https://github.com/heitoke'
-                },
-                {
-                    label: 'GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub GitHub ',
-                    text: 'Kkd a;skd;l askd;laskd ;laskd;as kas;dk as;kda s;kdapodqopf jw ejg 9er fgjw9e- fw0e fw',
-                    color: 'black',
-                    url: 'https://github.com/heitoke'
-                }
-            ]" v-show="block === 'links'"/> -->
+
+        <section v-show="block === 'links'">
+            <Links :links="user?.links || []" :filters="user?.links?.length! < 1 ? [] : ['search', 'add']"
+                @add="add = $event"
+                @update="changes.links = []; changes.links = $event.list;"
+            />
+
+            <Alert type="mini" v-if="user?.links?.length! < 1">
+                <div>Soon everything may appear :D</div>
+                <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="getUser?._id === user?._id || isAdmin"
+                    color="var(--green)"
+                    @click="add ? add() : null"
+                >Create first link</Button>
+            </Alert>
+        </section>
 
         <!-- <Loading v-show="block === 'projects'"/> -->
     </div>
@@ -80,7 +70,7 @@ import { copy, getAvatar } from '../../libs/utils';
 
 // import NavBar, { IButton } from '../../components/content/NavBar.vue';
 
-// import Links from '../../components/content/lists/Links.vue';
+import Links from '../../components/content/lists/Links.vue';
 
 </script>
 
@@ -129,43 +119,15 @@ export default defineComponent({
                 label: 'Projects',
                 icon: 'projects'
             }
-        ] as any
+        ] as any,
+        add: null as any
     }),
     watch: {
         'getLengthChanges'(newValue, oldValue) {
-            if (oldValue < 1 && newValue > 0) {
-                this.$windows.addButtons(this.windowId!, [
-                    {
-                        label: 'Back',
-                        icon: 'clock-alt',
-                        color: 'var(--red)',
-                        click: () => {
-                            this.changes = {} as IUser;
-                        }
-                    },
-                    {
-                        label: 'Save changes',
-                        icon: 'quill',
-                        color: 'var(--green)',
-                        click: async () => {
-                            let [result, status] = await Users.update(this.selfUser?._id, this.changes);
-
-                            if (status !== 200) return this.$notifications.error({
-                                title: 'updated user',
-                                message: result?.message,
-                                status
-                            });
-
-                            this.selfUser = this.user;
-                            this.changes = {} as IUser;
-
-                            if (this.selfUser?._id === this.getUser._id) this.setUser(this.selfUser);
-                        }
-                    }
-                ]);
-            } else if (newValue < 1) {
-                this.$windows.removeButtons(this.windowId!, [1, 2]);
-            }
+            this.saveButtons(oldValue < 1 && newValue > 0);
+        },
+        'selfUser.links.length'(newValue, oldValue) {
+            this.saveButtons(JSON.stringify(this.selfUser.links) !== JSON.stringify(this.user.links));
         }
     },
     methods: {
@@ -325,6 +287,67 @@ export default defineComponent({
                 }
             };
 
+            const buttonAvatarClick = (name: 'avatar' | 'banner' = 'avatar') => {
+                this.$windows.create({
+                    component: 'Message',
+                    data: {
+                        title: `Change user ${name}`,
+                        icon: 'image',
+                        components: [
+                            {
+                                component: 'Textbox',
+                                name: name,
+                                props: {
+                                    label: `New ${name} (URL)`,
+                                    text: this.user.avatar || '',
+                                    autofocus: true
+                                },
+                                events: {
+                                    input: (e: InputEvent) => {
+                                        this.changes[name] = (e.target as any)?.value;
+                                    }
+                                }
+                            }
+                        ],
+                        buttons: [
+                            {
+                                label: 'Submit',
+                                click: (e: MouseEvent, data: any, windowId: number) => {
+                                    this.$windows.close(windowId);
+                                }
+                            }
+                        ]
+                    }
+                });
+            }
+            const buttonAvatar = (boolean: boolean, name: 'avatar' | 'banner' = 'avatar', label: string = 'Avatar') => ({
+                label,
+                icon: 'image',
+                children: boolean ? {
+                    name: `user:settings:${name}`,
+                    title: `User ${name}`,
+                    buttons: [
+                        {
+                            label: 'Change',
+                            icon: 'pencil',
+                            click: () => {
+                                buttonAvatarClick(name);
+                            }
+                        },
+                        {
+                            label: 'Remove',
+                            icon: 'close',
+                            click: () => {
+                                this.changes.avatar = '';
+                            }
+                        }
+                    ]
+                } : undefined,
+                click: boolean ? null : () => {
+                    buttonAvatarClick(name);
+                }
+            })
+
             return {
                 label: 'User settings',
                 icon: 'settings',
@@ -340,6 +363,9 @@ export default defineComponent({
                                 this.changes['private'] = !this.user.private;
                             }
                         },
+                        { separator: true },
+                        buttonAvatar(Boolean(this.user?.avatar)),
+                        buttonAvatar(Boolean(this.user?.banner), 'banner', 'Banner'),
                         { separator: true },
                         buttonNickname,
                         buttonUsername,
@@ -390,9 +416,51 @@ export default defineComponent({
                 return this.$emit('error');
             }
 
-            this.selfUser = result;
+            this.selfUser = { ...result, links: result?.links || [] };
 
             this.setButtons();
+        },
+        saveButtons(boolean: boolean) {
+            if (boolean) {
+                this.$windows.addButtons(this.windowId!, [
+                    {
+                        label: 'Back',
+                        icon: 'clock-alt',
+                        color: 'var(--red)',
+                        click: () => {
+                            this.changes = {} as IUser;
+                        }
+                    },
+                    {
+                        label: 'Save changes',
+                        icon: 'quill',
+                        color: 'var(--green)',
+                        click: async () => {
+                            const [result, status] = await Users.update(this.selfUser?._id, this.changes, 'links');
+
+                            if (status !== 200) return this.$notifications.error({
+                                title: 'updated user',
+                                message: result?.message,
+                                status
+                            });
+
+                            this.$notifications.push({
+                                title: 'User',
+                                icon: 'user-circle',
+                                message: 'User saved successfully',
+                                color: 'var(--green)'
+                            });
+
+                            this.selfUser = this.user;
+                            this.changes = {} as IUser;
+
+                            if (this.selfUser?._id === this.getUser._id) this.setUser(this.selfUser);
+                        }
+                    }
+                ]);
+            } else {
+                this.$windows.removeButtons(this.windowId!, [1, 2]);
+            }
         }
     },
     mounted() {
@@ -418,6 +486,8 @@ export default defineComponent({
             width: 100%;
             position: relative;
             border-radius: 5px;
+            background-size: cover;
+            background-position: 50% 50%;
             background-color: var(--background-secondary);
             transition: .2s;
 

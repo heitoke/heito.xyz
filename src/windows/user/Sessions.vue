@@ -4,9 +4,9 @@
 
         <NavBar style="margin: 0 0 12px 0;" :menu="[
             { label: 'All', icon: 'damage-void', value: 'all' },
-            ...[getSessions.find(s => s.type === ESessionType.GuastToken) ? { label: 'Guast token', icon: 'user-circle', value: ESessionType.GuastToken } : {} as any],
-            ...[getSessions.find(s => s.type === ESessionType.Refresh) ? { label: 'Refresh token', icon: 'setting', value: ESessionType.Refresh } : {} as any],
-            ...[getSessions.find(s => s.type === ESessionType.Access) ? { label: 'Access token', icon: 'exit', value: ESessionType.Access } : {} as any]
+            ...(getSessions.find(s => s.type === ESessionType.GuastToken) ? [{ label: 'Guast token', icon: 'user-circle', value: ESessionType.GuastToken }] : [] as any),
+            ...(getSessions.find(s => s.type === ESessionType.Refresh) ? [{ label: 'Refresh token', icon: 'setting', value: ESessionType.Refresh }] : [] as any),
+            ...(getSessions.find(s => s.type === ESessionType.Access) ? [{ label: 'Access token', icon: 'exit', value: ESessionType.Access }] : [] as any)
         ]" @select="filters.type = $event.value!"/>
 
         <ScrollBar :max-height="'256px'">

@@ -68,7 +68,9 @@
                             @input="search.text = $event.target?.value; searchUsers()"
                         />
                         <div class="result blur">
-                            <User v-for="user of search.users" :key="user._id" :user="user"/>
+                            <ScrollBar :max-height="'50vh'">
+                                <User v-for="user of search.users" :key="user._id" :user="user"/>
+                            </ScrollBar>
                         </div>
                     </div>
                 </Transition>

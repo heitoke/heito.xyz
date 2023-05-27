@@ -2,7 +2,7 @@
     <div :class="['user', { hover: hovered }]"
         @click="clicked ? $windows.create({ component: 'User', data: user?._id }) : null"
     >
-        <div class="avatar" :style="{ '--avatar': `url('${getAvatar({ nameId: user?._id })}')` }"></div>
+        <div class="avatar" :style="{ '--avatar': `url('${user?.avatar || getAvatar({ nameId: user?._id })}')` }"></div>
         <div style="max-width: 100%; width: 100%;">
             <div class="username">{{ user?.nickname || user?.username || user?._id }}</div>
             <Text class="text" :text="text" v-show="text"/>

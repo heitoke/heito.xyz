@@ -126,10 +126,11 @@ export default defineComponent({
     }),
     watch: {
         'getLengthChanges'(newValue, oldValue) {
-            this.saveButtons(oldValue < 1 && newValue > 0);
+            this.saveButtons(oldValue < 1 && newValue > 0, newValue < 1);
         },
         'selfUser.links.length'(newValue, oldValue) {
-            this.saveButtons(JSON.stringify(this.selfUser.links) !== JSON.stringify(this.user.links));
+            const boolean = JSON.stringify(this.selfUser.links) !== JSON.stringify(this.user.links);
+            this.saveButtons(boolean, !boolean);
         }
     },
     methods: {
@@ -422,8 +423,8 @@ export default defineComponent({
 
             this.setButtons();
         },
-        saveButtons(boolean: boolean) {
-            if (boolean) {
+        saveButtons(isTrue: boolean, isFalse: boolean) {
+            if (isTrue) {
                 this.$windows.addButtons(this.windowId!, [
                     {
                         label: 'Back',
@@ -460,7 +461,7 @@ export default defineComponent({
                         }
                     }
                 ]);
-            } else {
+            } else if (isFalse) {
                 this.$windows.removeButtons(this.windowId!, [1, 2]);
             }
         }

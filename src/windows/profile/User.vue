@@ -301,7 +301,7 @@ export default defineComponent({
                                 name: name,
                                 props: {
                                     label: `New ${name} (URL)`,
-                                    text: this.user.avatar || '',
+                                    text: this.user[name] || '',
                                     autofocus: true
                                 },
                                 events: {

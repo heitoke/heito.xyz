@@ -2,8 +2,8 @@
     <div class="main">
         <div class="hello-world">
             <div class="content">
-                <Text class="title" :text="getLang.page.main.title"/>
-                <Text class="text" :text="getLang.page.main.text"/>
+                <Text class="title" :text="$lang.params.page.main.title"/>
+                <Text class="text" :text="$lang.params.page.main.text"/>
             </div>
             <Suspense>
                 <SpaceOfStars/>
@@ -27,9 +27,7 @@ import { mapGetters } from 'vuex';
 export default defineComponent({
     name: 'MainPage',
     components: {},
-    computed: {
-        ...mapGetters(['getLang'])
-    },
+    computed: {},
     props: {},
     data: () => ({}),
     watch: {},

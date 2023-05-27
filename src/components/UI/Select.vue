@@ -3,7 +3,7 @@
         <header @click="open">
             <div :class="['label', { active: getItem?.label || isActive }]">{{ label }}</div>
             <div>
-                <Icon :name="getItem?.icon" v-if="getItem?.icon"/>
+                <Icon :name="getItem?.icon" :style="{ color: getItem?.color || 'var(--text-secondary)' }" v-if="getItem?.icon"/>
                 <Text class="text
                 " :text="getItem?.label || ''" style="height: 18px;"/>
             </div>
@@ -27,6 +27,7 @@ export interface IMenuButton {
     text: string;
     value: string;
     icon: string;
+    color: string;
 }
 
 export default defineComponent({

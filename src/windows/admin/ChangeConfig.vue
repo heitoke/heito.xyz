@@ -87,7 +87,7 @@
 
 import User from '../../components/cards/User.vue';
 import NavBar from '../../components/content/NavBar.vue';
-import ScrollBar from '../../components/ScrollBar.vue';
+import ScrollBar from '../../components/content/ScrollBar.vue';
 
 import { copy } from '../../libs/utils';
 

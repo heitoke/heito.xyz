@@ -11,6 +11,7 @@ import './assets/css/root.css';
 // * Plugins
 import Sockets from './plugins/sockets';
 import Storage from './plugins/storage';
+import Langs from './plugins/langs';
 import Windows from './plugins/windows';
 import Notifications from './plugins/notifications';
 import Log from './plugins/log';
@@ -24,6 +25,7 @@ export const createApp = async () => {
         connection: import.meta.env.VITE_API_URL
     });
     app.use(Storage);
+    app.use(Langs);
     app.use(Windows);
     app.use(Notifications);
     app.use(Log);

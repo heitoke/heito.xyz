@@ -6,31 +6,16 @@
 
 <script lang="ts">
 
-import { defineAsyncComponent } from 'vue';
+import { defineComponent } from 'vue';
 
-import { mapGetters } from 'vuex';
-
-export default {
+export default defineComponent({
     name: 'ErrorPage',
-    components: {
-        Text: defineAsyncComponent(() => import('../components/UI/Text.vue'))
-    },
-    computed: {
-        ...mapGetters(['getLang'])
-    },
-    data: () => ({
-        title: {
-            en: 'Welcome my friend',
-            ru: 'Добро пожаловать мой друг'
-        },
-        text: {
-            en: 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ex odio ad soluta obcaecati magnam sit eius dolor. Numquam dolore exercitationem maxime repellat molestias neque quos.',
-            ru: 'Lore2m ipsum dolor sit amet, consectetur adipisicing elit. Ex odio ad soluta obcaecati magnam sit eius dolor. Numquam dolore exercitationem maxime repellat molestias neque quos.'
-        }
-    }),
+    components: {},
+    computed: {},
+    data: () => ({}),
     watch: {},
     mounted() {}
-}
+});
 
 </script>
 

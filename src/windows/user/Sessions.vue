@@ -39,7 +39,7 @@
 
 <script lang="ts" setup>
 
-import ScrollBar from '../../components/ScrollBar.vue';
+import ScrollBar from '../../components/content/ScrollBar.vue';
 
 import NavBar from '../../components/content/NavBar.vue';
 

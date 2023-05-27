@@ -48,7 +48,7 @@
 <script lang="ts" setup>
 
 import Footer from '../Footer.vue';
-import ScrollBar from '../ScrollBar.vue';
+import ScrollBar from '../content/ScrollBar.vue';
 
 </script>
 

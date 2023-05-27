@@ -37,7 +37,7 @@
 
 <script setup lang="ts">
 
-import ScrollBar from './ScrollBar.vue';
+import ScrollBar from './content/ScrollBar.vue';
 
 import Notification from './notifications/Notification.vue';
 
@@ -55,7 +55,7 @@ export default defineComponent({
     computed: {
         ...mapGetters(['getWinHeight']),
         getMaxCountNotification(): number {
-            let count: number = Math.floor(this.getWinHeight / 70) - 2;
+            const count: number = Math.floor(this.getWinHeight / 70) - 2;
             return count > 7 ? 7 : count;
         }
     },
@@ -65,9 +65,6 @@ export default defineComponent({
         enterNotification(el: Element) {
             setTimeout(() => {
                 this.$notifications.hide(Number(el.id));
-
-                console.log(this.$notifications.list);
-                
             }, 7000);
         }
     },

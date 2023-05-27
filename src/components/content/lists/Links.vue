@@ -80,7 +80,7 @@
 
 <script lang="ts">
 
-import { defineComponent, PropType } from 'vue';
+import { defineComponent, PropType, markRaw, defineAsyncComponent } from 'vue';
 
 import { mapActions } from 'vuex';
 
@@ -117,6 +117,7 @@ export default defineComponent({
         }
     },
     data: () => ({
+        SelectIcon: markRaw(defineAsyncComponent(() => import('../SelectIcon.vue'))),
         filter: {
             text: ''
         },
@@ -194,6 +195,15 @@ export default defineComponent({
                                     newLink['color'] = color;
                                 }
                             }
+                        },
+                        {
+                            component: this.SelectIcon,
+                            props: { icon: newLink?.icon, color: newLink?.color },
+                            events: {
+                                select(iconName: string) {
+                                    newLink['icon'] = iconName;
+                                }
+                            }
                         }
                     ],
                     buttons: [
@@ -202,9 +212,6 @@ export default defineComponent({
                             color: `var(--${link?.label ? 'yellow' : 'green'})`,
                             click: (e: MouseEvent, data: any, windowId: number) => {
                                 if (!newLink?.label || !newLink?.url) return;
-
-                                console.log(link, id);
-                                
 
                                 if (id > -1) {
                                     this.list[id] = newLink;

@@ -3,28 +3,28 @@
         <div class="banner" :style="{ '--image': `url('${image}')` }"></div>
         
         <div>
-            <Text class="title" :text="getLang.user[type === 'login' ? 'auth' : 'create'].title[0]"/>
-            <Text class="text" :text="getLang.user.create.text" v-show="type === 'register'"/>
+            <Text class="title" :text="$lang.params.user[type === 'login' ? 'auth' : 'create'].title[0]"/>
+            <Text class="text" :text="$lang.params.user.create.text" v-show="type === 'register'"/>
 
-            <Textbox :label="type === 'login' ? `${getLang.global.login} / ${getLang.global.email}` : getLang.global.login"
+            <Textbox :label="type === 'login' ? `${$lang.params.global.login} / ${$lang.params.global.email}` : $lang.params.global.login"
                 :match="type === 'login' ? /(^[a-zA-Z0-9\_]+$)|(\S+@\S+\.\S+)/ : /^[a-zA-Z0-9\_]+$/"
                 @input="login = $event?.target?.value"
             />
-            <Textbox :label="getLang.global.email" v-show="type === 'register'"
+            <Textbox :label="$lang.params.global.email" v-show="type === 'register'"
                 :match="/\S+@\S+\.\S+/"
                 @input="email = $event?.target?.value"
             />
-            <Textbox :label="getLang.global.password" type="password"
+            <Textbox :label="$lang.params.global.password" type="password"
                 :min="8" :max="64"
                 @input="password = $event?.target?.value"
             />
-            <Textbox :label="getLang.global.repeatPassword" type="password" v-show="type === 'register'"
+            <Textbox :label="$lang.params.global.repeatPassword" type="password" v-show="type === 'register'"
                 :min="8" :max="64"
                 @input="repeatPassword = $event?.target?.value"
             />
     
             <Button @click="auth()" :disabled="getValid">
-                {{ type === 'login' ? getLang.global.sign.in : getLang.user.create.title[1] }}
+                {{ type === 'login' ? $lang.params.global.sign.in : $lang.params.user.create.title[1] }}
             </Button>
 
             <div class="footer"
@@ -40,7 +40,7 @@
 
 import { PropType, defineComponent } from 'vue';
 
-import { mapActions, mapGetters } from 'vuex';
+import { mapActions } from 'vuex';
 
 import Auth from '../../libs/api/routes/auth';
 
@@ -50,7 +50,6 @@ export default defineComponent({
     name: 'WindowAuth',
     components: {},
     computed: {
-        ...mapGetters(['getLang']),
         getValid() {
             let login = this.isValid(this.login),
                 email = this.isValid(this.email),

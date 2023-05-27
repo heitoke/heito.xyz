@@ -62,7 +62,7 @@
 
 <script lang="ts" setup>
 
-import ScrollBar from '../../components/ScrollBar.vue';
+import ScrollBar from '../../components/content/ScrollBar.vue';
 
 import { getAvatar } from '../../libs/utils';
 

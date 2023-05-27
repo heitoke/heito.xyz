@@ -9,14 +9,16 @@
                     'max-width': contextMenu.autoMaxWidth ? 'auto' : '196px'
                 }"
             >
-                <Menu :menu="contextMenu" v-if="contextMenu?.buttons?.length! > 0"/>
-
-                <div v-if="contextMenu?.components?.length! > 0">
-                    <component v-for="component of contextMenu?.components" :is="component.component"
-                        v-bind="component.props"
-                        v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
-                    />
-                </div>
+                <ScrollBar>
+                    <Menu :menu="contextMenu" v-if="contextMenu?.buttons?.length! > 0"/>
+    
+                    <div v-if="contextMenu?.components?.length! > 0">
+                        <component v-for="component of contextMenu?.components" :is="component.component"
+                            v-bind="component.props"
+                            v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
+                        />
+                    </div>
+                </ScrollBar>
             </div>
         </TransitionGroup>
     </div>
@@ -25,6 +27,8 @@
 <script setup lang="ts">
 
 import Menu from './content/Menu.vue';
+
+import ScrollBar from './content/ScrollBar.vue';
 
 </script>
 
@@ -81,6 +85,17 @@ export default defineComponent({
             contextMenu.x = x;
             contextMenu.y = y;
 
+            console.log(e.scrollHeight);
+            
+            if ((e.scrollHeight + 32) > window.innerHeight) {
+                const
+                    scrollBar = e.querySelector('.scrollbar [scrollbar-block]'),
+                    maxHeight = window.innerHeight - contextMenu.y - 32;
+
+                if (scrollBar) scrollBar.setAttribute('style', `max-height: ${maxHeight}px; height: ${maxHeight}px;`);
+            }
+            
+
             let close = () => {
                 setTimeout(() => {
                     window.addEventListener('click', (clickEvent: Event) => {
@@ -110,6 +125,7 @@ export default defineComponent({
         border-radius: 5px;
         border: 1px solid var(--background-secondary);
         transition: .2s;
+        overflow: hidden;
         z-index: 109;
 
         &-enter-active,

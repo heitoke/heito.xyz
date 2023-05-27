@@ -341,7 +341,7 @@ export default defineComponent({
                             label: 'Remove',
                             icon: 'close',
                             click: () => {
-                                this.changes.avatar = '';
+                                this.changes[name] = '';
                             }
                         }
                     ]

@@ -1,33 +1,43 @@
 <template>
-    <div class="project" :style="{ '--image': `url('${project?.image}')` }">
+    <div class="project" :style="{ '--image': `url('${p?.banner}')` }"
+        @click="clicked ? $windows.create({
+            component: 'Project',
+            data: p?._id,
+            props: {
+                update: (newProject: IProject) => {
+                    changes = newProject;
+                }
+            }
+        }) : null"
+    >
         <header>
-            <div class="title">{{ project?.title }}</div>
-            <div class="description">{{ project?.description }}</div>
+            <div class="title">{{ p?.displayName || p?.name || p?._id }}</div>
+            <div class="description">{{ p?.description }}</div>
         </header>
 
         <div>
-            <ul class="members">
-                <li v-for="(member, idx) of members.slice(0, 5)" :key="idx"
+            <ul class="members" v-if="p?.members?.length! > 0">
+                <li v-for="({ member }, idx) of p?.members?.slice(0, 5)" :key="idx"
                     :style="{
-                        '--avatar': `url('${getAvatar({ nameId: member.name })}')`,
+                        '--avatar': `url('${member?.avatar || getAvatar({ nameId: member._id })}')`,
                         opacity: hoverMember > -1 ? (hoverMember === idx ? 1 : 0) : 1
                     }"
-                    @mouseenter="setToolpic({ name: `project:asd`, title: member.name }); hoverMember = idx"
+                    @mouseenter="setToolpic({ name: `project:asd`, title: member.nickname || member.username || member._id }); hoverMember = idx"
                     @mouseleave="hoverMember = -1"
+                    @click.prevent.stop="$windows.create({ component: 'User', data: member._id })"
                 ></li>
-                <li v-show="members.length > 5" :style="{ opacity: hoverMember > -1 ? 0 : 1 }">
-                    +{{ members?.length - 5 }}
+
+                <li v-show="p?.members?.length! > 5" :style="{ opacity: hoverMember > -1 ? 0 : 1 }">
+                    +{{ p?.members?.length! - 5 }}
                 </li>
             </ul>
+
+            <div style="margin: 0 0 0 auto;"></div>
+
             <div class="date">{{ time.format(Date.now(), 'dd MMM YYYY') }}</div>
-            <ul class="tags">
-                <li>New 1</li>
-                <li>New 2</li>
-                <li>New 3</li>
-                <li>New 4</li>
-                <li>New 5</li>
-                <li>New 6</li>
-                <li>New 7</li>
+
+            <ul class="tags" v-if="p?.tags?.length! > 0">
+                <li v-for="(tag, idx) of p?.tags" :key="idx">{{ tag }}</li>
             </ul>
         </div>
     </div>
@@ -45,55 +55,27 @@ import { defineComponent, PropType } from 'vue';
 
 import { mapActions } from 'vuex';
 
-export interface IProject {
-    title: string;
-    description?: string;
-    image?: string;
-    createdAt: number;
-}
+import type { IProject } from '../../libs/api/routes/projects';
 
 export default defineComponent({
     name: 'CardProject',
-    computed: {},
+    computed: {
+        p(): IProject {
+            return { ...this.project, ...this.changes };
+        }
+    },
     props: {
         project: {
             type: Object as PropType<IProject>
+        },
+        clicked: {
+            type: Boolean,
+            default: true
         }
     },
     data: () => ({
-        hoverMember: -1,
-        members: [
-            {
-                name: 'heito'
-            },
-            {
-                name: 'test'
-            },
-            {
-                name: 'bobiclaki'
-            },
-            {
-                name: 'lyama'
-            },
-            {
-                name: 'Ляма'
-            },
-            {
-                name: 'gg'
-            },
-            {
-                name: 'Саша'
-            },
-            {
-                name: 'Никита'
-            },
-            {
-                name: 'Олег'
-            },
-            {
-                name: 'Влад'
-            }
-        ]
+        changes: {} as IProject,
+        hoverMember: -1
     }),
     methods: {
         ...mapActions(['setToolpic', 'setContextMenu'])
@@ -198,7 +180,7 @@ export default defineComponent({
             color: var(--text-secondary);
             font-size: 12px;
             white-space: nowrap;
-            mix-blend-mode: difference;
+            // mix-blend-mode: difference;
         }
 
         ul.tags {

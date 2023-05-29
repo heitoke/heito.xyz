@@ -47,9 +47,8 @@ export interface IRoute {
     }>;
     permissions?: Array<EPermissions>;
 }
-export interface ICategory {
+interface ICategoryOptions {
     label?: string;
-    name: string;
     icon?: string;
     description?: string;
     path: string;
@@ -57,37 +56,50 @@ export interface ICategory {
     permissions?: Array<EPermissions>;
     version?: 'stable' | 'beta' | 'disabled';
 }
+export interface ICategory extends ICategoryOptions {
+    name: string;
+}
 
 export let categories: Array<ICategory> = [];
 
-export const descriptors = {
-    addCategory(options: ICategory) {
-        return function(ctor: Function) {
-            if (!options.name || categories.find(c => c.name === options.name)) return;
+export class DocumentationAPI {
+    readonly name: string;
+    readonly options: ICategoryOptions;
 
-            categories = [...categories || [], {
-                version: 'stable',
-                ...options,
-                routes: []
-            }];
-        }
-    },
-    addRoute(categoryName: string, route: IRoute) {
+    constructor(name: string, options: ICategoryOptions) {
+        this.name = name;
+        this.options = options;
+
+        this.initCategory();
+    }
+
+    private initCategory() {
+        if (!this.name || categories.find(c => c.name === this.name)) return;
+
+        categories = [...categories || [], {
+            version: 'stable',
+            ...this.options,
+            name: this.name,
+            routes: []
+        }];
+    }
+
+    route(route: IRoute) {
+        const name = this.name;
+
         return function(target: any, propertyKey: string, descriptor: PropertyDescriptor) {
-            setTimeout(() => {
-                let index = categories?.findIndex(c => c?.name === categoryName);
-            
-                if (index < 0) return;
+            const categoryIndex = categories?.findIndex(c => c?.name === name);
 
-                categories[index].routes = [
-                    ...categories[index].routes || [],
-                    {
-                        path: ``,
-                        method: 'GET',
-                        ...route
-                    }
-                ];
-            }, 100);
+            if (categoryIndex < 0) return;
+
+            categories[categoryIndex].routes = [
+                ...categories[categoryIndex].routes || [],
+                {
+                    path: ``,
+                    method: 'GET',
+                    ...route
+                }
+            ];
         };
     }
 }

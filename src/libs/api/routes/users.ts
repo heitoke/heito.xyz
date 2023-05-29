@@ -1,4 +1,11 @@
-import $api, { descriptors, categories } from '../';
+import $api, { DocumentationAPI } from '../';
+
+const docs = new DocumentationAPI('users', {
+    path: '/users',
+    label: 'Users',
+    icon: 'users',
+    version: 'beta'
+});
 
 export interface IEMail {
     email: string;
@@ -81,6 +88,7 @@ export interface IUser {
     nickname?: string;
     avatar?: string;
     banner?: string;
+    description?: string;
     emails?: IEMail[];
     password?: string;
     ips?: IIp[];
@@ -111,17 +119,10 @@ export interface IUserFilters {
 
 const enumForBy = ['_id', 'private', 'isRegistered', 'username', 'nickname', 'color', 'verified', 'permissions', 'isDeleted', 'updatedAt', 'createdAt'];
 
-@descriptors.addCategory({
-    label: 'Users',
-    name: 'users',
-    icon: 'users',
-    path: '/users',
-    version: 'beta'
-})
 class Route {
     constructor() {}
 
-    @descriptors.addRoute('users', {
+    @docs.route({
         label: 'Get Me',
         icon: 'username',
         path: '/me',
@@ -135,7 +136,7 @@ class Route {
         return $api.get(`/users/me`, { token }) as any;
     }
 
-    @descriptors.addRoute('users', {
+    @docs.route({
         label: 'Get list users',
         icon: 'users',
         description: 'Get a list of users (Filters for easy search will appear soon)',
@@ -157,7 +158,7 @@ class Route {
         return $api.get(`/users?skip=${skip || 0}&limit=${limit || 0}&fields=${fields.join(',')}&by=${by.join(',')}&text=${text || ''}&sort=${sort || 'date'}&order=${order}`) as any;
     }
 
-    @descriptors.addRoute('users', {
+    @docs.route({
         label: 'Get user',
         icon: 'id-card',
         path: '/:userId',
@@ -176,7 +177,7 @@ class Route {
         return $api.get(`/users/${userId}`) as any;
     }
 
-    @descriptors.addRoute('users', {
+    @docs.route({
         label: 'Merge accounts',
         icon: 'merge',
         path: '/merge',
@@ -202,7 +203,7 @@ class Route {
         return $api.put('/users/merge', { body });
     }
 
-    @descriptors.addRoute('users', {
+    @docs.route({
         label: 'Update user account',
         icon: 'pencil',
         path: '/:userId',
@@ -217,6 +218,9 @@ class Route {
             { name: 'private', type: 'boolean', text: '' },
             { name: 'username', type: 'string', text: '' },
             { name: 'nickname', type: 'string', text: '' },
+            { name: 'avatar', type: 'string', text: 'URL' },
+            { name: 'banner', type: 'string', text: 'URL' },
+            { name: 'description', type: 'string', text: 'Max length - 512' },
             { name: 'color', type: 'string', text: '' },
             { name: 'verified', type: 'boolean', text: '', permissions: [EPermissions.Users] },
             { name: 'permissions', type: 'string', text: '', permissions: [EPermissions.Users] },

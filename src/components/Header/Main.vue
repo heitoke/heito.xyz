@@ -188,6 +188,7 @@ export default defineComponent({
                 this.online.count = data?.online;
             } else if (data?.list) {
                 this.online.list = data?.list as IUser[];
+                this.online.count = data?.list?.length || 0;
             }
         }
     },

@@ -30,23 +30,12 @@
                             icon: 'search-alt',
                             value: 'name'
                         },
-                        {
-                            label: 'by Stars',
-                            icon: 'star-alt',
-                            value: 'stars'
-                        },
-                        {
-                            label: 'by Watchers',
-                            icon: 'eye',
-                            value: 'watchers'
-                        },
-                        {
-                            label: 'by Forks',
-                            icon: 'fork',
-                            value: 'forks'
-                        }
+                        ...(type === 'repos' ? filters.reposMenu : filters.projectsMenu)
                     ]"
                 />
+                <Button style="margin: 0 0 0 12px; width: 96px;" color="var(--green)" v-if="isAdmin"
+                    @click="createProject"
+                >Create</Button>
             </div>
 
             <Loading style="margin: 12px 0 0 0;" v-if="loading"/>
@@ -55,12 +44,9 @@
 
             <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'projects'">
                 <Project v-for="(project, idx) in getListProjects" :key="idx" :project="project"
-                    @click="$windows.create({ title: `Project ${project.title}`, component: 'Project' });"
                     :style="{ '--d': `${.05 * (idx & 5)}s` }"
                 />
             </TransitionGroup>
-
-            <Alert v-if="projects?.length < 1"/>
             
             <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'repos'">
                 <Repository v-for="(repo, idx) in getListRepos" :key="idx" :repository="repo"
@@ -84,24 +70,34 @@ import NavBar from '../../components/content/NavBar.vue';
 
 import { PropType, defineComponent } from 'vue';
 
+import { mapGetters } from 'vuex';
+
+import Projects, { IProject } from '../../libs/api/routes/projects';
+
+import { EPermissions } from '../../libs/api/routes/users';
+import type { IMessage } from '../../windows/Message.vue';
+
 export default defineComponent({
     name: 'ProjectsPage',
     components: {},
     computed: {
+        ...mapGetters(['getUser']),
+        isAdmin() {
+            return this.getUser?.permissions?.includes(EPermissions.Projects);
+        },
         getListProjects() {
             let projects = [...this.projects || []],
                 type = this.filters.type;
 
-            // let sort = projects.sort((a: any, b: any) => {
-            //     if (type === 'name') return (a.name > b.name) as any;
-            //     if (type === 'stars') return (a.stargazers_count < b.stargazers_count) as any;
-            //     if (type === 'watchers') return (a.watchers_count < b.watchers_count) as any;
-            //     if (type === 'forks') return (a.forks_count < b.forks_count) as any;
-            // });
+            let sort = projects.sort((a: any, b: any) => {
+                if (type === 'name') return (a.name > b.name) as any;
+                if (type === 'members') return (a.members.length < b.members.length) as any;
+                if (type === 'date') return (a.createdAt > b.createdAt) as any;
+            });
 
             let regex = new RegExp(this.filters.text.trim(), 'gi');
 
-            return projects.filter(({ title, description }) => regex.test(title) || regex.test(description));
+            return sort.filter(({ name, displayName, description }) => regex.test(name || '') || regex.test(displayName || '') || regex.test(description || ''));
         },
         getListRepos() {
             let repos = [...this.repos || []],
@@ -135,18 +131,40 @@ export default defineComponent({
     data: () => ({
         filters: {
             text: '',
-            type: 'name'
+            type: 'name',
+            reposMenu: [
+                {
+                    label: 'by Stars',
+                    icon: 'star-alt',
+                    value: 'stars'
+                },
+                {
+                    label: 'by Watchers',
+                    icon: 'eye',
+                    value: 'watchers'
+                },
+                {
+                    label: 'by Forks',
+                    icon: 'fork',
+                    value: 'forks'
+                }
+            ],
+            projectsMenu: [
+                {
+                    label: 'by Count members',
+                    icon: 'users',
+                    value: 'members'
+                },
+                {
+                    label: 'by Date',
+                    icon: 'clock',
+                    value: 'date'
+                }
+            ]
         },
-        projects: [
-            ...new Array(5).fill({
-                title: 'Project',
-                image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg',
-                description: 'Description',
-                createdAt: Date.now()
-            })
-        ],
+        projects: [] as Array<IProject>,
         loading: false,
-        repos: [] as IRepository[]
+        repos: [] as Array<IRepository>
     }),
     watch: {
         'scrollProps.scrollY'(newValue: number) {
@@ -163,6 +181,25 @@ export default defineComponent({
         }
     },
     methods: {
+        async loadProjects() {
+            this.loading = true;
+
+            const [projects, status] = await Projects.list();
+
+            if (status !== 200) {
+                this.$notifications.error({
+                    title: 'loading projects',
+                    message: (projects as any)?.message,
+                    status: status
+                });
+
+                return this.loading = false;
+            }
+
+            this.projects = [...this.projects || [], ...projects?.results];
+
+            this.loading = false;
+        },
         async loadRepos(page: number = 1) {
             this.loading = true;
 
@@ -182,13 +219,65 @@ export default defineComponent({
             this.repos = [...this.repos || [], ...repos];
 
             this.loading = false;
+        },
+        async createProject() {
+            const newProject = {
+                name: ''
+            };
+
+            this.$windows.create({
+                component: 'Message',
+                data: {
+                    title: 'Create new project',
+                    icon: 'image',
+                    components: [
+                    {
+                            component: 'Textbox',
+                            name: 'name',
+                            props: { label: 'Name', match: /^[a-zA-Z0-9\_]+$/ },
+                            events: {
+                                input(e: InputEvent) {
+                                    newProject.name = (e.target as any)?.value;
+                                }
+                            }
+                        }
+                    ],
+                    buttons: [
+                        {
+                            label: 'Create',
+                            color: 'var(--green)',
+                            click: async (e, data, windowId) => {
+                                const [project, status] = await Projects.create(newProject as any);
+
+                                if (status !== 200) return this.$notifications.error({
+                                    title: 'creating project',
+                                    message: (project as any)?.message,
+                                    status
+                                });
+
+                                this.$notifications.push({
+                                    title: 'New project',
+                                    message: `Project ${project.name} was successfully created`,
+                                    icon: 'image',
+                                    color: 'var(--green)'
+                                });
+
+                                this.projects = [];
+                                this.loadProjects();
+
+                                this.$windows.close(windowId);
+                            }
+                        }
+                    ]
+                } as IMessage
+            })
         }
     },
     mounted() {
-        console.log(this.type, this.login);
-        
         if (this.type === 'repos') {
             this.loadRepos();
+        } else if (this.type === 'projects') {
+            this.loadProjects();
         }
     }
 });

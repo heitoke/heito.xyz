@@ -10,7 +10,7 @@ export interface IContextMenuButton {
     text?: string;
     icon?: string;
     color?: string;
-    component?: Component;
+    component?: string | Component;
     separator?: boolean;
     value?: object | number | string;
     click?(e?: Event): void;

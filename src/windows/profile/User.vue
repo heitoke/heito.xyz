@@ -163,7 +163,7 @@ export default defineComponent({
                             {
                                 label: 'Verify',
                                 icon: 'verify',
-                                text: this.selfUser.verified ? 'Enabled' : 'Disabled',
+                                text: this.user.verified ? 'Enabled' : 'Disabled',
                                 click: (): void => {
                                     this.changes['verified'] = !this.user.verified;
                                 }
@@ -174,79 +174,43 @@ export default defineComponent({
             ]
         },
         buttonUserSettings() {
-            const buttonNickname = {
-                label: 'Nickname',
-                icon: 'id-card',
-                click: () => {
-                    this.$windows.create({
-                        component: 'Message',
-                        data: {
-                            title: 'Change nickname',
-                            icon: 'id-card',
-                            components: [
-                                {
-                                    component: 'Textbox',
-                                    name: 'nickname',
-                                    props: {
-                                        label: 'New nickname',
-                                        text: this.user.nickname || '',
-                                        autofocus: true
-                                    },
-                                    events: {
-                                        input: (e: InputEvent) => {
-                                            this.changes['nickname'] = (e.target as any)?.value;
+            const buttonText = (name: 'nickname' | 'username' = 'nickname', icon: string = 'id-card', label: string = 'Nickname') => {
+                return {
+                    label,
+                    icon,
+                    click: () => {
+                        this.$windows.create({
+                            component: 'Message',
+                            data: {
+                                title: `Change ${name}`,
+                                icon,
+                                components: [
+                                    {
+                                        component: 'Textbox',
+                                        name,
+                                        props: {
+                                            label: `New ${name}`,
+                                            text: this.user[name] || '',
+                                            autofocus: true
+                                        },
+                                        events: {
+                                            input: (e: InputEvent) => {
+                                                this.changes[name] = (e.target as any)?.value;
+                                            }
                                         }
                                     }
-                                }
-                            ],
-                            buttons: [
-                                {
-                                    label: 'Submit',
-                                    click: (e: MouseEvent, data: any, windowId: number) => {
-                                        this.$windows.close(windowId);
-                                    }
-                                }
-                            ]
-                        }
-                    });
-                }
-            };
-
-            const buttonUsername = {
-                label: 'Username',
-                icon: 'username',
-                click: () => {
-                    this.$windows.create({
-                        component: 'Message',
-                        data: {
-                            title: 'Change username',
-                            icon: 'username',
-                            components: [
-                                {
-                                    component: 'Textbox',
-                                    name: 'username',
-                                    props: {
-                                        label: 'New username',
-                                        text: this.user.nickname || '',
-                                        autofocus: true
-                                    },
-                                    events: {
-                                        input: (e: InputEvent) => {
-                                            this.changes['username'] = (e.target as any)?.value;
+                                ],
+                                buttons: [
+                                    {
+                                        label: 'Submit',
+                                        click: (e: MouseEvent, data: any, windowId: number) => {
+                                            this.$windows.close(windowId);
                                         }
                                     }
-                                }
-                            ],
-                            buttons: [
-                                {
-                                    label: 'Submit',
-                                    click: (e: MouseEvent, data: any, windowId: number) => {
-                                        this.$windows.close(windowId);
-                                    }
-                                }
-                            ]
-                        }
-                    });
+                                ]
+                            }
+                        });
+                    }
                 }
             };
 
@@ -370,8 +334,8 @@ export default defineComponent({
                         buttonAvatar(Boolean(this.user?.avatar)),
                         buttonAvatar(Boolean(this.user?.banner), 'banner', 'Banner'),
                         { separator: true },
-                        buttonNickname,
-                        buttonUsername,
+                        buttonText(),
+                        buttonText('username', 'username', 'Username'),
                         { separator: true },
                         buttonColor,
                         ...(this.isAdmin ? this.buttonAdmin() : [])

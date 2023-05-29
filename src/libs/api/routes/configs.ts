@@ -1,6 +1,16 @@
-import $api, { descriptors, categories } from '../';
+import $api, { DocumentationAPI } from '../';
 
 import { IUser, EPermissions } from './users';
+
+const docs = new DocumentationAPI('configs', {
+    path: '/configs',
+    label: 'Configs',
+    icon: 'configs',
+    permissions: [
+        EPermissions.Site
+    ],
+    version: 'beta'
+})
 
 export enum EAccountType {
     Steam = 'steam',
@@ -26,20 +36,11 @@ export interface IConfig {
     createdAt: Date;
 }
 
-@descriptors.addCategory({
-    label: 'Configs',
-    name: 'configs',
-    icon: 'configs',
-    path: '/configs',
-    permissions: [
-        EPermissions.Site
-    ],
-    version: 'beta'
-})
+
 class Route {
     constructor() {}
 
-    @descriptors.addRoute('configs', {
+    @docs.route({
         label: 'Get list configs',
         icon: 'configs',
         description: 'Get a complete list of all configurations that are',
@@ -53,7 +54,7 @@ class Route {
         return $api.get(`/configs`) as any;
     }
 
-    @descriptors.addRoute('configs', {
+    @docs.route({
         label: 'Get config',
         icon: 'settings-alt',
         path: '/:configId',
@@ -72,7 +73,7 @@ class Route {
         return $api.get(`/configs/${configId}`) as any;
     }
 
-    @descriptors.addRoute('configs', {
+    @docs.route({
         label: 'Create new config',
         icon: 'settings-plus',
         description: 'Create a new configuration (If it is the first one, it will be on automatically)',
@@ -91,7 +92,7 @@ class Route {
         return $api.post(`/configs`, { body }) as any;
     }
 
-    @descriptors.addRoute('configs', {
+    @docs.route({
         label: 'Enable config',
         icon: 'settings-check',
         path: '/:configId',
@@ -111,7 +112,7 @@ class Route {
         return $api.put(`/configs/${configId}`) as any;
     }
 
-    @descriptors.addRoute('configs', {
+    @docs.route({
         label: 'Update config',
         icon: 'pencil',
         path: '/:configId',
@@ -136,7 +137,7 @@ class Route {
         return $api.patch(`/configs/${configId}`, { body }) as any;
     }
 
-    @descriptors.addRoute('configs', {
+    @docs.route({
         label: 'Delete config or configs',
         icon: 'trash',
         description: 'Delete one or a list of configurations',

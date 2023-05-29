@@ -1,12 +1,15 @@
 <template>
     <div class="ui-select">
-        <header @click="open">
-            <div :class="['label', { active: getItem?.label || isActive }]">{{ label }}</div>
+        <header @click="open(text)">
+            <!-- <div :class="['label', { active: getItem?.label || isActive }]">{{ label }}</div>
             <div>
                 <Icon :name="getItem?.icon" :style="{ color: getItem?.color || 'var(--text-secondary)' }" v-if="getItem?.icon"/>
-                <Text class="text
-                " :text="getItem?.label || ''" style="height: 18px;"/>
-            </div>
+                <Text class="text" :text="getItem?.label || ''" style="height: 18px;"/>
+            </div> -->
+
+            <Textbox :label="label" :icon="getItem?.icon" :value="getItem?.label" :watchValue="true"
+                @input="text = ($event.target as any)?.value; open(text)"
+            />
         </header>
     </div>
 </template>
@@ -14,7 +17,7 @@
 <script lang="ts" setup>
 
 import { mapActions } from 'vuex';
-import { type IContextMenuButton } from '../../store/modules/contextMenu';
+import type { IContextMenu, IContextMenuButton } from '../../store/modules/contextMenu';
 
 </script>
 
@@ -51,23 +54,40 @@ export default defineComponent({
         position: {
             type: String as PropType<'bottom' | 'top'>,
             default: 'bottom'
+        },
+        search: {
+            type: Boolean,
+            default: true
         }
     },
     data: () => ({
-        isActive: false,
-        selected: ''
+        selected: '',
+        text: ''
     }),
     watch: {},
     methods: {
         ...mapActions(['setContextMenu', 'closeContextMenu']),
-        open(event: MouseEvent) {
-            this.isActive = !this.isActive;
+        open(text: string = '') {
+            this.closeContextMenu('ui-select');
+
+            const regex = new RegExp(text, 'g');
+
+            const sort = this.menu?.filter(x => regex.test(x.label) || regex.test(x?.value as any));
 
             this.setContextMenu({
                 name: 'ui-select',
                 position: [this.position, 'center', 'fixed-target'],
                 event: this.$el,
-                buttons: this.menu?.map(btn => {
+                components: sort?.length! < 1 ? [
+                    {
+                        name: 'alert',
+                        component: 'Alert',
+                        props: {
+                            type: 'mini'
+                        }
+                    }
+                ] : [],
+                buttons: sort?.length! < 1 ? [] : sort?.map(btn => {
                     return {
                         ...btn,
                         click: (e: MouseEvent) => {
@@ -77,12 +97,11 @@ export default defineComponent({
 
                             this.$emit('select', this.getItem);
 
-                            this.isActive = false;
                             this.closeContextMenu('ui-select');
                         }
                     }
                 })
-            });
+            } as IContextMenu);
         },
     },
     mounted() {}
@@ -96,59 +115,49 @@ export default defineComponent({
     min-width: 196px;
     position: relative;
 
-    header {
-        cursor: pointer;
-        display: flex;
-        padding: 8px 12px;
-        max-width: 100%;
-        width: 100%;
-        position: relative;
-        border-radius: 5px;
-        border: 1px solid var(--background-secondary);
-        box-sizing: border-box;
-        transition: .2s;
+    // header {
+    //     cursor: pointer;
+    //     display: flex;
+    //     padding: 8px 12px;
+    //     max-width: 100%;
+    //     width: 100%;
+    //     position: relative;
+    //     border-radius: 5px;
+    //     border: 1px solid var(--background-secondary);
+    //     box-sizing: border-box;
+    //     transition: .2s;
 
-        .label {
-            position: absolute;
-            top: 8px;
-            color: var(--text-secondary);
-            transition: .2s;
-            user-select: none;
-            z-index: 1;
+    //     .label {
+    //         position: absolute;
+    //         top: 8px;
+    //         color: var(--text-secondary);
+    //         transition: .2s;
+    //         user-select: none;
+    //         z-index: 1;
 
-            &.active {
-                top: -10px;
-                font-size: 12px;
-                color: var(--text-primary);
-            }
-        }
+    //         &.active {
+    //             top: -10px;
+    //             font-size: 12px;
+    //             color: var(--text-primary);
+    //         }
+    //     }
 
-        .label + div {
-            display: flex;
-            align-items: center;
+    //     .label + div {
+    //         display: flex;
+    //         align-items: center;
 
-            .hx-icon {
-                margin: 0 8px 0 0;
-            }
+    //         .hx-icon {
+    //             margin: 0 8px 0 0;
+    //         }
 
-            .text {
-                max-width: 100%;
-                text-overflow: ellipsis;
-                white-space: nowrap;
-                overflow: hidden;
-            }
-        }
-    }
-
-    .list {
-        width: 100%;
-        position: absolute;
-        top: calc(100% + 8px);
-        left: 0px;
-        border-radius: 5px;
-        border: 1px solid var(--background-secondary);
-        transition: .2s;
-    }
+    //         .text {
+    //             max-width: 100%;
+    //             text-overflow: ellipsis;
+    //             white-space: nowrap;
+    //             overflow: hidden;
+    //         }
+    //     }
+    // }
 }
 
 </style>

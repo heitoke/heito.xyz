@@ -1,8 +1,10 @@
 <template>
-    <label :class="['ui-textbox', { error }]"
+    <label :class="['ui-textbox', { error, icon: Boolean(icon) }]"
         :style="{ '--left': `${isValid ? labelWidth : 0}px` }"
         @click="($event.target as any).focus()"
     >
+        <Icon :name="icon" style="margin: 0 8px 0 0;" v-show="Boolean(icon)"/>
+
         <input :type="type" :placeholder="labelType === 'input' ? label : text" v-model="modelValue"
             :style="{ '--placeholder-color': focus ? 'var(--text-secondary)' : 'var(--T)' }"
             @focus="$emit('focus', $event); focus = true"    
@@ -59,40 +61,23 @@ export default defineComponent({
         }
     },
     props: {
-        label: {
-            type: String,
-            default: 'Test'
-        },
+        label: { type: String, default: 'Test' },
         labelType: {
             type: String as PropType<TLabel>,
             default: 'block'
         },
-        value: {
-            type: String
-        },
-        text: {
-            type: String
-        },
+        value: { type: String },
+        icon: { type: String },
+        text: { type: String },
         type: {
             type: String as PropType<TInput>,
             default: 'text'
         },
-        match: {
-            type: RegExp,
-            default: /(.*)/
-        },
-        min: {
-            type: Number,
-            default: 0
-        },
-        max: {
-            type: Number,
-            default: 256
-        },
-        autofocus: {
-            type: Boolean,
-            default: false
-        }
+        match: { type: RegExp, default: /(.*)/ },
+        min: { type: Number, default: 0 },
+        max: { type: Number, default: 256 },
+        autofocus: { type: Boolean, default: false },
+        watchValue: { type: Boolean, default: false }
     },
     data: () => ({
         focus: false,
@@ -144,6 +129,10 @@ export default defineComponent({
     },
     mounted() {
         this.modelValue = this.value || '';
+
+        if (this.watchValue) this.$watch('value', (newValue) => {
+            this.modelValue = newValue || '';
+        });
         
         this.setLabelWidth();
         
@@ -207,6 +196,12 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
         background-position: left top, right top;
     }
 
+    &.icon {
+        .label {
+            left: 36px;
+        }
+    }
+
     .label {
         position: absolute;
         top: 8px;
@@ -217,6 +212,7 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
 
         &.active {
             top: -10px;
+            left: 12px;
             font-size: 12px;
             color: var(--text-primary);
         }

@@ -1,16 +1,16 @@
-import $api, { descriptors } from '../';
+import $api, { DocumentationAPI } from '../';
+
+const docs = new DocumentationAPI('blogs', {
+    path: '/blogs',
+    label: 'Blogs',
+    icon: 'quill',
+    version: 'disabled'
+});
 
 export interface IBlog {
     _id: string;
 }
 
-@descriptors.addCategory({
-    label: 'Blogs',
-    name: 'blogs',
-    icon: 'quill',
-    path: '/blogs',
-    version: 'disabled'
-})
 class Route {
     constructor() {}
 }

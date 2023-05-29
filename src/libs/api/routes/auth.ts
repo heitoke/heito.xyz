@@ -1,5 +1,13 @@
-import $api, { descriptors } from '../';
+import $api, { DocumentationAPI } from '../';
+
 import { type IUser } from './users';
+
+const docs = new DocumentationAPI('auth',{
+    path: '/auth',
+    label: 'Auth',
+    icon: 'exit',
+    version: 'beta'
+});
 
 export enum ESessionType {
     Access = 'access',
@@ -19,17 +27,10 @@ export interface ISession {
     createdAt: Date;
 }
 
-@descriptors.addCategory({
-    label: 'Auth',
-    name: 'auth',
-    icon: 'exit',
-    path: '/auth',
-    version: 'beta'
-})
 class Route {
     constructor() {}
 
-    @descriptors.addRoute('auth', {
+    @docs.route({
         label: 'User register',
         icon: 'hand',
         path: '/register',
@@ -53,7 +54,7 @@ class Route {
         return $api.post('/auth/register', { body });
     }
 
-    @descriptors.addRoute('auth', {
+    @docs.route({
         label: 'User login',
         icon: 'user-circle',
         path: '/login',
@@ -75,7 +76,7 @@ class Route {
         return $api.post('/auth/login', { body: { login: body.login, password: body.password } });
     }
 
-    @descriptors.addRoute('auth', {
+    @docs.route({
         label: 'User sessions',
         icon: 'users',
         path: '/sessions',
@@ -90,7 +91,7 @@ class Route {
         return $api.get('/auth/sessions') as any;
     }
 
-    @descriptors.addRoute('auth', {
+    @docs.route({
         label: 'User session',
         icon: 'user-circle',
         path: '/sessions',
@@ -109,7 +110,7 @@ class Route {
         return $api.get(`/auth/sessions/${sessionIdOrToken}`) as any;
     }
 
-    @descriptors.addRoute('auth', {
+    @docs.route({
         label: 'Close user session(s)',
         icon: 'close',
         path: '/sessions',

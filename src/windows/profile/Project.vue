@@ -1,38 +1,68 @@
 <template>
     <div class="project">
-        <div class="image" :style="{ '--image': `url('${project.image}')` }">
-            <div class="date">{{ time.format(project.createdAt, 'dd MMM YYYY') }}</div>
+        <div class="image"
+            :style="{
+                height: `${project?.banner ? 156 : 128}px`,
+                '--image': `url('${project?.banner}')`,
+                'background-color': project?.color
+            }"
+        >
+            <ul>
+                <li v-show="project.verified">
+                    <Icon name="verify"/>
+                    <span>Verify</span>
+                </li>
+                <li v-show="project.private">
+                    <Icon name="eye-hide"/>
+                    <span>Private</span>
+                </li>
+                <li v-show="project.isDeleted">
+                    <Icon name="trash"/>
+                    <span>Deleted</span>
+                </li>
+            </ul>
+
+            <div class="date" v-if="project?.createdAt">{{ time.format(`${project?.createdAt}`, 'dd MMM YYYY') }}</div>
         </div>
 
         <header>
-            <div class="title">{{ project.title }}</div>
+            <div class="title">{{ project?.displayName || project?.name || project?._id }}</div>
             <div class="description">{{ project.description }}</div>
         </header>
+        
+        <NavBar style="margin: 12px 0 0 0;" v-if="project?.tags?.length! > 0"
+            :menu="project.tags?.map(tag => ({ label: tag, icon: 'tag' } as any))"
+            :selected="false"
+        />
 
-        <NavBar style="margin: 12px 0;" :menu="[
-            {
-                label: 'Users',
-                icon: 'arrow-right'
-            },
-            {
-                label: 'Projects',
-                icon: 'half-sun'
-            },
-            {
-                label: 'Collections',
-                icon: 'sun-moon'
-            },
-            {
-                label: 'Minecraft',
-                icon: 'settings'
-            },
-            {
-                label: 'Notifications',
-                icon: 'notification'
-            }
-        ]" @select="a = $event"/>
+        <NavBar style="padding: 12px 0;" :menu="navBar" @select="block = $event.value!"/>
 
-        {{ a }}
+        <div style="margin: 0 0 12px 0; border-bottom: 1px solid var(--background-secondary-alt);"></div>
+
+        <section v-show="block === 'links'">
+            <Links :links="project?.links || []" :filters="project?.links?.length! < 1 ? [] : ['search', 'add']"
+                @add="add = $event"
+                @update="changes.links = []; changes.links = $event.list as any;"
+            >
+                <template v-slot:void>
+                    <Alert type="mini" v-if="project?.links?.length! < 1">
+                        <div>Soon everything may appear :D</div>
+                        <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="member.permission !== EProjectPermission.Member"
+                            color="var(--green)"
+                            @click="add ? add() : null"
+                        >Create first link</Button>
+                    </Alert>
+                </template>
+            </Links>
+        </section>
+
+        <section class="members" v-show="block === 'members'">
+            <div class="grid" v-if="project?.members?.length! > 0">
+                <User v-for="(member, idx) of project?.members" :key="idx"
+                    :user="member.member" :text="member.permission"
+                />
+            </div>
+        </section>
     </div>
 </template>
 
@@ -42,36 +72,406 @@ import { time } from '../../libs/utils';
 
 import NavBar from '../../components/content/NavBar.vue';
 
+import Links from '../../components/content/lists/Links.vue';
+
+import User from '../../components/cards/User.vue';
+
 </script>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
+
+import Projects, { type IProject, type IProjectMember, EProjectPermission } from '../../libs/api/routes/projects';
+import { EPermissions } from '../../libs/api/routes/users';
+
+import { copy } from '../../libs/utils';
 
 export default defineComponent({
     name: 'WindowProfileProject',
     components: {},
-    computed: {},
+    computed: {
+        ...mapGetters(['getUser']),
+        project(): IProject {
+            return { ...this.selfProject, ...this.changes };
+        },
+        member(): IProjectMember {
+            const memberIndex = this.project.members?.findIndex(member => member?.member?._id === this.getUser?._id) || -1;
+
+            if (memberIndex > -1) return {} as any;
+
+            return (this.project?.members || [])[memberIndex] || {};
+        },
+        getLengthChanges(): number {
+            return Object.keys(this.changes).length;
+        }
+    },
     props: {
         windowId: { type: Number },
-        data: { type: String }
+        data: { type: String },
+        update: { type: Function }
     },
     data: () => ({
-        a: {},
-        project: {
-            image: 'https://kartinkin.net/pics/uploads/posts/2022-08/1659385713_18-kartinkin-net-p-doski-piksel-art-oboi-20.jpg',
-            title: 'ProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProjectProject',
-            description: 'DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionv',
-            createdAt: Date.now()
-        }
+        EProjectPermission,
+        selfProject: {} as IProject,
+        changes: {} as IProject,
+        block: 'links',
+        navBar: [
+            { label: 'Links', icon: 'link', value: 'links' },
+            { label: 'Members', icon: 'users', value: 'members' }
+        ],
+        add: null as any
     }),
-    watch: {},
+    watch: {
+        'getLengthChanges'(newValue, oldValue) {
+            this.saveButtons(oldValue < 1 && newValue > 0, newValue < 1);
+        },
+        'selfProject.links.length'(newValue, oldValue) {
+            const boolean = JSON.stringify(this.selfProject.links) !== JSON.stringify(this.project.links);
+            this.saveButtons(boolean, !boolean);
+        }
+    },
     methods: {
-        ...mapActions(['setContextMenu'])
+        ...mapActions(['setContextMenu']),
+        buttonAdmin() {
+            return [
+                { separator: true },
+                {
+                    label: 'Admin menu',
+                    icon: 'fire',
+                    children: {
+                        name: 'project:admin:menu',
+                        title: 'Admin menu',
+                        buttons: [
+                            {
+                                label: 'Verify',
+                                icon: 'verify',
+                                text: this.project.verified ? 'Enabled' : 'Disabled',
+                                click: (): void => {
+                                    this.changes['verified'] = !this.project.verified;
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        buttonProjectSettings() {
+            const buttonText = (name: 'name' | 'displayName' | 'description' = 'name', icon: string = 'text-a', label: string = 'Name') => {
+                return {
+                    label,
+                    icon,
+                    click: () => {
+                        this.$windows.create({
+                            component: 'Message',
+                            data: {
+                                title: `Change ${name}`,
+                                icon,
+                                components: [
+                                    {
+                                        component: 'Textbox',
+                                        name,
+                                        props: {
+                                            label: `New ${name}`,
+                                            text: this.project[name] || '',
+                                            autofocus: true
+                                        },
+                                        events: {
+                                            input: (e: InputEvent) => {
+                                                this.changes[name] = (e.target as any)?.value;
+                                            }
+                                        }
+                                    }
+                                ],
+                                buttons: [
+                                    {
+                                        label: 'Submit',
+                                        click: (e: MouseEvent, data: any, windowId: number) => {
+                                            this.$windows.close(windowId);
+                                        }
+                                    }
+                                ]
+                            }
+                        });
+                    }
+                }
+            };
+
+            const buttonImageClick = (name: 'image' | 'banner' = 'image') => {
+                this.$windows.create({
+                    component: 'Message',
+                    data: {
+                        title: `Change project ${name}`,
+                        icon: 'image',
+                        components: [
+                            {
+                                component: 'Textbox',
+                                name: name,
+                                props: {
+                                    label: `New ${name} (URL)`,
+                                    text: this.project[name] || '',
+                                    autofocus: true
+                                },
+                                events: {
+                                    input: (e: InputEvent) => {
+                                        this.changes[name] = (e.target as any)?.value;
+                                    }
+                                }
+                            }
+                        ],
+                        buttons: [
+                            {
+                                label: 'Submit',
+                                click: (e: MouseEvent, data: any, windowId: number) => {
+                                    this.$windows.close(windowId);
+                                }
+                            }
+                        ]
+                    }
+                });
+            };
+            const buttonImage = (boolean: boolean, name: 'image' | 'banner' = 'image', label: string = 'Image') => ({
+                label,
+                icon: 'image',
+                children: boolean ? {
+                    name: `project:settings:${name}`,
+                    title: `Project ${name}`,
+                    buttons: [
+                        {
+                            label: 'Change',
+                            icon: 'pencil',
+                            click: () => {
+                                buttonImageClick(name);
+                            }
+                        },
+                        {
+                            label: 'Remove',
+                            icon: 'close',
+                            click: () => {
+                                this.changes[name] = '';
+                            }
+                        }
+                    ]
+                } : undefined,
+                click: boolean ? null : () => {
+                    buttonImageClick(name);
+                }
+            });
+
+            let color = '';
+            const buttonColor = {
+                label: 'Color',
+                icon: 'colors',
+                color: this.project.color,
+                click: () => {
+                    this.$windows.create({
+                        component: 'Message',
+                        data: {
+                            title: 'Change user color',
+                            icon: 'color-f',
+                            components: [
+                                {
+                                    component: 'ColorPicker',
+                                    name: 'color',
+                                    props: {
+                                        value: this.project?.color
+                                    },
+                                    events: {
+                                        color: (e: string) => {
+                                            if (this.project?.color === e) return delete this.changes['color'];
+
+                                            this.changes['color'] = color = e;
+                                        }
+                                    }
+                                }
+                            ],
+                            buttons: [
+                                {
+                                    label: 'Submit',
+                                    click: (e: MouseEvent, data: any, windowId: number) => {
+                                        this.$windows.close(windowId);
+                                    }
+                                }
+                            ]
+                        }
+                    });
+                }
+            };
+
+            let tag = '';
+            const buttonTags = {
+                label: 'Tags',
+                icon: 'tag',
+                children: {
+                    name: `project:settings:tags`,
+                    title: `Tags`,
+                    buttons: [
+                        {
+                            label: 'Add new tag',
+                            icon: 'tag',
+                            click: () => {
+                                this.$windows.create({
+                                    component: 'Message',
+                                    data: {
+                                        title: 'New tag',
+                                        components: [
+                                            {
+                                                name: 'name',
+                                                component: 'Textbox',
+                                                props: { label: 'Name tag' },
+                                                events: {
+                                                    input(e: InputEvent) {
+                                                        tag = (e.target as any)?.value;
+                                                    }
+                                                }
+                                            }
+                                        ],
+                                        buttons: [
+                                            {
+                                                label: 'Add tag',
+                                                click: (e: MouseEvent, data: any, windowId: number) => {
+                                                    this.changes.tags = [...this.project.tags || [], tag];
+
+                                                    this.$windows.close(windowId);
+                                                }
+                                            }
+                                        ]
+                                    }
+                                });
+                            }
+                        },
+                        {
+                            label: 'Remove all',
+                            icon: 'close',
+                            click: () => {
+                                this.changes.tags = [];
+                            }
+                        }
+                    ]
+                }
+            }
+
+            return {
+                label: 'Project settings',
+                icon: 'settings',
+                children: {
+                    name: 'project:settings',
+                    title: 'Project settings',
+                    buttons: [
+                        {
+                            label: 'Private mode',
+                            icon: 'eye',
+                            text: this.project.private ? 'Enable' : 'Disable',
+                            click: (): void => {
+                                this.changes['private'] = !this.project.private;
+                            }
+                        },
+                        { separator: true },
+                        // buttonImage(Boolean(this.project?.image)),
+                        buttonImage(Boolean(this.project?.banner), 'banner', 'Banner'),
+                        { separator: true },
+                        buttonText('displayName', 'heart-alt', 'Display name'),
+                        buttonText(),
+                        buttonText('description', 'text-align-left', 'Description'),
+                        { separator: true },
+                        buttonColor,
+                        buttonTags,
+                        ...(this.getUser?.permissions?.includes(EPermissions.Projects) ? this.buttonAdmin() : [])
+                    ]
+                }
+            };
+        },
+        setButtons() {
+            const contextMenuUserSettings = (e: Event) => this.setContextMenu({
+                name: 'window:user:settings',
+                position: ['left', 'fixed-target'],
+                event: e,
+                buttons: [
+                    ...(this.member.permission !== EProjectPermission.Member ? [this.buttonProjectSettings(), { separator: true }] : []),
+                    {
+                        label: 'Copy Project ID',
+                        icon: 'user-circle',
+                        click: () => {
+                            copy(this.project?._id);
+                        }
+                    }
+                ]
+            });
+
+            this.$windows.addButtons(this.windowId!, [
+                {
+                    label: 'Settings',
+                    icon: 'ellipsis',
+                    click: (e: Event) => {
+                        contextMenuUserSettings(e);
+                    }
+                }
+            ]);
+        },
+        saveButtons(isTrue: boolean, isFalse: boolean) {
+            if (isTrue) {
+                this.$windows.addButtons(this.windowId!, [
+                    {
+                        label: 'Back',
+                        icon: 'clock-alt',
+                        color: 'var(--red)',
+                        click: () => {
+                            this.changes = {} as IProject;
+                        }
+                    },
+                    {
+                        label: 'Save changes',
+                        icon: 'quill',
+                        color: 'var(--green)',
+                        click: async () => {
+                            const [result, status] = await Projects.update(this.selfProject?._id, this.changes);
+
+                            if (status !== 200) return this.$notifications.error({
+                                title: 'updated project',
+                                message: result?.message,
+                                status
+                            });
+
+                            this.$notifications.push({
+                                title: 'Project',
+                                icon: 'image',
+                                message: 'Project saved successfully',
+                                color: 'var(--green)'
+                            });
+
+                            this.selfProject = this.project;
+                            this.changes = {} as IProject;
+
+                            if (this.update) this.update(this.project);
+                        }
+                    }
+                ]);
+            } else if (isFalse) {
+                this.$windows.removeButtons(this.windowId!, [1, 2]);
+            }
+        },
+        async loadProject(projectId: string) {
+            const [result, status] = await Projects.get(projectId);
+
+            if (status !== 200) {
+                this.$notifications.error({
+                    title: 'project',
+                    message: (result as any)?.message,
+                    status
+                });
+
+                return this.$emit('error');
+            }
+
+            this.selfProject = { ...result, links: result?.links || [] };
+
+            this.setButtons();
+        }
     },
     mounted() {
+        if (this.data) this.loadProject(this.data);
     }
 });
 
@@ -80,25 +480,68 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .block.project {
-    padding: 156px 0 0 0;
     max-width: 512px;
     min-width: 512px;
-    overflow: hidden;
+    // overflow: hidden;
 
     .image {
-        width: 100%;
-        height: 156px;
-        position: absolute;
-        top: 0;
-        left: 0;
+        width: calc(100% + 24px);
+        position: relative;
+        top: -12px;
+        left: -12px;
         border-radius: 5px;
         background-size: cover;
         background-position: center;
         background-image: var(--image);
+        background-color: var(--background-secondary-alt);
 
         &:hover {
             * {
                 opacity: 0;
+            }
+        }
+
+        ul {
+            display: flex;
+            position: absolute;
+            top: 8px;
+            right: 0;
+            align-items: center;
+            transition: .2s;
+            user-select: none;
+            z-index: 1;
+
+            li {
+                display: flex;
+                margin: 0 8px 0 0;
+                padding: 2px 4px;
+                position: relative;
+                color: var(--text-secondary);
+                border-radius: 5px;
+                border: 1px solid var(--text-secondary);
+                align-items: center;
+
+                i {
+                    margin: 0 4px 0 0;
+                    color: var(--text-secondary);
+                    font-size: 14px;
+                }
+
+                span {
+                    font-size: 12px;
+                }
+
+                ol {
+                    width: calc(100% - 8px);
+                    position: absolute;
+                    top: calc(100% + 8px);
+                    left: 0px;
+
+                    li {
+                        margin: 0 0 4px 0;
+                        width: 100%;
+                    }
+                }
             }
         }
 
@@ -140,6 +583,34 @@ export default defineComponent({
             margin: 4px 0 0 0;
             color: var(--text-secondary);
             font-size: 13px;
+        }
+    }
+
+    .members {
+        .grid {
+            display: grid;
+            max-width: 100%;
+            position: relative;
+            grid-template-columns: repeat(2, 50%);
+
+            .user {
+                width: auto;
+
+                &:nth-child(1n) {
+                    margin: 12px 6px 0 0;
+                }
+                &:nth-child(2n) {
+                    margin: 12px 0 0 6px;
+                }
+
+                &:nth-child(1) {
+                    margin: 0 6px 0 0 !important;   
+                }
+
+                &:nth-child(2) {
+                    margin: 0 0 0 6px !important;   
+                }
+            }
         }
     }
 }

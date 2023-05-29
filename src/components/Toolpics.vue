@@ -69,6 +69,14 @@ export default defineComponent({
                 this.closeToolpic(toolpic.id);
             }, { once: true });
 
+            target.addEventListener('pointerdown', () => {
+                this.closeToolpic(toolpic.id);
+            }, { once: true });
+
+            target.addEventListener('click', () => {
+                this.closeToolpic(toolpic.id);
+            }, { once: true });
+
             done();
         }
     },

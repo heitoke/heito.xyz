@@ -21,7 +21,9 @@
             <div class="group" v-for="(group, idx) of groups" :key="idx">
                 <div class="title">{{ group.title }}</div>
                 <ul>
-                    <li v-for="(children, id) of group.childrens" :key="id">
+                    <li v-for="(children, id) of group.childrens" :key="id"
+                        @click="redirect(children.url)"
+                    >
                         <span>{{ children.label }}</span>
                     </li>
                 </ul>
@@ -87,6 +89,9 @@ export default defineComponent({
             
             this.$local.set('lang', name);
             document.querySelector('html')?.setAttribute('lang', name);
+        },
+        redirect(url: string) {
+            window.open(url);
         }
     },
     mounted() {}
@@ -118,7 +123,7 @@ footer {
             margin: 0 12px;
             color: var(--main-color);
             font-size: 20px;
-            animation: Icon 1s ease-in-out infinite;
+            animation: Icon 1.5s ease-in-out infinite;
         }
 
         &::after, &::before {

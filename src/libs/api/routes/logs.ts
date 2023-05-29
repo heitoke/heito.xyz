@@ -1,6 +1,13 @@
-import $api, { descriptors, categories } from '../';
+import $api, { DocumentationAPI } from '../';
 
 import { IUser } from './users';
+
+const docs = new DocumentationAPI('logs', {
+    path: '/logs',
+    label: 'Logs',
+    icon: 'book',
+    version: 'disabled'
+});
 
 export interface ILog {
     _id: string;
@@ -13,13 +20,7 @@ export interface ILog {
     createdAt: Date;
 }
 
-@descriptors.addCategory({
-    label: 'Logs',
-    name: 'logs',
-    icon: 'book',
-    path: '/logs',
-    version: 'disabled'
-})
+
 class Route {
     constructor() {}
 }

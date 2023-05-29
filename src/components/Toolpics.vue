@@ -25,16 +25,12 @@ export default defineComponent({
     computed: {
         ...mapGetters(['getListToolpics'])
     },
-    data() {
-        return {
-            positions: {}
-        }
-    },
+    data: () => ({}),
     watch: {},
     methods: {
         ...mapActions(['closeToolpic']),
         getPosition(position: string | any, elPos: DOMRect, el: DOMRect): number[] {
-            let  has = (val: string): boolean => position.split(' ').includes(val),
+            let has = (val: string): boolean => position.split(' ').includes(val),
                 x = elPos.x,
                 y = elPos.y;
 
@@ -50,27 +46,26 @@ export default defineComponent({
 
             return [x, y];
         },
-        async showToolpic(e: Element) {
-            let toolpic: IToolpic = await this.getListToolpics?.filter((toolpic: IToolpic) => toolpic.id === Number(e.id))[0];
+        async showToolpic(el: Element, done: Function) {
+            const toolpic: IToolpic = await this.getListToolpics?.filter((toolpic: IToolpic) => toolpic.id === Number(el.id))[0];
 
             if (!toolpic) return;
 
-            // @ts-ignore
-            let elPos: DOMRect = toolpic.event.target?.getBoundingClientRect(),
-                el: DOMRect = e.getBoundingClientRect();
+            const
+                target = (toolpic.event.target as HTMLElement),
+                targetPosition: DOMRect = target.getBoundingClientRect(),
+                elementPosition: DOMRect = el.getBoundingClientRect();
 
-            let [x, y]: number[] = await this.getPosition(toolpic.position, elPos, el);
+            const [x, y]: number[] = await this.getPosition(toolpic.position, targetPosition, elementPosition);
 
-            setTimeout(() => {
-                for (let name of ['mouseleave', 'mouseout', 'mousedown', 'click']) {
-                    toolpic?.event.target?.addEventListener(name, () => {
-                        this.closeToolpic(toolpic.id);
-                    });
-                }
+            toolpic.x = x;
+            toolpic.y = y;
 
-                toolpic.x = x;
-                toolpic.y = y;
-            }, 10);
+            target.addEventListener('pointerleave', () => {
+                this.closeToolpic(toolpic.id);
+            }, { once: true });
+
+            done();
         }
     },
     mounted() {}
@@ -86,7 +81,7 @@ export default defineComponent({
         position: absolute;
         border-radius: 5px;
         background-color: var(--background-secondary);
-        transition: .2s;
+        transition: opacity .2s;
         z-index: 110;
 
         &-enter-active,

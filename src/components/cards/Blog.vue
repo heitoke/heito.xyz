@@ -72,7 +72,7 @@ export default defineComponent({
             background-size: cover;
             background-position: center;
             background-image: var(--image);
-            filter: blur(5px);
+            // filter: blur(5px);
             transform: scale(1.2);
             transition: .2s;
             z-index: -1;
@@ -95,7 +95,7 @@ export default defineComponent({
         .image {
             &::after {
                 transform: scale(1);
-                filter: blur(0);
+                // filter: blur(0);
             }
 
             .date {

@@ -47,6 +47,10 @@ export default defineComponent({
         },
         menu: {
             type: Object as PropType<Array<IContextMenuButton>>
+        },
+        position: {
+            type: String as PropType<'bottom' | 'top'>,
+            default: 'bottom'
         }
     },
     data: () => ({
@@ -61,7 +65,7 @@ export default defineComponent({
 
             this.setContextMenu({
                 name: 'ui-select',
-                position: ['bottom', 'center', 'fixed-target'],
+                position: [this.position, 'center', 'fixed-target'],
                 event: this.$el,
                 buttons: this.menu?.map(btn => {
                     return {

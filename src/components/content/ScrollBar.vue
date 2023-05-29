@@ -9,6 +9,7 @@
                 :scrollHeight="scrollHeight"
                 :scrollMaxHeight="heightMax"
                 :toScroll="toScroll"
+                :element="$el"
             ></slot>
         </div>
         <div :class="['indicator', { active: height }]" :style="{ height: `calc(${maxHeight} - 16px)` }" v-show="scrollHeight < 100">

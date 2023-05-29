@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
             title: 'Main',
             icon: 'earth',
             description: '',
-            hide: ['footer']
+            // hide: ['footer']
         }
     },
     {

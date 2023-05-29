@@ -3,18 +3,20 @@
         <header :class="{ active: headerActive }">
             <div class="image" :style="{ '--image': `url('${image}')` }"></div>
 
-            <div class="date">0 seconds ago</div>
-            <div class="title">Guidelines for Designing a Catalog and Product Page for Products with Multiple Options</div>
-            
-            <Transition name="height">
-                <div class="scroll" v-show="!headerActive" @click="scrollProps?.toScroll(0, getWinHeight / 2)">Scroll down</div>
-            </Transition>
+            <div ref="headerContent" :style="{ '--header-content-height': `${($refs.headerContent as Element)?.clientHeight}px` }">
+                <div class="date">0 seconds ago</div>
+                <div class="title">Guidelines for Designing a Catalog and Product Page for Products with Multiple Options</div>
+                
+                <Transition name="height">
+                    <div class="scroll" v-show="!headerActive" @click="scrollProps?.toScroll(0, getWinHeight / 2)">Scroll down</div>
+                </Transition>
 
-            <Transition>
-                <div class="description" v-show="headerActive">
-                    Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum possimus sit, cupiditate quas inventore eius.
-                </div>
-            </Transition>
+                <Transition>
+                    <div class="description" v-show="headerActive">
+                        Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptatum possimus sit, cupiditate quas inventore eius.
+                    </div>
+                </Transition>
+            </div>
         </header>
 
         <div class="content">
@@ -24,10 +26,10 @@
 
             <div class="separator">The End</div>
 
-            <CarouselTab :gap="12">
-                <div v-for="(_, id) in new Array(10)" :key="id"
-                    :style="{ height: '128px' }"
-                >{{ id }}</div>
+            <CarouselTab :gap="12" :column="4">
+                <Blog v-for="(a, id) of new Array(25).fill(blog)" :key="id" :blog="a"
+                    @click="$router.push(`/blogs/${id}`)"
+                />
             </CarouselTab>
         </div>
 
@@ -35,6 +37,8 @@
 </template>
 
 <script lang="ts" setup>
+
+import Blog from '../../components/cards/Blog.vue';
 
 import CarouselTab from '../../components/content/CarouselTab.vue';
 
@@ -100,7 +104,17 @@ You can rename the current file by clicking the file name in the navigation bar 
 |Single backticks|\`'Isn't this fun?'\`            |'Isn't this fun?'            |
 |Quotes          |\`"Isn't this fun?"\`            |"Isn't this fun?"            |
 |Dashes          |\`-- is en-dash, --- is em-dash\`|-- is en-dash, --- is em-dash|
-`
+`,
+        blog: {
+            title: 'Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog Blog',
+            description: 'Description',
+            image: 'https://avatars.mds.yandex.net/i?id=79ebacfe308fb494ac056a01cb3cba3840e07e0c-8350343-images-thumbs&n=13',
+            tags: [
+                'new'
+            ],
+            category: 'void',
+            createdAt: Date.now()
+        }
     }),
     watch: {
         headerActive(newValue) {
@@ -128,12 +142,10 @@ You can rename the current file by clicking the file name in the navigation bar 
                 process: n
             })
 
-            n++
-        }, 100)
+            n++;
+        }, 100);
     },
     unmounted() {
-        console.log(123213);
-        
         this.setHeaderOptions({
             blur: {
                 enable: true,
@@ -159,20 +171,33 @@ You can rename the current file by clicking the file name in the navigation bar 
     }
 }
 
+.super.active {
+    .page.blog {
+        header {
+            height: calc(100vh - 72px);
+        }
+    }
+}
+
 .page.blog {
     padding: 0 !important;
+    position: relative;
 
     header {
         display: flex;
         padding: 5% 10%;
         width: 100%;
-        min-height: 100%;
+        height: 100vh;
         position: relative;
         align-items: flex-start;
         justify-content: flex-end;
         flex-direction: column;
         box-sizing: border-box;
         transition: .2s;
+
+        & > div {
+            transition: .2s;
+        }
 
         &.active {
             transform: translateY(64px);
@@ -189,6 +214,10 @@ You can rename the current file by clicking the file name in the navigation bar 
                 }
             }
 
+            & > div {
+                transform: translateY(calc(var(--header-content-height) - (var(--header-content-height) / 2)));
+            }
+
             .date, .title, .scroll {
                 color: var(--text-primary);
                 mix-blend-mode: none;
@@ -197,6 +226,7 @@ You can rename the current file by clicking the file name in the navigation bar 
         
         .image {
             width: 100%;
+            max-height: 100%;
             height: 100%;
             position: absolute;
             top: 0;

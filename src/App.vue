@@ -64,7 +64,7 @@ export default defineComponent({
         }
     },
     methods: {
-        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setLang', 'setBroadcastChannel']),
+        ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setBroadcastChannel']),
         setEffects() {
             let html = document.querySelector('html'),
                 style = document.documentElement.style;
@@ -79,7 +79,7 @@ export default defineComponent({
 
             this.setWinSize([window.innerWidth, window.innerHeight]);
 
-            this.setLang(this.$local.get('lang') || 'en');
+            this.$lang.set((this.$local.get('lang') as any) || 'en');
 
             this.setBroadcastChannel();
 

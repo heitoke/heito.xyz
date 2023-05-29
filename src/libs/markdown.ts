@@ -223,7 +223,6 @@ ${rows.map(row => `<tr>${row.slice(0, width.length).map((col, idx) => {
     createList(content: string[], type: 'ul' | 'ol' = 'ul', name: string = 'list') {
         content = content?.map(item => item.replace(/\s\s\s\s/g, `\t`).replace(/\n/g, ''));
         let result = ``, next = 0;
-        console.log(content);
         
         content.map((item, i) => {
             let c = (e: string) => e?.split('\t').filter(e => e === '').length,

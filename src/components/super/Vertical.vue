@@ -1,8 +1,8 @@
 <template>
     <div :class="['super', { active }]">
-        <ScrollBar v-slot="scrollProps">
+        <ScrollBar v-slot="scrollProps" >
             <Transition name="page">
-                <component :is="component" :class="['page', { 'to-left': $notifications?.options?.active }]"
+                <component :is="component" :class="['page', { 'to-left': $notifications?.options?.active }]" ref="page"
                     :scrollProps="scrollProps"
                 ></component>
             </Transition>

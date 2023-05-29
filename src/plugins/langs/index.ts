@@ -1,4 +1,4 @@
-import { App, Plugin, reactive, Component } from "vue";
+import { App, Plugin, reactive, Component, ref } from "vue";
 
 
 // * LANGS
@@ -84,19 +84,28 @@ const listLangs = {
 }
 
 export class Langs implements ILangs {
-    public name: TLangName = 'en';
-    public params: ILang = reactive(en);
+    private _name = ref('en' as TLangName);
+
     readonly list: IListLangs = langs;
-    public lang: IListOption = langs['en'];
 
     constructor(lang: TLangName = 'en') {
         this.set(lang);
     }
 
+    get name(): TLangName {
+        return this._name.value;
+    }
+
+    get params(): ILang {
+        return listLangs[this.name];
+    }
+
+    get lang(): IListOption {
+        return this.list[this.name];
+    }
+
     set(lang: TLangName) {
-        this.name = lang;
-        this.lang = this.list[lang];
-        this.params = listLangs[lang];
+        this._name.value = lang;
     }
 }
 

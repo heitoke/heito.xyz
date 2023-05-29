@@ -61,8 +61,9 @@ export default defineComponent({
                 x -= isFix ? (el.width - elPos.width) / 2 : (el.height / 2);
                 y -= isFix ? (el.height - elPos.height) / 2 : (el.height / 2);
             }
+            
 
-            if (has('top')) y = elPos?.y - (el?.height * 2) - 8;
+            if (has('top')) y = elPos?.y - (el?.height * 2) - 24;
             if (has('bottom')) y = elPos?.y + elPos?.height + 8;
             
             if (has('left')) x -= (el.width + 4);
@@ -84,8 +85,6 @@ export default defineComponent({
 
             contextMenu.x = x;
             contextMenu.y = y;
-
-            console.log(e.scrollHeight);
             
             if ((e.scrollHeight + 32) > window.innerHeight) {
                 const

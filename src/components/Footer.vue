@@ -5,11 +5,30 @@
         </div>
         
         <div class="content">
-            <Select label="Language" position="top" :value="$lang.name"
-                :menu="getListLangs"
-                @select="$lang.set($event.value)"
-            />
+            <div class="left">
+                <div>
+                    <Icon name="logo"/>
+                    <span>heito.xyz</span>
+                </div>
+                <Select label="Language" position="top" :value="$lang.name"
+                    :menu="getListLangs"
+                    @select="$lang.set($event.value)"
+                />
+            </div>
+
+            <div style="margin: 0 0 0 auto;"></div>
+
+            <div class="group" v-for="(group, idx) of groups" :key="idx">
+                <div class="title">{{ group.title }}</div>
+                <ul>
+                    <li v-for="(children, id) of group.childrens" :key="id">
+                        <span>{{ children.label }}</span>
+                    </li>
+                </ul>
+            </div>
         </div>
+
+        <Text class="text" :text="'Thanks for everything'"/>
     </footer>
 </template>
 
@@ -32,17 +51,39 @@ export default defineComponent({
                 click: () => {
                     this.setLang(key as TLangName);
                 }
-            }))
+            }));
         }
     },
-    data: () => ({}),
+    data: () => ({
+        groups: [
+            {
+                title: 'Community',
+                childrens: [
+                    {
+                        label: 'GitHub',
+                        url: 'https://github.com/heito-xyz'
+                    }
+                ]
+            },
+            {
+                title: 'Products',
+                childrens: [
+                    {
+                        label: 'Hoshi',
+                        url: 'https://hoshi.heito.xyz'
+                    },
+                    {
+                        label: 'Uptime',
+                        url: 'https://status.heito.xyz'
+                    }
+                ]
+            }
+        ]
+    }),
     watch: {},
     methods: {
         setLang(name: TLangName) {
             this.$lang.set(name);
-
-            console.log(name, this.$lang.name);
-            
             
             this.$local.set('lang', name);
             document.querySelector('html')?.setAttribute('lang', name);
@@ -91,6 +132,91 @@ footer {
     .content {
         display: flex;
         padding: 5% 10%;
+        border-bottom: 1px solid var(--background-secondary);
+    }
+
+    .left {
+        & > div {
+            display: flex;
+            margin: 0 0 16px 0;
+            align-items: center;
+
+            i {
+                margin: 0 12px 0 0;
+                color: var(--main-color);
+                font-size: 48px;
+            }
+
+            span {
+                font-size: 20px;
+            }
+        }
+    }
+
+    .group {
+        margin: 0 5% 0 0;
+
+        &:last-child {
+            margin: 0;
+        }
+
+        .title {
+            color: var(--main-color);
+            font-size: 18px;
+            text-align: right;
+            user-select: none;
+        }
+
+        ul {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            justify-content: flex-start;
+            
+            li {
+                cursor: pointer;
+                margin: 4px 0 0 0;
+                position: relative;
+
+                &:last-child {
+                    margin: 0;
+                }
+
+                &:hover {
+                    &::after {
+                        width: 100%;
+                    }
+
+                    span {
+                        color: var(--text-primary);
+                    }
+                }
+                
+                &::after {
+                    content: " ";
+                    width: 0px;
+                    height: 1px;
+                    position: absolute;
+                    right: 0;
+                    bottom: 1px;
+                    background-color: var(--main-color);
+                    transition: .2s;
+                    z-index: -1;
+                }
+
+                span {
+                    color: var(--text-secondary);
+                    transition: .2s;
+                }
+            }
+        }
+    }
+
+    .text {
+        padding: 24px;
+        color: var(--text-secondary);
+        font-size: 12px;
+        text-align: center;
     }
 }
 

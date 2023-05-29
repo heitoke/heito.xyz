@@ -65,6 +65,10 @@ export default defineComponent({
                 this.closeToolpic(toolpic.id);
             }, { once: true });
 
+            target.addEventListener('mouseleave', () => {
+                this.closeToolpic(toolpic.id);
+            }, { once: true });
+
             done();
         }
     },

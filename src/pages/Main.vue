@@ -22,8 +22,6 @@ import SpaceOfStars from '../components/content/SpaceOfStars.vue';
 
 import { defineComponent } from 'vue';
 
-import { mapGetters } from 'vuex';
-
 export default defineComponent({
     name: 'MainPage',
     components: {},

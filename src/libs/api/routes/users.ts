@@ -1,5 +1,7 @@
 import $api, { DocumentationAPI } from '../';
 
+import { ILog } from './logs';
+
 const docs = new DocumentationAPI('users', {
     path: '/users',
     label: 'Users',
@@ -236,6 +238,26 @@ class Route {
     })
     update(userId: string, body: IUser, type: 'person' | 'default' | 'links' = 'default') {
         return $api.patch(`/users/${userId}?type=${type}`, { body });
+    }
+
+    @docs.route({
+        label: 'Get user list notifications',
+        icon: 'notification',
+        path: '/:userId/notifications',
+        // description: 'Find out information about a specific user',
+        params: [
+            { name: 'userId', text: 'Username, user Id, or mail linked to the user' }
+        ],
+        permissions: [EPermissions.Users],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 404, text: 'Not found' },
+            { code: 401, text: 'You don\'t have editing rights' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
+    notifications(userId: string): [{ count: number, results: Array<ILog> }, number, any] {
+        return $api.get(`/users/${userId}/notifications`) as any;
     }
 }
 

@@ -19,7 +19,7 @@
 <script setup lang="ts">
 
 import Header from './components/Header/Main.vue';
-import Notifications from './components/Notifications.vue';
+import Notifications from './components/Notifications/Main.vue';
 import Toolpics from './components/Toolpics.vue';
 import Windows from './components/Windows.vue';
 import ContextMenu from './components/ContextMenu.vue';

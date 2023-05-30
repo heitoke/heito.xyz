@@ -6,7 +6,7 @@
             <li v-for="(btn, idx) of menu" :key="btn.label"
                 :class="{ active: id === idx }"
                 :style="{ '--color': btn?.color }"
-                @click="selected ? id = idx : $emit('select', btn)"
+                @click="selected ? id = idx : $emit('select', btn); btn?.click ? btn?.click($event, btn) : btn?.click"
                 @mouseenter="selected ? (id === idx ? null : hoverId = idx) : null"
                 @mouseleave="hoverId = -1"
             >
@@ -35,6 +35,7 @@ export interface IButton {
     img?: string;
     value?: string;
     [key: string]: any;
+    click?(event: MouseEvent, button: IButton): void;
 }
 
 export default defineComponent({

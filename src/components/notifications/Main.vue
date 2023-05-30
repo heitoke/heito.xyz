@@ -11,11 +11,12 @@
                     <Icon name="close" @click="$notifications.setActive(false)"/>
                 </header>
 
-                <ScrollBar>
+                <ScrollBar max-height="calc(100vh - 48px)">
                     <ul class="list menu" v-if="$notifications.list.length > 0">
-                        <Notification v-for="notification of $notifications.list" :key="notification.id"
+                        <Notification v-for="notification of $notifications.list.sort((a, b) => a?.createdAt! < b?.createdAt! ? 1 : -1)" :key="notification.id"
                             :id="notification.id"
                             :notification="notification"
+                            :showButtons="true"
                         />
                     </ul>
                     <Alert style="margin: 12px 12px 0 12px;" type="mini" v-else/>
@@ -37,9 +38,9 @@
 
 <script setup lang="ts">
 
-import ScrollBar from './content/ScrollBar.vue';
+import ScrollBar from '../content/ScrollBar.vue';
 
-import Notification from './notifications/Notification.vue';
+import Notification from './Notification.vue';
 
 </script>
 
@@ -49,23 +50,94 @@ import { defineComponent } from 'vue';
 
 import { mapGetters } from 'vuex';
 
+import Users from '../../libs/api/routes/users';
+import Projects from '../../libs/api/routes/projects';
+import { ILog, codes } from '../../libs/api/routes/logs';
+
+import { INotification, INotificationButton } from '../../plugins/notifications';
+
 export default defineComponent({
     name: 'Notifications',
     components: {},
     computed: {
-        ...mapGetters(['getWinHeight']),
+        ...mapGetters(['getWinHeight', 'getUser']),
         getMaxCountNotification(): number {
             const count: number = Math.floor(this.getWinHeight / 70) - 2;
             return count > 7 ? 7 : count;
         }
     },
     data: () => ({}),
-    watch: {},
+    watch: {
+        'getUser._id'(newValue) {
+            if (!newValue) return;
+
+            this.loadUserNotifications(newValue);
+        }
+    },
+    sockets: {
+        'notifications:push'(notification: ILog) {
+            this.$notifications.push(this.getNotification(notification));
+        }
+    },
     methods: {
         enterNotification(el: Element) {
             setTimeout(() => {
                 this.$notifications.hide(Number(el.id));
             }, 7000);
+        },
+        getNotification(notification: ILog): INotification {
+            const code = codes[notification.code];
+
+            let message = '';
+
+            let buttons: Array<INotificationButton> = [];
+
+            const id = Math.random();
+
+            switch(notification.code) {
+                case 202:
+                    message = `In ${notification?.props?.project}`;
+
+                    buttons = ['accept', 'refuse'].map(x => ({
+                        label: x[0].toLocaleUpperCase() + x.slice(1),
+                        click: async () => {
+                            const [result, status] = await Projects.action(notification?.props?.project, 'invate', x);
+
+                            if (status !== 200) return;
+
+                            this.$notifications.push({
+                                title: 'Project action',
+                                message: 'Everything went well',
+                                color: 'var(--green)'
+                            });
+
+                            this.$notifications.remove(id);
+                        }
+                    }));
+                    break;
+            }
+
+            return {
+                id,
+                title: code.text,
+                message,
+                color: code.color || 'var(--main-color)',
+                icon: code.icon || 'pacman',
+                shadowPosition: 'left',
+                shadow: true,
+                buttons,
+                createdAt: new Date(notification.createdAt).getTime()
+            }
+        },
+        async loadUserNotifications(userId: string) {
+            if (!userId) return;
+
+            const [result, status] = await Users.notifications(userId);
+
+            if (status !== 200) return;
+
+            const notifications: Array<INotification> = result.results.map(n => this.getNotification(n));
+            this.$notifications.addNotifications(notifications, true);
         }
     },
     mounted() {}

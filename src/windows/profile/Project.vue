@@ -57,7 +57,9 @@
         </section>
 
         <section class="members" v-show="block === 'members'">
-            <Button @click="openInvateWindow">Invate</Button>
+            <div style="display: flex; margin: 0 0 12px 0;">
+                <Button @click="openInvateWindow" v-if="member.permission !== EProjectPermission.Member">Invate</Button>
+            </div>
 
             <div class="grid" v-if="project?.members?.length! > 0">
                 <User v-for="(member, idx) of project?.members" :key="idx"
@@ -484,6 +486,8 @@ export default defineComponent({
 
                         this.$notifications.push({
                             title: 'Project invate members',
+                            icon: 'image',
+                            color: 'var(--green)',
                             message: `Invitations sent to ${members.length} users`
                         });
                         

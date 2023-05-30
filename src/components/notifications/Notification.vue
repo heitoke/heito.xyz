@@ -8,32 +8,44 @@
             '--notification-color': notification.color
         }"
     >
-        <div class="icon" v-show="notification.icon">
-            <Icon :name="notification.icon"/>
-        </div>
-        <div>
-            <div class="title">{{ notification.title || 'Title' }}</div>
-            <div class="text">{{ notification.message }}</div>
-        </div>
+        <header>
+            <div class="icon" v-show="notification.icon">
+                <Icon :name="notification.icon"/>
+            </div>
+            <div>
+                <div class="title">{{ notification.title || 'Title' }}</div>
+                <div class="text" v-html="notification.message"></div>
+            </div>
+        </header>
+
+        <NavBar style="margin: 8px 0 0 0;" v-if="notification?.buttons?.length! > 0 && showButtons"
+            :menu="notification.buttons"    
+        />
     </div>
 </template>
+
+<script lang="ts" setup>
+
+import NavBar from '../content/NavBar.vue';
+
+</script>
 
 <script lang="ts">
 
 import type { INotification } from '../../plugins/notifications';
 import { defineComponent, PropType } from 'vue';
 
-import { mapGetters } from 'vuex';
-
 export default defineComponent({
     name: 'Notification',
-    computed: {
-        ...mapGetters([''])
-    },
+    computed: {},
     props: {
         notification: {
             type: Object as PropType<INotification>,
             default: () => ({})
+        },
+        showButtons: {
+            type: Boolean,
+            default: false
         }
     },
     data: () => ({}),
@@ -59,13 +71,16 @@ export default defineComponent({
 
 .notification.old {
     pointer-events: all;
-    display: flex;
-    min-height: 64px;
-    border-radius: 5px;
-    align-items: center;
     transition: all .2s;
     animation: ShowNotification 1s linear;
     overflow: hidden;
+
+    header {
+        display: flex;
+        min-height: 64px;
+        border-radius: 5px;
+        align-items: center;
+    }
 
     .icon {
         display: flex;
@@ -130,20 +145,24 @@ export default defineComponent({
 
 .notification {
     pointer-events: all;
-    display: flex;
-    padding: 0 16px;
+    padding: 12px;
     max-width: 512px;
     min-width: 215px;
-    min-height: 64px;
+    // min-height: 64px;
     position: relative;
     border-radius: 5px;
-    align-items: center;
     transition: all .2s;
     font-family: 'Shalimar' !important;
     // animation: ShowNotification 1s linear;
     // background-color: var(--background-secondary);
     backdrop-filter: blur(5px);
     overflow: hidden;
+
+    header {
+        display: flex;
+        position: relative;
+        align-items: center;
+    }
 
     &.shadow::before {
         box-shadow: 0 0 150px 200px var(--notification-color);
@@ -173,7 +192,7 @@ export default defineComponent({
 
     .icon {
         display: flex;
-        margin: 0 16px 0 0;
+        margin: 0 12px 0 0;
         min-width: 32px;
         min-height: 32px;
         position: relative;

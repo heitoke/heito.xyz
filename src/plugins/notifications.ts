@@ -6,12 +6,21 @@ type TTypeNotification = 'shadow' | 'old' | 'mini' | 'info' | 'toast';
 
 type TShadowPosition = 'left' | 'right';
 
+export interface INotificationButton {
+    label: string;
+    icon?: string;
+    img?: string;
+    color?: string;
+    click?(): void;
+}
+
 export interface INotification {
     id?: number;
     title?: string;
     message?: string;
     color?: string;
     icon?: string;
+    buttons?: Array<INotificationButton>;
     shadow?: boolean;
     shadowPosition?: TShadowPosition;
     type?: TTypeNotification;
@@ -31,10 +40,12 @@ interface INotifications {
     setActive(active: boolean): void;
     setPotition(position: TPosition): void;
 
-    push(notification: INotification): void;
-    error(options: INotificationError): void;
+    push(notification: INotification): INotification;
+    error(options: INotificationError): INotification;
     hide(notificationId: number): void;
     remove(notificationId: number): void;
+
+    addNotifications(notifications: Array<INotification>, hide: boolean): void;
 }
 
 interface INotificationError {
@@ -58,24 +69,30 @@ export class Notifications implements INotifications {
         this.options.position = position;
     }
 
-    push(notification: INotification) {
-        this.list.push({
+    push(notification: INotification): INotification {
+        const newnNotification: INotification = {
             shadowPosition: 'left',
             shadow: true,
             ...notification,
             id: this.list.length + 1,
             createdAt: Date.now(),
             hide: false
-        });
+        };
+
+        this.list.push(newnNotification);
+
+        return newnNotification;
     }
 
-    error({ title, message, icon = 'info-circle', status = 501 }: INotificationError) {
-        this.push({
+    error({ title, message, icon = 'info-circle', status = 501 }: INotificationError): INotification {
+        const notification = this.push({
             title: `Error ${title || ''} (${status || 501})`,
             message: message || 'Server error',
             icon: icon,
             color: 'var(--red)'
         });
+
+        return notification;
     }
 
     hide(notificationId: number) {
@@ -92,6 +109,11 @@ export class Notifications implements INotifications {
         if (notificationIndex < 0) return;
 
         this.list.splice(notificationIndex, 1);
+    }
+
+
+    addNotifications(notifications: INotification[], hide: boolean = true): void {
+        this.list.push(...notifications.map(n => ({ ...n, hide })));
     }
 }
 

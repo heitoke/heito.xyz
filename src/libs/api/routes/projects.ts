@@ -171,6 +171,31 @@ class Route {
             }
         }) as any; 
     }
+
+    @docs.route({
+        label: 'Action project',
+        // icon: 'users',
+        // description: 'We are expanding our social circle',
+        body: [
+            { name: 'type', type: 'string', enum: { invate: {} } }
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 400, text: 'You didn\'t specify the type of action' },
+            // { code: 401, text: 'You don\'t have editing rights' },
+            { code: 404, text: 'There is no such project' },
+            { code: 501, text: 'Server error' }
+        ],
+        method: 'PUT'
+    })
+    action(projectId: string, type: 'invate', value: any): [any, number, any] {
+        return $api.put(`/projects/${projectId}`, {
+            body: {
+                type,
+                value
+            }
+        }) as any; 
+    }
 }
 
 export default new Route();

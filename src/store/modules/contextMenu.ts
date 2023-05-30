@@ -9,6 +9,7 @@ export interface IContextMenuButton {
     label: string;
     text?: string;
     icon?: string;
+    img?: string;
     color?: string;
     component?: string | Component;
     separator?: boolean;

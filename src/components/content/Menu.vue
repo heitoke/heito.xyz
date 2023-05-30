@@ -11,7 +11,8 @@
                     :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                     @click="buttonClick(btn, $event)"
                 >
-                    <Icon :name="btn?.icon" v-if="btn?.icon"/>
+                    <img :src="btn?.img" alt="ContextMenu Image" v-if="btn?.img">
+                    <Icon :name="btn?.icon" v-else-if="btn?.icon"/>
 
                     <div class="content"
                         :style="{ 'max-width': `calc(100% - ${0 + (btn.children && (btn?.children?.buttons?.length > 0) ? 24 : 0) + (btn?.icon ? 24 : 0) + (btn?.checkbox ? 32 : 0)}px)` }"
@@ -165,6 +166,13 @@ export default defineComponent({
                 .arrow {
                     --color: var(--text-primary);
                 }
+            }
+
+            img {
+                margin: 0 12px 0 0;
+                min-width: 24px;
+                height: 24px;
+                border-radius: 50%;
             }
 
             &.separator {

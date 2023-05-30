@@ -57,6 +57,8 @@
         </section>
 
         <section class="members" v-show="block === 'members'">
+            <Button @click="openInvateWindow">Invate</Button>
+
             <div class="grid" v-if="project?.members?.length! > 0">
                 <User v-for="(member, idx) of project?.members" :key="idx"
                     :user="member.member" :text="member.permission"
@@ -68,7 +70,7 @@
 
 <script lang="ts" setup>
 
-import { time } from '../../libs/utils';
+import { getAvatar, time } from '../../libs/utils';
 
 import NavBar from '../../components/content/NavBar.vue';
 
@@ -85,7 +87,7 @@ import { PropType, defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 
 import Projects, { type IProject, type IProjectMember, EProjectPermission } from '../../libs/api/routes/projects';
-import { EPermissions } from '../../libs/api/routes/users';
+import Users, { EPermissions, IUser } from '../../libs/api/routes/users';
 
 import { copy } from '../../libs/utils';
 
@@ -468,6 +470,27 @@ export default defineComponent({
             this.selfProject = { ...result, links: result?.links || [] };
 
             this.setButtons();
+        },
+        openInvateWindow() {
+            const { windowId } = this.$windows.create({
+                component: 'InvateUsers',
+                data: {
+                    save: async (members: Array<{ id: string, permission: EProjectPermission }>) => {
+                        if (members.length < 1) return;
+                        
+                        const [result, status] = await Projects.invateMembers(this.project._id, members, 'invate');
+
+                        if (status !== 200) return;
+
+                        this.$notifications.push({
+                            title: 'Project invate members',
+                            message: `Invitations sent to ${members.length} users`
+                        });
+                        
+                        this.$windows.close(windowId);
+                    }
+                }
+            });
         }
     },
     mounted() {

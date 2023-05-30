@@ -8,7 +8,7 @@
             </div> -->
 
             <Textbox :label="label" :icon="getItem?.icon" :value="getItem?.label" :watchValue="true"
-                @input="text = ($event.target as any)?.value; open(text)"
+                @input="text = ($event.target as any)?.value; open(text); $emit('input', $event)"
             />
         </header>
     </div>
@@ -31,6 +31,7 @@ export interface IMenuButton {
     value: string;
     icon: string;
     color: string;
+    img: string;
 }
 
 export default defineComponent({
@@ -39,6 +40,9 @@ export default defineComponent({
         getItem() {
             let buttonIndex = this.menu?.findIndex(btn => btn.value === (this.selected || this.value)) as number;
             return this.menu![buttonIndex] || {};
+        },
+        getLengthMenu() {
+            return this.menu?.length;
         }
     },
     props: {
@@ -58,13 +62,21 @@ export default defineComponent({
         search: {
             type: Boolean,
             default: true
+        },
+        sort: {
+            type: Boolean,
+            default: true
         }
     },
     data: () => ({
         selected: '',
         text: ''
     }),
-    watch: {},
+    watch: {
+        'getLengthMenu'(newValue, oldValue) {
+            this.open(this.text);
+        }
+    },
     methods: {
         ...mapActions(['setContextMenu', 'closeContextMenu']),
         open(text: string = '') {
@@ -72,7 +84,10 @@ export default defineComponent({
 
             const regex = new RegExp(text, 'g');
 
-            const sort = this.menu?.filter(x => regex.test(x.label) || regex.test(x?.value as any));
+            const sort = this.sort ? this.menu?.filter(x => regex.test(x.label) || regex.test(x?.value as any)) : this.menu;
+
+            console.log(sort);
+            
 
             this.setContextMenu({
                 name: 'ui-select',

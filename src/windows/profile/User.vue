@@ -29,7 +29,7 @@
                             buttons: getUserPermissions
                         })"    
                     >
-                        <Icon name="clubs"/>
+                        <Icon name="c"/>
                         <span>Permissions</span>
                     </li>
                 </ul>

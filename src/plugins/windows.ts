@@ -33,9 +33,10 @@ interface IWindows {
     readonly list: Array<IWindow>;
     readonly options: IWindowsOptions;
 
-    create(window: IWindow): void;
+    create(window: IWindow): { windowId: number };
     close(windowId: number): void;
     hide(windowId: number): void;
+    update(windowId: number, newWindow: IWindow): void;
 
     addButtons(windowId: number, buttons: Array<IButton>): void;
     removeButtons(windowId: number, ids: Array<number> | number): void;
@@ -52,14 +53,20 @@ export class Windows implements IWindows {
     }
 
     create(window: IWindow) {
-        this.list.push({
+        const id = this.list.length + 1;
+
+        this.list.push(reactive({
             position: 'center',
             buttons: [],
             close: true,
             ...window,
-            id: this.list.length + 1,
+            id,
             createdAt: Date.now()
-        });
+        }));
+
+        return {
+            windowId: id
+        }
     }
 
     close(windowId: number) {
@@ -78,6 +85,13 @@ export class Windows implements IWindows {
         this.list[windowIndex].hide = true;
     }
 
+    update(windowId: number, newWindow: IWindow) {
+        const windowIndex = this.getWindowIndex(windowId);
+
+        if (windowIndex < 0) return;
+
+        this.list[windowIndex] = reactive({ ...this.list[windowIndex], ...newWindow });
+    }
 
     addButtons(windowId: number, buttons: Array<IButton>): void {
         const windowIndex = this.getWindowIndex(windowId);

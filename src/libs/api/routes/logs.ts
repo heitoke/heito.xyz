@@ -21,7 +21,9 @@ export const projectCodes = {
     201: { text: 'The project has been updated', icon: '', color: '' },
     202: { text: 'Invitation to the project', icon: '', color: '' },
     203: { text: 'Participants are excluded from the project', icon: 'image', color: 'var(--red)' },
-    204: { text: 'The project has been deleted', icon: '', color: '' }
+    204: { text: 'The project has been deleted', icon: '', color: '' },
+    205: { text: 'The user accepted the invitation', icon: 'user-circle', color: 'var(--green)' },
+    206: { text: 'The user declined the invitation', icon: 'user-circle', color: 'var(--red)' }
 }
 
 export const codes: { [key: number]: ICode } = {

@@ -10,6 +10,7 @@
                 <div class="blur">
                     <ScrollBar maxHeight="90vh" :inset="true">
                         <component :is="window?.component" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
+                            style="padding: 12px;"
                             :closeWindow="() => $windows.close(window?.id!)"
                             v-bind="window?.props"
                             @error="window.error = true"
@@ -131,7 +132,7 @@ export default defineComponent({
         }
 
         .bg + div {
-            padding: 12px;
+            // padding: 12px;
             position: absolute;
             border-radius: 5px;
             border: 1px solid var(--background-secondary);
@@ -197,7 +198,12 @@ export default defineComponent({
 
                 .buttons {
                     top: -48px;
-                    left: 12px;
+                    right: 12px;
+                    flex-direction: row-reverse;
+
+                    li {
+                        margin: 0 8px 0 0;
+                    }
                 }
             }
         }

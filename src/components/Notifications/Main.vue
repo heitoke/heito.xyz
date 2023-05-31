@@ -13,12 +13,14 @@
 
                 <ScrollBar max-height="calc(100vh - 48px)">
                     <ul class="list menu" v-if="$notifications.list.length > 0">
-                        <Notification v-for="notification of $notifications.list.sort((a, b) => a?.createdAt! < b?.createdAt! ? 1 : -1)" :key="notification.id"
+                        <Notification v-for="(notification, idx) of $notifications.list.sort((a, b) => a?.createdAt! < b?.createdAt! ? 1 : -1)" :key="notification.id"
                             :id="notification.id"
                             :notification="notification"
                             :showButtons="true"
+                            @contextmenu="notificationContextMenu(idx, notification.id!)"
                         />
                     </ul>
+
                     <Alert style="margin: 12px 12px 0 12px;" type="mini" v-else/>
                 </ScrollBar>
             </div>
@@ -27,9 +29,11 @@
         <ul :class="['list global', $notifications?.options?.position, { active: !$notifications?.options?.active }]">
             <TransitionGroup name="notification" @enter="enterNotification($event)">
                 <Notification v-for="notification of $notifications?.list.filter(n => !n.hide).slice(0, getMaxCountNotification)" :key="notification.id"
+                    style="cursor: pointer;"
                     :id="notification.id"
                     :style="{ 'transform-origin': $notifications?.options?.position }"
                     :notification="notification"
+                    @click="$notifications.setActive(true)"
                 />
             </TransitionGroup>
         </ul>
@@ -48,7 +52,7 @@ import Notification from './Notification.vue';
 
 import { defineComponent } from 'vue';
 
-import { mapGetters } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import Users from '../../libs/api/routes/users';
 import Projects from '../../libs/api/routes/projects';
@@ -80,6 +84,7 @@ export default defineComponent({
         }
     },
     methods: {
+        ...mapActions(['setContextMenu']),
         enterNotification(el: Element) {
             setTimeout(() => {
                 this.$notifications.hide(Number(el.id));
@@ -98,25 +103,54 @@ export default defineComponent({
                 case 202:
                     message = `In ${notification?.props?.project}`;
 
-                    buttons = ['accept', 'refuse'].map(x => ({
-                        label: x[0].toLocaleUpperCase() + x.slice(1),
-                        click: async () => {
-                            const [result, status] = await Projects.action(notification?.props?.project, 'invate', x);
+                    buttons = [
+                        ...['accept', 'refuse'].map(x => ({
+                            label: x[0].toLocaleUpperCase() + x.slice(1),
+                            click: async () => {
+                                const [result, status] = await Projects.action(notification?.props?.project, 'invate', x);
 
-                            if (status !== 200) return;
+                                if (status !== 200) return;
 
-                            this.$notifications.push({
-                                title: 'Project action',
-                                message: 'Everything went well',
-                                color: 'var(--green)'
-                            });
+                                this.$notifications.push({
+                                    title: 'Project action',
+                                    message: 'Everything went well',
+                                    color: 'var(--green)'
+                                });
 
-                            this.$notifications.remove(id);
+                                this.$notifications.remove(id);
+                            }
+                        })),
+                        {
+                            label: 'Open project',
+                            icon: 'image',
+                            click: () => {
+                                this.$windows.create({ component: 'Project', data: notification.props?.project });
+                            }
                         }
-                    }));
+                    ];
                     break;
                 case 203:
                     message = `From ${notification?.props?.project}`;
+                    break;
+                case 205: case 206:
+                    message = `User ${notification.props?.member}`;
+
+                    buttons = [
+                        {
+                            label: 'User profile',
+                            icon: 'user-circle',
+                            click: () => {
+                                this.$windows.create({ component: 'User', data: notification.props?.member });
+                            }
+                        },
+                        {
+                            label: 'Project',
+                            icon: 'image',
+                            click: () => {
+                                this.$windows.create({ component: 'Project', data: notification.props?.project });
+                            }
+                        }
+                    ];
                     break;
             }
 
@@ -132,6 +166,23 @@ export default defineComponent({
                 createdAt: new Date(notification.createdAt).getTime()
             }
         },
+        notificationContextMenu(idx: number, notificationId: number) {
+            this.setContextMenu({
+                name: `notifications:${idx}`,
+                position: ['left', 'fixed-target'],
+                event: (this.$el as Element)?.querySelector(`.panel .list.menu .notification:nth-child(${idx + 1})`),
+                buttons: [
+                    {
+                        label: 'Delete',
+                        icon: 'trash',
+                        color: 'var(--red)',
+                        click: async () => {
+                            this.$notifications.remove(notificationId)
+                        }
+                    }
+                ]
+            })
+        },
         async loadUserNotifications(userId: string) {
             if (!userId) return;
 
@@ -141,6 +192,13 @@ export default defineComponent({
 
             const notifications: Array<INotification> = result.results.map(n => this.getNotification(n));
             this.$notifications.addNotifications(notifications, true);
+
+            this.$notifications.push({
+                title: 'Notifications',
+                icon: 'notification',
+                message: `You have ${result.count} notifications`,
+                color: 'var(--main-color)'
+            })
         }
     },
     mounted() {}

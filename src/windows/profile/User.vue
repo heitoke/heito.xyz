@@ -29,7 +29,7 @@
                             buttons: getUserPermissions
                         })"    
                     >
-                        <Icon name="c"/>
+                        <Icon name="clubs"/>
                         <span>Permissions</span>
                     </li>
                 </ul>
@@ -69,7 +69,7 @@
             <Loading v-show="projects.loading"/>
 
             <div class="grid" v-if="!projects.loading && projects.list.length > 0">
-                <Project v-for="(project, idx) of new Array(10).fill(projects.list[0])" :key="project._id"
+                <Project v-for="(project, idx) of projects.list" :key="project._id"
                     :project="project"
                 />
             </div>

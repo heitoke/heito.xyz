@@ -7,12 +7,14 @@
                 :scrollPercentY="scroll || 0"
                 :scrollY="y"
                 :scrollHeight="scrollHeight"
-                :scrollMaxHeight="heightMax"
+                :scrollMaxHeight="elementHeight.max"
                 :toScroll="toScroll"
                 :element="$el"
             ></slot>
         </div>
-        <div :class="['indicator', { active: height }]" :style="{ height: `calc(${maxHeight} - 16px)`, right: `${inset ? -8 : 4}px` }" v-show="scrollHeight < 100">
+        <div :class="['indicator', { active: elementHeight.value }]" v-show="scrollHeight < 100"
+            :style="{ height: `calc(${maxHeight} - 16px)`, right: `${inset ? -8 : 4}px` }"
+        >
             <div :style="{ top: `${scroll}%`, height: `${scrollHeight}%` }"></div>
         </div>
     </div>
@@ -30,16 +32,18 @@ export default defineComponent({
         ...mapGetters(['getWinHeight']),
         scrollHeight(): number {
             if (this.show) {
-                let el = (this.$el as Element).querySelector('[scrollbar-block]');
-                return 100 - (100 * (this.height - (el?.clientHeight || 0)) / this.height);
-            } else return 0;
+                return 100 - (100 * (this.elementHeight.value - (this.elementHeight.client || 0)) / this.elementHeight.value);
+            }
+            
+            return 0;
         },
         scroll(): number {
             if (this.show) {
-                let hMaxP = 100 - this.scrollHeight;
-                let el = (this.$el as Element).querySelector('[scrollbar-block]');
-                return hMaxP * this.y / (this.height - (el?.clientHeight || 0));
-            } else return 0;
+                const heightMax = 100 - this.scrollHeight;
+                return heightMax * this.y / (this.elementHeight.value - (this.elementHeight.client || 0));
+            }
+
+            return 0;
         }
     },
     props: {
@@ -55,16 +59,17 @@ export default defineComponent({
     data: () => ({
         x: 0,
         y: 0,
-        height: 0,
-        heightMax: 0,
-        show: false,
-        hover: false,
-        hasSlotContent: false
+        elementHeight: {
+            max: 0,
+            value: 0,
+            client: 0
+        },
+        show: false
     }),
     watch: {
         y(newValue: number) {
-            if ((newValue + 35) >= this.heightMax) {
-                this.setMaxHeight();
+            if ((newValue + 35) >= this.elementHeight.max) {
+                this.setHeight();
             }
         }
     },
@@ -79,14 +84,10 @@ export default defineComponent({
 
             let coll: HTMLCollection = el?.children;
 
-            this.height = 0;
+            this.elementHeight.value = 0;
 
             for (let i = 0; i < coll.length; i++)
-                this.height += coll[i]?.scrollHeight;
-            
-
-
-            // this.height = el?.lastElementChild?.scrollHeight as number;
+                this.elementHeight.value += coll[i]?.scrollHeight;
         },
         checkForSlotContent() {
             let checkForContent = (hasContent: any, node: any) => {
@@ -100,7 +101,7 @@ export default defineComponent({
             return this.$slots.default && this.$slots.default()?.reduce(checkForContent, false);
         },
         toScroll(x: number, y: number) {
-            let el: Element = this.$refs?.el as Element;
+            const el: Element = this.$refs?.el as Element;
 
             el?.scrollTo({
                 top: y,
@@ -108,16 +109,22 @@ export default defineComponent({
                 behavior: 'smooth'
             });
         },
-        setMaxHeight() {
-            let el = (this.$el as Element).querySelector('[scrollbar-block]');
+        setHeight() {
+            const el = (this.$refs?.el as Element);
     
-            this.heightMax = (el?.scrollHeight || 0) - document.documentElement?.clientHeight;
+            this.elementHeight = {
+                value: el?.scrollHeight,
+                max: (el?.scrollHeight || 0) - document.documentElement?.clientHeight,
+                client: el?.clientHeight
+            }
         },
         observeHeight() {
             const el = (this.$refs?.el as Element);
 
-            const resizeObserver = new ResizeObserver(function() {
-                console.log(el?.scrollHeight, el?.clientHeight);
+            const resizeObserver = new ResizeObserver(() => {
+                this.setHeight();
+
+                console.log(el?.className, this.elementHeight);
             });
 
             resizeObserver.observe(el);
@@ -129,16 +136,10 @@ export default defineComponent({
 
             this.setScroll(this.$refs.el as Element, true);
 
-            this.setMaxHeight();
+            this.setHeight();
 
             this.observeHeight();
         }
-    },
-    beforeUpdate() {
-        this.hasSlotContent = this.checkForSlotContent();
-    },
-    created() {
-        this.hasSlotContent = this.checkForSlotContent();
     }
 })
 

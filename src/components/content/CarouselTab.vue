@@ -1,13 +1,6 @@
 <template>
     <div class="carousel-tab">
         <div class="content">
-            <!-- <div :style="{
-                transform: `translateX(calc(-${index * 100}% - ${index * gap}px))`,
-                'grid-template': `1fr / repeat(${countElements}, calc(${100 / column}% - ${column > 1 ? gap / 2 : 0}px))`,
-                'column-gap': `${gap}px`
-            }">
-                <slot style="--g: 123px;"></slot>
-            </div> -->
             <div class="grid"
                 :style="{
                     transform: `translateX(calc(-${index * 100}% - ${index * gap}px))`,
@@ -16,16 +9,15 @@
                 <div v-for="(_, idx) in new Array(barLength).fill(0)" :key="idx"
                     :style="{
                         margin: `0 ${gap}px 0 0`,
-                        'grid-template-columns': `repeat(${column}, 1fr)`, //`1fr / repeat(${countElements}, calc(${100 / column}% - ${column > 1 ? gap / 2 : 0}px))`,
+                        'grid-template-columns': `repeat(${column}, minmax(calc((100% / ${column}) - ${gap}px), 1fr))`,
                         'column-gap': `${gap}px`
                     }"
                 >
-                    <!-- | {{ idx * column }} {{ (idx * column) + column }} | -->
                     <component v-for="c of ($slots as any)?.default()[0]?.children?.slice(idx * column, idx * column + column)" :key="c" :is="c"></component>
                 </div>
-                <!-- --- {{ column }} | {{ countElements }} -->
             </div>
         </div>
+
         <div class="bar">
             <div v-for="(_, id) of new Array(barLength)" :key="id"
                 :class="['btn', { active: id === index }]"

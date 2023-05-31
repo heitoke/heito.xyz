@@ -26,7 +26,7 @@
             />
 
             <div class="lang" v-show="repository?.language"
-                :style="{ 'background-image': `url(https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/${repository?.language?.toLocaleLowerCase()}.svg)` }"
+                :style="{ 'background-image': `url(https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/${getLangImage}.svg)` }"
                 @mouseenter="setToolpic({ title: repository?.language })"
             ></div>
         </header>
@@ -112,7 +112,17 @@ export interface IRepository {
 
 export default defineComponent({
     name: 'CardRepository',
-    computed: {},
+    computed: {
+        getLangImage() {
+            const lang = this.repository?.language?.toLocaleLowerCase(); 
+            
+            const replace: { [key: string]: string } = {
+                'c#': 'csharp'
+            };
+
+            return replace[lang as any] || lang;
+        }
+    },
     props: {
         repository: {
             type: Object as PropType<IRepository>

@@ -112,6 +112,22 @@ const routes: RouteRecordRaw[] = [
         ]
     },
     {
+        name: 'MusicPage',
+        path: '/music',
+        component: () => import('../pages/music/Main.vue'),
+        meta: {
+            title: 'Music',
+            icon: 'music-note'
+        },
+        children: [
+            {
+                name: 'MusicPlaylistPage',
+                path: 'playlists/:playlistId',
+                component: () => import('../pages/music/Playlist.vue')
+            }
+        ]
+    },
+    {
         path: '/:catchAll(.*)',
         name: 'ErrorPage',
         component: () => import('../pages/Error.vue'),

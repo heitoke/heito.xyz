@@ -70,11 +70,12 @@ export default defineComponent({
     },
     data: () => ({
         selected: '',
-        text: ''
+        text: '',
+        isOpen: false
     }),
     watch: {
         'getLengthMenu'(newValue, oldValue) {
-            this.open(this.text);
+            if (this.isOpen) this.open(this.text);
         }
     },
     methods: {
@@ -85,9 +86,8 @@ export default defineComponent({
             const regex = new RegExp(text, 'g');
 
             const sort = this.sort ? this.menu?.filter(x => regex.test(x.label) || regex.test(x?.value as any)) : this.menu;
-
-            console.log(sort);
             
+            this.isOpen = false;
 
             this.setContextMenu({
                 name: 'ui-select',
@@ -113,6 +113,8 @@ export default defineComponent({
                             this.$emit('select', this.getItem);
 
                             this.closeContextMenu('ui-select');
+
+                            this.isOpen = false;
                         }
                     }
                 })

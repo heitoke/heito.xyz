@@ -130,6 +130,21 @@ class Route {
     closeSessions(ids: Array<string> | string): [ISession, number, any] {
         return $api.delete(`/auth/sessions?ids=${(Array.isArray(ids) ? ids : [ids]).join(',')}`) as any;
     }
+
+    @docs.route({
+        label: 'Logout user',
+        icon: 'exit',
+        path: '/logout',
+        method: 'POST',
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 404, text: 'There is no such user' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
+    logout() {
+        return $api.post(`/auth/logout`) as any;
+    }
 }
 
 export default new Route();

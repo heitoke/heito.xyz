@@ -42,7 +42,7 @@
 
 import Menu from '../content/Menu.vue';
 
-import { getAvatar, colors } from '../../libs/utils';
+import { getAvatar, colors, cookies } from '../../libs/utils';
 
 </script>
 
@@ -51,6 +51,9 @@ import { getAvatar, colors } from '../../libs/utils';
 import { defineComponent, PropType } from 'vue';
 
 import { mapActions, mapGetters } from 'vuex';
+
+import Users from '../../libs/api/routes/users';
+import Auth from '../../libs/api/routes/auth';
 
 import type { IContextMenu } from '../../store/modules/contextMenu';
 
@@ -76,8 +79,8 @@ export default defineComponent({
                         })
                     }
                 },
+                { separator: true },
                 ...(!this.getUser?.isRegistered ? [
-                    { separator: true },
                     {
                         label: this.$lang.params.global.sign.in,
                         icon: 'hand',
@@ -92,26 +95,60 @@ export default defineComponent({
                             this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth', data: 'register' });
                         }
                     }
-                ] : []),
-                // ...(this.getUser?.isRegistered ? [
-                //     { separator: true },
-                //     {
-                //         label: this.$lang.params.global.exit[1],
-                //         icon: 'exit',
-                //         class: 'exit',
-                //         click: async () => {
-                //             const [user, status, props] = await Users.me('exit');
+                ] : [
+                    {
+                        label: this.$lang.params.global.exit[1],
+                        icon: 'exit',
+                        class: 'exit',
+                        click: async () => {
+                            const { windowId } = this.$windows.create({
+                                component: 'Message',
+                                data: {
+                                    title: 'Warning',
+                                    icon: 'info-circle',
+                                    text: 'When you log out of the account, the ip from which you are currently sitting will be deleted, you will have to log in again. Do you want to get out?',
+                                    buttons: [
+                                        {
+                                            label: 'Bye Bye',
+                                            color: 'var(--main-color)',
+                                            click: async () => {
+                                                const [result, logoutStatus] = await Auth.logout();
 
-                //             if (status !== 200) return;
+                                                if (logoutStatus !== 200) return;
 
-                //             deleteCookie(['HX_AT', 'HX_RT']);
+                                                this.$notifications.push({
+                                                    title: 'Parting words',
+                                                    message: 'You are logged out',
+                                                    icon: 'exit',
+                                                    color: 'var(--yellow)'
+                                                });
 
-                //             if (props?.token?.guast) setCookie('HX_GUAST', props?.token?.guast, { days: 365 });
+                                                const [user, status, props] = await Users.me('exit');
 
-                //             this.setUser(user);
-                //         }
-                //     }
-                // ] : [])
+                                                if (status !== 200) return;
+
+                                                cookies.delete(['HX_AT', 'HX_RT']);
+
+                                                if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+
+                                                this.setUser(user);
+
+                                                this.$windows.close(windowId);
+                                            }
+                                        },
+                                        {
+                                            label: 'To stay',
+                                            color: 'var(--green)',
+                                            click: () => {
+                                                this.$windows.close(windowId);
+                                            }
+                                        }
+                                    ]
+                                }
+                            })
+                        }
+                    }
+                ])
             ];
 
             return {
@@ -167,6 +204,7 @@ export default defineComponent({
     }),
     watch: {},
     methods: {
+        ...mapActions(['setUser']),
         open(e: Event, ref: string, callbackTrue: Function = () => {}, callbackFalse: Function = () => {}) {
             callbackTrue();
 

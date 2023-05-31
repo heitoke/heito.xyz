@@ -123,8 +123,6 @@ export default defineComponent({
 
             const resizeObserver = new ResizeObserver(() => {
                 this.setHeight();
-
-                console.log(el?.className, this.elementHeight);
             });
 
             resizeObserver.observe(el);

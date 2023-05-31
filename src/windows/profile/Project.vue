@@ -47,7 +47,8 @@
                 <template v-slot:void>
                     <Alert type="mini" v-if="project?.links?.length! < 1">
                         <div>Soon everything may appear :D</div>
-                        <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="member.permission !== EProjectPermission.Member"
+
+                        <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="isModer"
                             color="var(--green)"
                             @click="add ? add() : null"
                         >Create first link</Button>
@@ -57,13 +58,15 @@
         </section>
 
         <section class="members" v-show="block === 'members'">
-            <div style="display: flex; margin: 0 0 12px 0;">
+            <div style="display: flex; margin: 0 0 12px 0;" v-if="project?.members?.length! < 1">
                 <Textbox label="Search"/>
 
-                <Button style="width: 96px; margin: 0 0 0 12px;" v-if="member.permission !== EProjectPermission.Member" 
+                <Button style="width: 96px; margin: 0 0 0 12px;" v-if="isModer" 
                     @click="openInvateWindow"
                 >Invate</Button>
             </div>
+
+            <Alert type="mini" v-else/>
 
             <div class="grid" v-if="project?.members?.length! > 0">
                 <User v-for="(member, idx) of project?.members" :key="idx" :id="member.member._id"
@@ -113,6 +116,9 @@ export default defineComponent({
             if (memberIndex > -1) return {} as any;
 
             return (this.project?.members || [])[memberIndex] || {};
+        },
+        isModer() {
+            return this.member?.member && this.member.permission !== EProjectPermission.Member;
         },
         getLengthChanges(): number {
             return Object.keys(this.changes).length;
@@ -399,7 +405,7 @@ export default defineComponent({
                 position: ['left', 'fixed-target'],
                 event: e,
                 buttons: [
-                    ...(this.member.permission !== EProjectPermission.Member ? [this.buttonProjectSettings(), { separator: true }] : []),
+                    ...(this.isModer ? [this.buttonProjectSettings(), { separator: true }] : []),
                     {
                         label: 'Copy Project ID',
                         icon: 'user-circle',

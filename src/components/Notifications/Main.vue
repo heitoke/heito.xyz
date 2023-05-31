@@ -188,7 +188,7 @@ export default defineComponent({
 
             const [result, status] = await Users.notifications(userId);
 
-            if (status !== 200) return;
+            if (status !== 200 || result.results.length < 1) return;
 
             const notifications: Array<INotification> = result.results.map(n => this.getNotification(n));
             this.$notifications.addNotifications(notifications, true);

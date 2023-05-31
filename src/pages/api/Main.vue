@@ -112,6 +112,7 @@ import { mapActions, mapGetters } from 'vuex';
 import $api, { categories, ICategory, IRoute } from '../../libs/api';
 import Logs from '../../libs/api/routes/logs';
 import Blogs from '../../libs/api/routes/blogs';
+import Music from '../../libs/api/routes/music';
 
 interface Route extends IRoute {
     open: boolean;
@@ -168,7 +169,7 @@ export default defineComponent({
         ...mapActions(['setToolpic'])
     },
     mounted() {
-        console.log(Logs, Blogs);
+        console.log(Logs, Blogs, Music);
     }
 });
 

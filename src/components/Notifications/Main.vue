@@ -115,6 +115,9 @@ export default defineComponent({
                         }
                     }));
                     break;
+                case 203:
+                    message = `From ${notification?.props?.project}`;
+                    break;
             }
 
             return {

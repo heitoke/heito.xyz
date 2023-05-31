@@ -34,7 +34,7 @@ export interface IContextMenu {
     name: string;
     title?: string;
     text?: string;
-    event?: Event | MouseEvent;
+    event?: Event | MouseEvent | Element;
     position?: Array<TPosition>;
     x?: number;
     y?: number;

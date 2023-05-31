@@ -12,7 +12,7 @@
                 :element="$el"
             ></slot>
         </div>
-        <div :class="['indicator', { active: height }]" :style="{ height: `calc(${maxHeight} - 16px)` }" v-show="scrollHeight < 100">
+        <div :class="['indicator', { active: height }]" :style="{ height: `calc(${maxHeight} - 16px)`, right: `${inset ? -8 : 4}px` }" v-show="scrollHeight < 100">
             <div :style="{ top: `${scroll}%`, height: `${scrollHeight}%` }"></div>
         </div>
     </div>
@@ -25,7 +25,7 @@ import { defineComponent } from 'vue';
 import { mapGetters } from 'vuex';
 
 export default defineComponent({
-    name: 'MainScrollBar',
+    name: 'ScrollBar',
     computed: {
         ...mapGetters(['getWinHeight']),
         scrollHeight(): number {
@@ -46,6 +46,10 @@ export default defineComponent({
         maxHeight: {
             type: String,
             default: '100%'
+        },
+        inset: {
+            type: Boolean,
+            default: false
         }
     },
     data: () => ({
@@ -108,6 +112,15 @@ export default defineComponent({
             let el = (this.$el as Element).querySelector('[scrollbar-block]');
     
             this.heightMax = (el?.scrollHeight || 0) - document.documentElement?.clientHeight;
+        },
+        observeHeight() {
+            const el = (this.$refs?.el as Element);
+
+            const resizeObserver = new ResizeObserver(function() {
+                console.log(el?.scrollHeight, el?.clientHeight);
+            });
+
+            resizeObserver.observe(el);
         }
     },
     mounted() {
@@ -117,6 +130,8 @@ export default defineComponent({
             this.setScroll(this.$refs.el as Element, true);
 
             this.setMaxHeight();
+
+            this.observeHeight();
         }
     },
     beforeUpdate() {

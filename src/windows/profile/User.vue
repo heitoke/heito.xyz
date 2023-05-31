@@ -43,9 +43,11 @@
             </div>
         </header>
 
-        <!-- <NavBar style="margin: 0 0 12px 0;" :menu="navMenu" @select="block = $event.value || $event.label.toLocaleLowerCase()"/> -->
+        <NavBar style="margin: 0 0 12px 0;" :menu="navMenu"
+            @select="block = $event.value || $event.label.toLocaleLowerCase()"
+        />
 
-        <section v-show="block === 'links'">
+        <section class="links" v-show="block === 'links'">
             <Links :links="user?.links || []" :filters="user?.links?.length! < 1 ? [] : ['search', 'add']"
                 @add="add = $event"
                 @update="changes.links = []; changes.links = $event.list;"
@@ -53,6 +55,7 @@
                 <template v-slot:void>
                     <Alert type="mini" v-if="user?.links?.length! < 1">
                         <div>Soon everything may appear :D</div>
+
                         <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="getUser?._id === user?._id || isAdmin"
                             color="var(--green)"
                             @click="add ? add() : null"
@@ -62,7 +65,20 @@
             </Links>
         </section>
 
-        <!-- <Loading v-show="block === 'projects'"/> -->
+        <section class="projects" v-if="block === 'projects'">
+            <Loading v-show="projects.loading"/>
+
+            <div class="grid" v-if="!projects.loading && projects.list.length > 0">
+                <Project v-for="(project, idx) of new Array(10).fill(projects.list[0])" :key="project._id"
+                    :project="project"
+                />
+            </div>
+
+            <Loading v-else-if="projects.loading"/>
+
+            <Alert type="mini" v-else-if="!projects.loading"/>
+        </section>
+
     </div>
 </template>
 
@@ -70,9 +86,11 @@
 
 import { copy, getAvatar } from '../../libs/utils';
 
-// import NavBar, { IButton } from '../../components/content/NavBar.vue';
+import NavBar, { IButton } from '../../components/content/NavBar.vue';
 
 import Links from '../../components/content/lists/Links.vue';
+
+import Project from '../../components/cards/Project.vue';
 
 </script>
 
@@ -83,6 +101,7 @@ import { defineComponent } from 'vue';
 import { mapActions, mapGetters } from 'vuex';
 
 import Users, { type IUser, EPermissions, listPermissions, type IButtonPermission } from '../../libs/api/routes/users';
+import { IProject } from '../../libs/api/routes/projects';
 
 export default defineComponent({
     name: 'WindowProfileUser',
@@ -119,12 +138,28 @@ export default defineComponent({
             },
             {
                 label: 'Projects',
-                icon: 'projects'
+                icon: 'images'
             }
         ] as any,
-        add: null as any
+        add: null as any,
+
+        projects: {
+            loading: false,
+            list: [] as Array<IProject>
+        }
     }),
     watch: {
+        'block'(newValue, oldValue) {
+            if (newValue === oldValue) return;
+
+            switch (newValue) {
+                case 'projects':
+                    if (this.projects.list.length > 0) return;
+
+                    this.loadProjects(this.user._id);
+                    break;
+            }
+        },
         'getLengthChanges'(newValue, oldValue) {
             this.saveButtons(oldValue < 1 && newValue > 0, newValue < 1);
         },
@@ -370,6 +405,25 @@ export default defineComponent({
                 }
             ]);
         },
+        async loadProjects(userId: string) {
+            this.projects.loading = true;
+            const [result, status] = await Users.projects(userId);
+
+            if (status !== 200) {
+                this.$notifications.error({
+                    title: 'user',
+                    message: (result as any)?.message,
+                    status
+                });
+
+                return this.$emit('error');
+            }
+
+            this.projects = {
+                loading: false,
+                list: result.results
+            }
+        },
         async loadUser(userId: string) {
             const [result, status] = await Users.get(userId);
 
@@ -539,6 +593,18 @@ export default defineComponent({
                 white-space: nowrap;
                 overflow: hidden;
             } 
+        }
+    }
+
+    section.projects {
+        .grid {
+            .project {
+                margin: 0 0 12px 0;
+
+                &:last-child {
+                    margin: 0;
+                }
+            }
         }
     }
 

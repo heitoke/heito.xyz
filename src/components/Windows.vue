@@ -8,16 +8,18 @@
                 <div class="bg" @click="window?.close ? $windows.close(window?.id!) : null"></div>
                 
                 <div class="blur">
-                    <component :is="window?.component" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
-                        :closeWindow="() => $windows.close(window?.id!)"
-                        v-bind="window?.props"
-                        @error="window.error = true"
-                    ></component>
+                    <ScrollBar maxHeight="90vh" :inset="true">
+                        <component :is="window?.component" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
+                            :closeWindow="() => $windows.close(window?.id!)"
+                            v-bind="window?.props"
+                            @error="window.error = true"
+                        ></component>
 
-                    <div class="error" v-else>
-                        <Text :text="'Произошла ошибка при загрузки'"/>
-                        <Button>Перезагрузить</Button>
-                    </div>
+                        <div class="error" v-else>
+                            <Text :text="'Произошла ошибка при загрузки'"/>
+                            <Button>Перезагрузить</Button>
+                        </div>
+                    </ScrollBar>
 
                     <ul class="buttons" v-show="getWindowButtons(window).length > 0">
                         <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.icon"
@@ -33,6 +35,12 @@
         </TransitionGroup>
     </div>
 </template>
+
+<script lang="ts" setup>
+
+import ScrollBar from './content/ScrollBar.vue';
+
+</script>
 
 <script lang="ts">
 

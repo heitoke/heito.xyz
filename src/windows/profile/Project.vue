@@ -58,12 +58,17 @@
 
         <section class="members" v-show="block === 'members'">
             <div style="display: flex; margin: 0 0 12px 0;">
-                <Button @click="openInvateWindow" v-if="member.permission !== EProjectPermission.Member">Invate</Button>
+                <Textbox label="Search"/>
+
+                <Button style="width: 96px; margin: 0 0 0 12px;" v-if="member.permission !== EProjectPermission.Member" 
+                    @click="openInvateWindow"
+                >Invate</Button>
             </div>
 
             <div class="grid" v-if="project?.members?.length! > 0">
-                <User v-for="(member, idx) of project?.members" :key="idx"
+                <User v-for="(member, idx) of project?.members" :key="idx" :id="member.member._id"
                     :user="member.member" :text="member.permission"
+                    @contextmenu="memberContextMenu($event, idx)"
                 />
             </div>
         </section>
@@ -92,6 +97,7 @@ import Projects, { type IProject, type IProjectMember, EProjectPermission } from
 import Users, { EPermissions, IUser } from '../../libs/api/routes/users';
 
 import { copy } from '../../libs/utils';
+import { IContextMenu } from '../../store/modules/contextMenu';
 
 export default defineComponent({
     name: 'WindowProfileProject',
@@ -495,6 +501,32 @@ export default defineComponent({
                     }
                 }
             });
+        },
+        memberContextMenu(e: MouseEvent, idx: number) {
+            this.setContextMenu({
+                name: `project:members:${idx}`,
+                position: ['bottom', 'center', 'fixed-target'],
+                event: (this.$el as Element).querySelector(`section.members .user:nth-child(${idx + 1})`),
+                buttons: [
+                    {
+                        label: 'Kick member',
+                        icon: 'close',
+                        click: async () => {
+                            const member = this.project.members![idx];
+
+                            if (!member) return;
+
+                            const [result, status] = await Projects.invateMembers(this.project._id, [{ id: member.member._id, permission: member.permission }], 'delete');
+
+                            if (status !== 200) return;
+
+                            this.selfProject.members = this.selfProject.members?.filter(m => m.member._id !== member.member._id);
+
+                            if (this.update) this.update(this.project);
+                        }
+                    }
+                ]
+            } as IContextMenu)
         }
     },
     mounted() {

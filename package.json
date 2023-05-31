@@ -16,6 +16,7 @@
     "type": "git",
     "url": "https://github.com/heitoke/heito.xyz"
   },
+  "homepage": "https://heito.xyz",
   "dependencies": {
     "@types/express": "^4.17.17",
     "@types/node": "^18.13.0",

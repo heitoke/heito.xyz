@@ -20,7 +20,7 @@ export const projectCodes = {
     200: { text: 'A new project has been created', icon: '', color: '' },
     201: { text: 'The project has been updated', icon: '', color: '' },
     202: { text: 'Invitation to the project', icon: '', color: '' },
-    203: { text: 'Participants are excluded from the project', icon: '', color: '' },
+    203: { text: 'Participants are excluded from the project', icon: 'image', color: 'var(--red)' },
     204: { text: 'The project has been deleted', icon: '', color: '' }
 }
 

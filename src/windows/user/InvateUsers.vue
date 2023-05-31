@@ -115,7 +115,7 @@ export default defineComponent({
                                                 label: 'Permission',
                                                 menu: Object.keys(EProjectPermission).map(x => ({
                                                     label: x,
-                                                    value: x
+                                                    value: EProjectPermission[x as keyof typeof EProjectPermission]
                                                 })),
                                                 value: permission
                                             },

@@ -1,6 +1,7 @@
 import $api, { DocumentationAPI } from '../';
 
 import { ILog } from './logs';
+import { IProject } from './projects';
 
 const docs = new DocumentationAPI('users', {
     path: '/users',
@@ -258,6 +259,24 @@ class Route {
     })
     notifications(userId: string): [{ count: number, results: Array<ILog> }, number, any] {
         return $api.get(`/users/${userId}/notifications`) as any;
+    }
+
+    @docs.route({
+        label: 'Get user projects',
+        icon: 'images',
+        path: '/:userId/projects',
+        // description: 'Find out information about a specific user',
+        params: [
+            { name: 'userId', text: 'Username, user Id, or mail linked to the user' }
+        ],
+        permissions: [EPermissions.Users, EPermissions.Projects],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
+    projects(userId: string): [{ count: number, results: Array<IProject> }, number, any] {
+        return $api.get(`/users/${userId}/projects`) as any;
     }
 }
 

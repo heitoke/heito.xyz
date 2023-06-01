@@ -1,6 +1,10 @@
 <template>
     <div class="playlist">
-        <div class="image" :style="{ '--image': `url('${playlist?.image}')` }"></div>
+        <Skeleton :show="type" class="image">
+            <Transition name="image">
+                <div class="image" :style="{ '--image': `url('${playlist?.image}')` }"></div>
+            </Transition>
+        </Skeleton>
 
         <div>
             <Text class="name" :text="playlist?.name"/>
@@ -31,8 +35,28 @@ export default defineComponent({
             type: Object as PropType<IPlaylist>
         }
     },
-    methods: {},
-    mounted() {}
+    data: () => ({
+        type: false
+    }),
+    watch: {
+        'track.image'(newValue) {
+            this.show(newValue);
+        }
+    },
+    methods: {
+        show(playlistImage: string = '') {
+            const image = new Image();
+
+            image.src = playlistImage;
+
+            image.onload = () => {
+                this.type = true;
+            }
+        }
+    },
+    mounted() {
+        this.show(this.playlist?.image)
+    }
 });
 
 </script>
@@ -58,11 +82,15 @@ export default defineComponent({
         padding: 0 0 100% 0;
         width: 100%;
         height: 0;
+        min-height: 0;
         border-radius: 10px;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
         transition: .2s;
+
+        &:not(.ui-skeleton) {
+            background-size: cover;
+            background-position: center;
+            background-image: var(--image);
+        }
     }
 
     .image + div {

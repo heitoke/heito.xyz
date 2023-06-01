@@ -1,6 +1,10 @@
 <template>
     <div class="artist">
-        <div class="image" :style="{ '--image': `url('${artist?.image}')` }"></div>
+        <Skeleton :show="type" class="image">
+            <Transition name="image">
+                <div class="image" :style="{ '--image': `url('${artist?.image}')` }"></div>
+            </Transition>
+        </Skeleton>
 
         <Text class="name" :text="artist?.name + ` (${artist?.popularity})`"/>
 
@@ -24,13 +28,39 @@ export default defineComponent({
             type: Object as PropType<IArtist>
         }
     },
-    methods: {},
-    mounted() {}
+    data: () => ({
+        type: false
+    }),
+    watch: {
+        'artist.image'(newValue) {
+            this.show(newValue);
+        }
+    },
+    methods: {
+        show(artistImage: string = '') {
+            const image = new Image();
+
+            image.src = artistImage;
+
+            image.onload = () => {
+                this.type = true;
+            }
+        }
+    },
+    mounted() {
+        this.show(this.artist?.image);
+    }
 });
 
 </script>
 
 <style lang="scss" scoped>
+
+.image-enter-active,
+.image-leave-active {
+    transition: all 1s;
+    opacity: 0;
+}
 
 .artist {
     display: flex;
@@ -46,10 +76,15 @@ export default defineComponent({
     .image {
         padding: 0 0 calc(100% - 48px) 0;
         width: calc(100% - 48px);
+        min-height: 0;
         border-radius: 50%;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
+        transition: 1s;
+
+        &:not(.ui-skeleton) {
+            background-size: cover;
+            background-position: center;
+            background-image: var(--image);
+        }
     }
 
     .name {

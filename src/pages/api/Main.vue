@@ -31,7 +31,7 @@
                     <div class="routes"><span>{{ getCategoty?.routes?.length }}</span> routes</div>
                 </div>
 
-                <Text class="description" :text="getCategoty?.description"/>
+                <Text class="description" :text="getCategoty?.description" v-if="getCategoty?.description"/>
 
                 <div style="margin: 12px 0 0 0;" v-if="getCategoty?.permissions?.length! > 0">
                     <div class="subtitle">Permissions</div>

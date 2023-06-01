@@ -403,13 +403,16 @@ window.addEventListener('pointermove', (event: MouseEvent) => {
 
     let intersects = getIntersects(event);
 
-    if (intersects.length < 1) return root['value']!['style']['cursor'] = 'default';
+    if (intersects.length < 1) {
+        if (root) root['value']!['style']['cursor'] = 'default';
+        return;
+    }
 
     let user = intersects[0].object.userData;
 
     if (!user._id) return;
 
-    root['value']!['style']['cursor'] = 'pointer';
+    if (root) root['value']!['style']['cursor'] = 'pointer';
 });
 
 let cPos = controls.object.position;

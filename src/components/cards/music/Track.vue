@@ -1,6 +1,10 @@
 <template>
     <div class="track">
-        <div class="image" :style="{ '--image': `url('${track?.image}')` }"></div>
+        <Skeleton :show="type" class="image">
+            <Transition name="image">
+                <div class="image" :style="{ '--image': `url('${track?.image}')` }"></div>
+            </Transition>
+        </Skeleton>
 
         <div>
             <Text class="name" :text="track?.name"/>
@@ -40,14 +44,33 @@ export default defineComponent({
             type: Object as PropType<ITrack | IRecentlyTrack>
         }
     },
+    data: () => ({
+        type: false
+    }),
+    watch: {
+        'track.image'(newValue) {
+            this.show(newValue);
+        }
+    },
     methods: {
         msInMin(ms: number) {
             let min = Math.floor((ms / 1000 / 60) << 0),
             sec = Math.floor((ms / 1000) % 60);
             return `${min}:${`${sec}`.length < 2 ? `0${sec}` : sec}`;
+        },
+        show(trackImage: string = '') {
+            const image = new Image();
+
+            image.src = trackImage;
+
+            image.onload = () => {
+                this.type = true;
+            }
         }
     },
-    mounted() {}
+    mounted() {
+        this.show(this.track?.image);
+    }
 });
 
 </script>
@@ -83,11 +106,15 @@ export default defineComponent({
         margin: 0 12px 0 0;
         min-width: 48px;
         height: 48px;
+        min-height: 0;
         border-radius: 10px;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
         transition: .2s;
+
+        &:not(.ui-skeleton) {
+            background-size: cover;
+            background-position: center;
+            background-image: var(--image);
+        }
     }
 
     .image + div {

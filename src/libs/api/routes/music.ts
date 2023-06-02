@@ -154,7 +154,7 @@ class Route {
         ]
     })
     top(type: 'tracks' | 'artists' = 'tracks', options: { offset: number, limit: number, term: 'long' | 'medium' | 'short' } = { offset: 0, limit: 50, term: 'medium' }): [{ count: number, results: Array<ITrack | IArtist> }, number, any] {
-        return $api.get(`/music/top/${type}?offset=${options.offset}&limit=${options.limit}&term=${options.term}`) as any;
+        return $api.get(`/music/top/${type}?offset=${options.offset || 0}&limit=${options.limit || 50}&term=${options.term || 'medium'}`) as any;
     }
 
 

@@ -25,7 +25,11 @@
                 </section>
 
                 <section class="top tracks">
-                    <Text class="title" text="Top tracks"/>
+                    <header>
+                        <Text class="title" text="Top tracks"/>
+
+                        <Select label="Period" value="medium" :menu="termMenu" @select="loadTopTracks('tracks', $event.value as any)"/>
+                    </header>
 
                     <CarouselTab :gap="12" :column="2" v-if="!top.tracks.loading && top.tracks.list.length > 0">
                         <Track v-for="track of top.tracks.list" :key="track.id"
@@ -41,7 +45,11 @@
             </div>
 
             <section class="top artists" style="margin: 0 0 0 16px;">
-                <Text class="title" text="Top artists"/>
+                <header>
+                    <Text class="title" text="Top artists"/>
+
+                    <Select label="Period" value="medium" :menu="termMenu" @select="loadTopTracks('artists', $event.value as any)"/>
+                </header>
 
                 <CarouselTab :gap="12" :column="3" v-if="!top.artists.loading && top.artists.list.length > 0">
                     <Artist v-for="artist of top.artists.list" :key="artist.id"
@@ -122,14 +130,28 @@ export default defineComponent({
         playlists: {
             loading: false,
             list: [] as Array<IPlaylist>
-        }
+        },
+        termMenu: [
+            {
+                label: 'For all the time',
+                value: 'long'
+            },
+            {
+                label: 'For 6 months',
+                value: 'medium'
+            },
+            {
+                label: 'For 4 weeks',
+                value: 'short'
+            }
+        ]
     }),
     watch: {},
     methods: {
-        async loadTopTracks(type: 'tracks' | 'artists' = 'tracks') {
+        async loadTopTracks(type: 'tracks' | 'artists' = 'tracks', term: 'long' | 'medium' | 'short' = 'medium') {
             this.top[type].loading = true;
 
-            const [result, status] = await Music.top(type);
+            const [result, status] = await Music.top(type, { term } as any);
 
             if (status !== 200) return;
 
@@ -189,9 +211,17 @@ export default defineComponent({
     }
 
     .title {
-        margin: 0 0 12px 0;
         font-size: 24px;
         font-weight: 600;
+    }
+
+    section {
+        header {
+            display: flex;
+            margin: 0 0 12px 0;
+            align-items: center;
+            justify-content: space-between;
+        }
     }
 
     section.playlists {

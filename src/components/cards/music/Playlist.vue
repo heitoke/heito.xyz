@@ -10,7 +10,7 @@
             <Text class="name" :text="playlist?.name"/>
 
             <Text class="text" :text="playlist?.description" v-if="playlist?.description"/>
-            <Text class="text" :text="`Tracks: ` + playlist?.totalTracks"/>
+            <Text class="text" :text="`Tracks: ` + playlist?.totalTracks" v-show="playlist?.totalTracks! > 0"/>
         </div>
     </div>
 </template>

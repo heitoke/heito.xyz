@@ -20,7 +20,7 @@
             </div>
 
             <ul class="buttons">
-                <li @pointerenter="setToolpic({ text: 'Open playlist' })"
+                <li @pointerenter="setToolpic({ text: 'Open playlist' })" v-show="playlist?.url"
                     @click="redirect(playlist.url)"
                 >
                     <Icon name="link"/>
@@ -206,15 +206,30 @@ export default defineComponent({
             if ((newValue + 35) >= this.scrollProps?.scrollMaxHeight) {
                 if (this.count <= this.getTracks.length) {
                     this.count += 10;
-                }
-                else {
-                    this.loadPlaylistTracks();
+                } else {
+                    this.load();
                 }
             }
         }
     },
     methods: {
         ...mapActions(["setToolpic"]),
+        load() {
+            const playlistId = this.$route.params.playlistId as string;
+
+            switch(playlistId) {
+                case "tracks":
+                    this.loadSavedTracks(this.getTracks?.length || 0, (this.getTracks?.length || 0) + 50);
+                    break;
+                default:
+                    if (!this.playlist?.id) {
+                        this.loadPlaylist(playlistId);
+                    } else {
+                        this.loadPlaylistTracks();
+                    }
+                    break;
+            }
+        },
         msInMin(ms: number) {
             let min = Math.floor((ms / 1000 / 60) << 0),
                 sec = Math.floor((ms / 1000) % 60);
@@ -286,10 +301,50 @@ export default defineComponent({
             this.preview.audio?.play();
 
             this.preview.audio?.addEventListener("ended", () => set());
+        },
+        async loadSavedTracks(offset: number = 0, limit: number = 50) {
+            this.tracks.loading = true;
+
+            const [result, status] = await Music.saved('tracks', { offset, limit });
+
+            if (status !== 200) {
+                this.tracks.loading = false;
+                return;
+            }
+
+            this.tracks.loading = false;
+
+            if (this.playlist?.id === 'Saved_Tracks') {
+                this.tracks = {
+                    loading: false,
+                    list: [...this.tracks?.list || [], ...result.results],
+                    total: result.total
+                };
+            } else {
+                this.playlist = {
+                    id: 'Saved_Tracks',
+                    name: 'Saved tracks',
+                    image: 'https://cdn.dribbble.com/users/652746/screenshots/2265275/dislike.gif',
+                    totalTracks: result.total,
+                    tracks: {
+                        list: result.results,
+                        total: result.total
+                    }
+                } as any
+            }
         }
     },
     mounted() {
-        this.loadPlaylist(this.$route.params.playlistId as string);
+        const playlistId = this.$route.params.playlistId as string;
+
+        switch(playlistId) {
+            case "tracks":
+                this.loadSavedTracks();
+                break;
+            default:
+                this.loadPlaylist(playlistId);
+                break;
+        }
     }
 });
 

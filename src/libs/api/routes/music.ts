@@ -173,6 +173,27 @@ class Route {
     recently(limit: number = 50): [{ count: number, results: Array<IRecentlyTrack> }, number, any] {
         return $api.get(`/music/recently?limit${limit}`) as any;
     }
+
+
+    @docs.route({
+        label: 'Saved tracks, albums or shows',
+        path: '/saved/:type',
+        description: 'Get saved tracks, albums or shows',
+        params: [
+            { name: 'type', type: 'string', enum: { tracks: {}, albums: {}, shows: {} } }
+        ],
+        queries: [
+            { name: 'offset', type: 'number', default: '0' },
+            { name: 'limit', type: 'number', default: '50' },
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
+    saved(type: 'tracks' | 'albums' | 'shows' = 'tracks', options: { offset: number, limit: number } = { offset: 0, limit: 50 }): [{ count: number, total: number, results: Array<ITrack> }, number, any] {
+        return $api.get(`/music/saved/${type}?offset=${options.offset || 0}&limit=${options.limit || 50}`) as any;
+    }
 }
 
 export default new Route();

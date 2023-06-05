@@ -10,7 +10,16 @@
         <div class="grid" style="display: grid; grid-template-columns: repeat(2, calc(100% / 2));">
             <div style="display: flex; margin: 0 16px 0 0; flex-direction: column; justify-content: space-between;">
                 <section class="recently">
-                    <Text class="title" text="Recently"/>
+                    <header>
+                        <Text class="title" text="Recently"/>
+
+                        <Skeleton style="width: 24px; height: 24px;" :show="!recently.loading && recently.list.length > 0">
+                            <Icon name="damage-void" class="reload"
+                                @pointerenter="setToolpic({ text: 'Reload' })"
+                                @click="loadRecently()"
+                            />
+                        </Skeleton>
+                    </header>
 
                     <CarouselTab :gap="12" :column="2" v-if="!recently.loading && recently.list.length > 0">
                         <Track v-for="track of recently.list" :key="track.id"
@@ -24,11 +33,13 @@
                     <Alert v-else-if="!recently.loading && recently.list.length < 1"/>
                 </section>
 
-                <section class="top tracks">
+                <section class="top tracks" style="margin: 12px 0 0 0;">
                     <header>
                         <Text class="title" text="Top tracks"/>
 
-                        <Select label="Period" value="medium" :menu="termMenu" @select="loadTopTracks('tracks', $event.value as any)"/>
+                        <Skeleton style="width: 169px; height: 32px;" :show="!top.tracks.loading && top.tracks.list.length > 0">
+                            <Select label="Period" :value="top.tracks.period" :menu="termMenu" @select="loadTopTracks('tracks', $event.value as any)"/>
+                        </Skeleton>
                     </header>
 
                     <CarouselTab :gap="12" :column="2" v-if="!top.tracks.loading && top.tracks.list.length > 0">
@@ -48,7 +59,9 @@
                 <header>
                     <Text class="title" text="Top artists"/>
 
-                    <Select label="Period" value="medium" :menu="termMenu" @select="loadTopTracks('artists', $event.value as any)"/>
+                    <Skeleton style="width: 169px; height: 32px;" :show="!top.artists.loading && top.artists.list.length > 0">
+                        <Select label="Period" :value="top.artists.period" :menu="termMenu" @select="loadTopTracks('artists', $event.value as any)"/>
+                    </Skeleton>
                 </header>
 
                 <CarouselTab :gap="12" :column="3" v-if="!top.artists.loading && top.artists.list.length > 0">
@@ -74,6 +87,10 @@
             <Text class="title" text="Playlists"/>
 
             <ul v-if="!playlists.loading && playlists.list.length > 0">
+                <Playlist :playlist="playlistSavedTracks"
+                    style="cursor: pointer;"
+                    @click="$router.push(`/music/playlists/tracks`)"
+                />
                 <Playlist v-for="playlist of playlists.list" :key="playlist.id"
                     :playlist="playlist"
                     style="cursor: pointer;"
@@ -102,6 +119,8 @@ import Playlist from '../../components/cards/music/Playlist.vue';
 
 import { defineComponent } from 'vue';
 
+import { mapActions } from 'vuex';
+
 import Music, { IArtist, IPlaylist, IRecentlyTrack, ITrack } from '../../libs/api/routes/music';
 
 export default defineComponent({
@@ -116,10 +135,12 @@ export default defineComponent({
         top: {
             tracks: {
                 loading: false,
+                period: 'medium',
                 list: [] as Array<ITrack>
             },
             artists: {
                 loading: false,
+                period: 'medium',
                 list: [] as Array<IArtist>
             }
         },
@@ -144,10 +165,21 @@ export default defineComponent({
                 label: 'For 4 weeks',
                 value: 'short'
             }
-        ]
+        ],
+        playlistSavedTracks: {
+            name: 'Saved Tracks',
+            image: 'https://cdn.dribbble.com/users/652746/screenshots/2265275/dislike.gif'
+        } as any
     }),
-    watch: {},
+    watch: {
+        '$route.name'(newValue) {
+            if (newValue !== 'MusicPlaylistPage') {
+                this.loadPlaylists();
+            }
+        }
+    },
     methods: {
+        ...mapActions(['setToolpic']),
         async loadTopTracks(type: 'tracks' | 'artists' = 'tracks', term: 'long' | 'medium' | 'short' = 'medium') {
             this.top[type].loading = true;
 
@@ -157,6 +189,7 @@ export default defineComponent({
 
             this.top[type] = {
                 loading: false,
+                period: term,
                 list: result.results as any
             }
         },
@@ -191,7 +224,9 @@ export default defineComponent({
 
         this.loadRecently();
 
-        this.loadPlaylists();
+        if (this.$route.name !== 'MusicPlaylistPage') {
+            this.loadPlaylists();
+        }
     }
 });
 
@@ -221,6 +256,16 @@ export default defineComponent({
             margin: 0 0 12px 0;
             align-items: center;
             justify-content: space-between;
+
+            .reload {
+                cursor: pointer;
+                color: var(--text-secondary);
+                transition: .2s;
+
+                &:hover {
+                    color: var(--main-color);
+                }
+            }
         }
     }
 

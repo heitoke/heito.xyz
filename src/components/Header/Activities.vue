@@ -63,7 +63,7 @@ export default defineComponent({
     }),
     watch: {},
     sockets: {
-        'activities:track:playing'(data: { userId: string, track: TTrack, is_playing: boolean }) {
+        'activities:track:playing'(data: { device: any, userId: string, track: TTrack, is_playing: boolean }) {
             if (!data.is_playing) return;
 
             this.track = {
@@ -73,6 +73,11 @@ export default defineComponent({
                 largeImage: {
                     url: data?.track?.image as string
                 },
+                smallImage: data.device ? {
+                    label: data.device?.type,
+                    icon: data.device?.type === 'Computer' ? 'desktop' : (data.device?.type === 'Smartphone' ? 'mobile' : 'damage-void'),
+                    color: 'var(--main-color)'
+                } : {},
                 progressBar: {
                     value: data?.track?.start,
                     end: data?.track?.end,

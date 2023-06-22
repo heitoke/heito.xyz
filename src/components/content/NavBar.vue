@@ -14,6 +14,7 @@
                 <Icon :name="btn.icon" v-if="btn?.icon"/>
                 <span>{{ btn.label }}</span>
             </li>
+
             <div :style="{
                 width: `${width}px`,
                 height: `${height}px`,
@@ -63,16 +64,14 @@ export default defineComponent({
             return btn;
         }
     },
-    data() {
-        return {
-            id: -1,
-            width: 0,
-            height: 0,
-            top: 0,
-            left: 0,
-            hoverId: -1
-        }
-    },
+    data: () => ({
+        id: -1,
+        width: 0,
+        height: 0,
+        top: 0,
+        left: 0,
+        hoverId: -1
+    }),
     watch: {
         id(newValue: number, oldValue: number) {
             this.set(newValue + 1);
@@ -107,7 +106,10 @@ export default defineComponent({
         }
     },
     mounted() {
+        if (!this.selected) return;
+
         this.id = this.defaultId || 0;
+        
         this.set(this.id + 1);
     }
 })

@@ -1,12 +1,6 @@
 <template>
     <div class="ui-select">
         <header @click="open(text)">
-            <!-- <div :class="['label', { active: getItem?.label || isActive }]">{{ label }}</div>
-            <div>
-                <Icon :name="getItem?.icon" :style="{ color: getItem?.color || 'var(--text-secondary)' }" v-if="getItem?.icon"/>
-                <Text class="text" :text="getItem?.label || ''" style="height: 18px;"/>
-            </div> -->
-
             <Textbox :label="label" :icon="getItem?.icon" :value="getItem?.label" :watchValue="true" :readonly="readonly"
                 @input="text = ($event.target as any)?.value; open(text); $emit('input', $event)"
             />

@@ -208,6 +208,7 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
         position: absolute;
         top: 8px;
         color: var(--text-secondary);
+        white-space: nowrap;
         transition: .2s;
         user-select: none;
         z-index: 1;

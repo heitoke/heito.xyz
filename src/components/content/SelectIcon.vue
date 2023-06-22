@@ -1,6 +1,6 @@
 <template>
     <div class="select-icon">
-		<Select label="Select icon" :value="icon || ''"
+		<Select label="Select icon" :readonly="false" :value="icon || ''"
 			:menu="listIcons.map(icon => ({
 				label: icon,
 				icon,

@@ -33,6 +33,7 @@
         <NavBar style="margin: 12px 0 0 0;" v-if="project?.tags?.length! > 0"
             :menu="project.tags?.map(tag => ({ label: tag, icon: 'tag' } as any))"
             :selected="false"
+            @select="isModer ? tagSettings($event) : null"
         />
 
         <NavBar style="padding: 12px 0;" :menu="navBar" @select="block = $event.value!"/>
@@ -82,7 +83,7 @@
 
 import { getAvatar, time } from '../../libs/utils';
 
-import NavBar from '../../components/content/NavBar.vue';
+import NavBar, { IButton } from '../../components/content/NavBar.vue';
 
 import Links from '../../components/content/lists/Links.vue';
 
@@ -529,6 +530,21 @@ export default defineComponent({
                             this.selfProject.members = this.selfProject.members?.filter(m => m.member._id !== member.member._id);
 
                             if (this.update) this.update(this.project);
+                        }
+                    }
+                ]
+            } as IContextMenu)
+        },
+        tagSettings(tag: IButton) {
+            this.setContextMenu({
+                name: `project:tags:${tag.label}`,
+                position: ['bottom', 'center', 'fixed-target'],
+                buttons: [
+                    {
+                        label: 'Remove tag',
+                        icon: 'close',
+                        click: () => {
+                            this.changes.tags = this.project.tags?.filter(t => t !== tag.label);
                         }
                     }
                 ]

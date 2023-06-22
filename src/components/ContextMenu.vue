@@ -88,7 +88,7 @@ export default defineComponent({
             
             if ((e.scrollHeight + 32) > window.innerHeight) {
                 const
-                    scrollBar = e.querySelector('.scrollbar [scrollbar-block]'),
+                    scrollBar = e.querySelector('.scrollbar [scrollbar-body]'),
                     maxHeight = window.innerHeight - contextMenu.y - 32;
 
                 if (scrollBar) scrollBar.setAttribute('style', `max-height: ${maxHeight}px; height: ${maxHeight}px;`);

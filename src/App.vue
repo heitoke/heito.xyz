@@ -143,7 +143,7 @@ export default defineComponent({
                 isAdmin = this.getUser?.permissions?.includes(EPermissions.Site),
                 user = page?.users.find(u => u.user._id === this.getUser?._id);
 
-            if (isAdmin && !user?.allowed) {
+            if (!isAdmin && !user?.allowed) {
                 this.blocked = Boolean(page);
             } else this.blocked = false;
 
@@ -291,7 +291,7 @@ export default defineComponent({
     max-width: 100%;
     width: 100%;
     min-width: 100%;
-    height: 100%;
+    // height: 100%;
     min-height: 100%;
     position: relative;
     box-sizing: border-box;

@@ -15,6 +15,7 @@
                     <RouterLink to="/"
                         @contextmenu="getUser?.permissions?.includes(EPermissions.Site) ? setContextMenu(getAdminContext) : null"
                     >heito.xyz</RouterLink>
+
                     <div class="online"
                         @click="open($event, 'online', () => getListOnlineUsers(online.isActive), () => online.isActive = false)"
                     >
@@ -25,6 +26,7 @@
                 <Transition name="activities">
                     <ul class="blur" v-if="online.isActive">
                         <Loading v-show="online.list?.length < 1"/>
+
                         <User v-for="user of online.list" :key="user._id"
                             :user="user"
                         />
@@ -133,6 +135,7 @@ interface IData {
         isActive: boolean;
         count: number;
         list: Array<IUser>;
+        lastedAt: number;
     };
     superMenu: boolean;
 }
@@ -171,7 +174,8 @@ export default defineComponent({
             online: {
                 isActive: false,
                 count: 0,
-                list: []
+                list: [],
+                lastedAt: 0
             },
             search: {
                 isActive: false,
@@ -210,7 +214,9 @@ export default defineComponent({
         getListOnlineUsers(boolean: boolean) {
             this.online.isActive = !boolean;
 
-            if (boolean || this.online.list?.length > 1) return;
+            if (boolean || this.online.list?.length > 1 || Date.now() < (this.online.lastedAt + 10000)) return;
+
+            this.online.lastedAt = Date.now();
 
             this.$socket.emit('users:online', 'list');
         },

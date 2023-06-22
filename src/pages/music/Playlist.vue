@@ -134,13 +134,15 @@ import Activity from '../../components/content/Activity.vue';
 
 <script lang="ts">
 
-import { defineComponent, reactive } from 'vue';
+import { PropType, defineComponent, reactive } from 'vue';
 
 import { mapActions } from 'vuex';
 
 import { getAvatar } from '../../libs/utils';
 
 import Music, { IPlaylistPlus, ITrack } from '../../libs/api/routes/music';
+
+import type { IScrollBar } from '../../components/content/ScrollBar.vue';
 
 export default defineComponent({
     name: "MusicPlaylistPage",
@@ -173,7 +175,7 @@ export default defineComponent({
     },
     props: {
         scrollProps: {
-            type: Object
+            type: Object as PropType<IScrollBar>
         }
     },
     data: () => ({
@@ -198,12 +200,12 @@ export default defineComponent({
         }
     }),
     watch: {
-        "scrollProps.scrollY"(newValue) {
+        'scrollProps.scroll.top'(newValue) {
             const total = this.tracks?.total;
 
             if (this.tracks.loading || (this.getTracks?.length === total && this.count >= total)) return;
 
-            if ((newValue + 35) >= this.scrollProps?.scrollMaxHeight) {
+            if ((newValue + 35) >= this.scrollProps?.scroll.max.height!) {
                 if (this.count <= this.getTracks.length) {
                     this.count += 10;
                 } else {

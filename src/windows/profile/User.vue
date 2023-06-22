@@ -524,14 +524,15 @@ export default defineComponent({
                     margin: 0 8px 0 0;
                     padding: 2px 4px;
                     position: relative;
-                    color: var(--background-secondary);
+                    color: #fff;
                     border-radius: 5px;
-                    border: 1px solid var(--background-secondary);
+                    border: 1px solid #fff;
                     align-items: center;
+                    mix-blend-mode: difference;
 
                     i {
                         margin: 0 4px 0 0;
-                        color: var(--background-secondary);
+                        color: #fff;
                         font-size: 14px;
                     }
 

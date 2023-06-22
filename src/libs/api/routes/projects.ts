@@ -196,6 +196,26 @@ class Route {
             }
         }) as any; 
     }
+
+    @docs.route({
+        label: 'Delete project or projects',
+        icon: 'trash',
+        description: 'Delete one or a list of projects',
+        queries: [
+            { name: 'ids', type: 'array<string>', required: true }
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 400, text: 'You did not specify the configuration ID' },
+            { code: 401, text: 'You don\'t have editing rights' },
+            { code: 404, text: 'More than one project that can be deleted was not found' },
+            { code: 501, text: 'Server error' }
+        ],
+        method: 'DELETE'
+    })
+    delete(ids: string | Array<string>): [{ deleted: Array<string>, notFound: Array<string> }, number, any] {
+        return $api.delete(`/projects?ids=${(Array.isArray(ids) ? ids : [ids]).join(',')}`) as any;
+    }
 }
 
 export default new Route();

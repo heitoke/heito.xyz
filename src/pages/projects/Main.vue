@@ -77,6 +77,8 @@ import Projects, { IProject } from '../../libs/api/routes/projects';
 import { EPermissions } from '../../libs/api/routes/users';
 import type { IMessage } from '../../windows/Message.vue';
 
+import type { IScrollBar } from '../../components/content/ScrollBar.vue';
+
 export default defineComponent({
     name: 'ProjectsPage',
     components: {},
@@ -125,7 +127,7 @@ export default defineComponent({
             default: 'projects'
         },
         scrollProps: {
-            type: Object
+            type: Object as PropType<IScrollBar>
         }
     },
     data: () => ({
@@ -167,8 +169,8 @@ export default defineComponent({
         repos: [] as Array<IRepository>
     }),
     watch: {
-        'scrollProps.scrollY'(newValue: number) {
-            if ((newValue + 1) >= this.scrollProps?.scrollMaxHeight && !this.loading && (this.repos?.length % 30) === 0) {
+        'scrollProps.scroll.top'(newValue: number) {
+            if ((newValue + 1) >= this.scrollProps?.scroll.max.height! && !this.loading && (this.repos?.length % 30) === 0) {
                 let nextPage = (this.repos?.length / 30) + 1;
 
                 this.loadRepos(nextPage);

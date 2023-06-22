@@ -1,13 +1,6 @@
 <template>
     <div class="super">
-        <ScrollBar v-slot="scrollProps">
-            <Transition name="page">
-                <component :is="component" :class="['page', { 'to-left': getActiveNotifications }]"
-                    :scrollProps="scrollProps"
-                ></component>
-            </Transition>
-            <Footer v-if="!($route.meta?.hide as any)?.includes('footer')"/>
-        </ScrollBar>
+        <slot/>
     </div>
 </template>
 
@@ -20,21 +13,12 @@ import ScrollBar from '../content/ScrollBar.vue';
 
 <script lang="ts">
 
-import { type Component, PropType, defineComponent } from 'vue';
-
-import { mapGetters, mapActions } from 'vuex';
+import { defineComponent } from 'vue';
 
 export default defineComponent({
     name: 'HorizontalSuperMode',
-    computed: {
-        ...mapGetters(['getActiveNotifications'])
-    },
-    props: {
-        component: {
-            type: Object as PropType<Component>,
-            required: true
-        }
-    },
+    computed: {},
+    props: {},
     mounted() {}
 });
 

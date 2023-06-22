@@ -48,9 +48,11 @@ import Markdown from '../../components/content/Markdown.vue';
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 import { mapGetters, mapActions } from 'vuex';
+
+import type { IScrollBar } from '../../components/content/ScrollBar.vue';
 
 export default defineComponent({
     name: 'BlogPage',
@@ -58,12 +60,12 @@ export default defineComponent({
     computed: {
         ...mapGetters(['getWinHeight']),
         headerActive(): boolean {
-            return this.scrollProps?.scrollY > (this.getWinHeight / 3);
+            return this.scrollProps?.scroll.top! > (this.getWinHeight / 3);
         }
     },
     props: {
         scrollProps: {
-            type: Object
+            type: Object as PropType<IScrollBar>
         }
     },
     data: () => ({

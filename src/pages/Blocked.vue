@@ -14,15 +14,21 @@
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
 import { mapActions } from 'vuex';
+
+import type { IScrollBar } from '../components/content/ScrollBar.vue';
 
 export default defineComponent({
     name: 'Blocked',
     components: {},
     computed: {},
-    props: ['scrollProps'],
+    props: {
+        scrollProps: {
+            type: Object as PropType<IScrollBar>
+        }
+    },
     data: () => ({
         text: 'Bl0ck#d',
         symbol: '.',
@@ -30,7 +36,7 @@ export default defineComponent({
         listEmoji: ['😎', '🤩', '🥰', '🤯', '💩', '🤑', '🤕', '🤡', '🤮']
     }),
     watch: {
-        'scrollProps.scrollY'(newValue) {
+        'scrollProps.scroll.top'(newValue) {
             this.setHeaderOptions({
                 blur: {
                     enable: newValue >= 250,

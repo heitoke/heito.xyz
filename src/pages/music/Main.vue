@@ -117,18 +117,20 @@ import Playlist from '../../components/cards/music/Playlist.vue';
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 import { mapActions } from 'vuex';
 
 import Music, { IArtist, IPlaylist, IRecentlyTrack, ITrack } from '../../libs/api/routes/music';
+
+import type { IScrollBar } from '../../components/content/ScrollBar.vue';
 
 export default defineComponent({
     name: "MusicPage",
     computed: {},
     props: {
         scrollProps: {
-            type: Object
+            type: Object as PropType<IScrollBar>
         }
     },
     data: () => ({

@@ -18,7 +18,7 @@
                 </Transition>
 
                 <Transition name="go-top">
-                    <div class="go-top" v-show="!($route.meta?.hide as any)?.includes('go-top') && scrollProps?.scrollY > (getWinHeight / 2)"
+                    <div class="go-top" v-show="!($route.meta?.hide as any)?.includes('go-top') && scrollProps?.scroll.top! > (getWinHeight / 2)"
                         @click="goTop(scrollProps)" 
                     >
                         <Icon name="arrow-up"/>

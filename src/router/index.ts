@@ -1,6 +1,6 @@
 import { createRouter, createMemoryHistory, createWebHistory, type RouteRecordRaw } from 'vue-router';
 
-let baseUrl = import.meta.env.BASE_URL;
+const baseUrl = import.meta.env.BASE_URL;
 
 const routes: RouteRecordRaw[] = [
     {
@@ -132,7 +132,8 @@ const routes: RouteRecordRaw[] = [
         name: 'ErrorPage',
         component: () => import('../pages/Error.vue'),
         meta: {
-            hide: ['page', 'footer']
+            hide: ['page', 'footer', 'animate'],
+            notIncludeToConfig: true
         }
     }
 ];
@@ -141,7 +142,5 @@ const router = createRouter({
     history: import.meta.env.SSR ? createMemoryHistory(baseUrl) : createWebHistory(baseUrl),
     routes
 });
-
-let a: number | string = 'asd';
 
 export default router;

@@ -225,4 +225,27 @@ footer {
     }
 }
 
+@media (max-width: 540px) {
+    footer {
+        .content {
+            flex-direction: column;
+            align-items: center;
+
+            .left {
+                display: flex;
+                align-items: center;
+                flex-direction: column;
+            }
+        }
+
+        .group {
+            margin: 0 0 12px 0;
+
+            ul {
+                align-items: center;
+            }
+        }
+    }
+}
+
 </style>

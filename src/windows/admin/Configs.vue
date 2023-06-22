@@ -34,7 +34,7 @@
 
                         <div class="l"></div>
 
-                        <div class="user" :style="{ 'background-image': `url(${getAvatar({ nameId: config.user?._id })})` }"
+                        <div class="user" :style="{ 'background-image': `url(${config.user?.avatar || getAvatar({ nameId: config.user?._id })})` }"
                             @mouseenter="setToolpic({ text: config?.user?.nickname || config?.user?.username || config?.user?._id })"
                             @click="$windows.create({ component: 'User', data: config?.user?._id })"
                         ></div>

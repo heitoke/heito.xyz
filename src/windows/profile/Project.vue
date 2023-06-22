@@ -58,7 +58,7 @@
         </section>
 
         <section class="members" v-show="block === 'members'">
-            <div style="display: flex; margin: 0 0 12px 0;" v-if="project?.members?.length! < 1">
+            <div style="display: flex; margin: 0 0 12px 0;" v-if="project?.members?.length! > 0">
                 <Textbox label="Search"/>
 
                 <Button style="width: 96px; margin: 0 0 0 12px;" v-if="isModer" 
@@ -111,14 +111,14 @@ export default defineComponent({
             return { ...this.selfProject, ...this.changes };
         },
         member(): IProjectMember {
-            const memberIndex = this.project.members?.findIndex(member => member?.member?._id === this.getUser?._id) || -1;
+            const memberIndex = this.project.members?.findIndex(member => member?.member?._id === this.getUser?._id)!;
 
-            if (memberIndex > -1) return {} as any;
+            if (memberIndex < 0) return {} as any;
 
             return (this.project?.members || [])[memberIndex] || {};
         },
         isModer() {
-            return this.member?.member && this.member.permission !== EProjectPermission.Member;
+            return Boolean(this.member?.member) && this.member?.permission !== EProjectPermission.Member;
         },
         getLengthChanges(): number {
             return Object.keys(this.changes).length;

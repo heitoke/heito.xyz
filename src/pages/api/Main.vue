@@ -1,6 +1,6 @@
 <template>
     <div class="api">
-        <NavBar style="width: 256px;"
+        <NavBar style="max-width: 215px; min-width: 215px;"
             :default-id="getButtons.findIndex(b => b.value === getCategoty?.name)"
             :orientation="'vertical'"
             :menu="getButtons"
@@ -76,9 +76,9 @@
                                 <Icon name="arrow-left"/>
                             </header>
 
-                            <Transition name="data">
-                                <APIRouteData :route="route" v-if="route.open"/>
-                            </Transition>
+                            <AnimationHeight :showed="route.open">
+                                <APIRouteData :route="route"/>
+                            </AnimationHeight>
                         </li>
                     </TransitionGroup>
                 </ul>
@@ -96,6 +96,8 @@
 import NavBar from '../../components/content/NavBar.vue';
 
 import APIRouteData from '../../components/other/api/APIRouteData.vue';
+
+import AnimationHeight from '../../components/animations/Height.vue';
 
 import { listPermissions } from '../../libs/api/routes/users';
 
@@ -182,20 +184,6 @@ export default defineComponent({
 .route-leave-active {
     transition: all .2s;
     opacity: 0;
-}
-
-.data-enter-active,
-.data-leave-active {
-    transform: translateY(-32px);
-    transition: .2s;
-    opacity: 0;
-}
-.data-enter-active {
-    height: 256px;
-}
-.data-leave-active {
-    height: 0px;
-    max-height: 0px;
 }
 
 .list-enter-active,

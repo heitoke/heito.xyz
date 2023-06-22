@@ -1,91 +1,87 @@
 <template>
     <div :class="['super', { active }]">
-        <ScrollBar v-slot="scrollProps" >
-            <Transition name="page">
-                <component :is="component" :class="['page', { 'to-left': $notifications?.options?.active }]" ref="page"
-                    :scrollProps="scrollProps"
-                ></component>
-            </Transition>
-            <Transition name="go-top">
-                <div class="go-top" v-show="!($route.meta?.hide as any)?.includes('go-top') && scrollProps?.scrollY > (winHeight / 2)"
-                    @click="goTop(scrollProps)" 
-                >
-                    <Icon name="arrow-up"/>
-                </div>
-            </Transition>
-            <Footer v-if="!($route.meta?.hide as any)?.includes('footer')"/>
-        </ScrollBar>
+        <slot/>
 
         <Transition name="menu">
             <div class="menu" v-if="active">
                 <div class="subtitle">Pages</div>
+
                 <ul class="pages">
                     <li v-for="route of getRoutes" :key="route.name"
-                        :class="{ active: $route.name === route.name }"
+                        :class="{ active: $route.name === route.name, hide: getHideRoutes.find(r => r.name === route.name) }"
                         @click="$router.push(route.path)"
                     >
                         <span>{{ route?.meta?.title || route.name }}</span>
                         <Icon :name="route.meta?.icon" v-if="route.meta?.icon"/>
                     </li>
                 </ul>
+
                 <div class="line"></div>
-                <div style="margin: auto 0 0 0; width: 100%;">
-                    <div class="line"></div>
-                    <ul class="buttons">
-                        <li @click="$windows.create({ component: 'Setting' })">
-                            <Icon name="settings"/>
-                        </li>
-                        <li @click="$notifications.setActive(true)">
-                            <Icon name="notification"/>
-                        </li>
-                    </ul>
-                </div>
+
+                <div style="margin: auto 0 0 0;"></div>
+
+                <div class="line"></div>
+
+                <ul class="buttons">
+                    <li @click="$windows.create({ component: 'Setting' })"
+                        @mouseenter="setToolpic({ text: 'Settings' })"
+                    >
+                        <Icon name="settings"/>
+                    </li>
+
+                    <li @click="$notifications.setActive(true)"
+                        @mouseenter="setToolpic({ text: 'Notifications' })"
+                    >
+                        <Icon name="notification"/>
+                    </li>
+
+                    <li v-if="isAdmin"
+                        @mouseenter="setToolpic({ text: 'Admin panel' })"
+                        @click=""
+                    >
+                        <Icon name="fire"/>
+                    </li>
+                </ul>
             </div>
         </Transition>
     </div>
 </template>
 
-<script lang="ts" setup>
-
-import Footer from '../Footer.vue';
-import ScrollBar from '../content/ScrollBar.vue';
-
-</script>
-
 <script lang="ts">
 
-import { type Component, PropType, defineComponent } from 'vue';
+import { defineComponent } from 'vue';
+
+import { mapActions, mapGetters } from 'vuex';
+
+import { EPermissions } from '../../libs/api/routes/users';
 
 export default defineComponent({
     name: 'VerticalSuperMode',
     computed: {
+        ...mapGetters(['getUser']),
+        isAdmin() {
+            return this.getUser?.permissions?.includes(EPermissions.Site);
+        },
+        getHideRoutes() {
+            return this.$config.pages.filter(p => !p.enabled);
+        },
         getRoutes() {
-            return this.$router?.options.routes.filter(route => !(route.meta?.hide as any)?.includes('page'));
+            return this.$router?.options.routes.filter(route => !(route.meta?.hide as any)?.includes('page') && (this.isAdmin ? true : !this.getHideRoutes.find(p => p.name === route.name)));
         }
     },
     data: () => ({
         winHeight: 0
     }),
     props: {
-        component: {
-            type: Object as PropType<Component>,
-            required: true
-        },
         active: {
             type: Boolean,
             default: false
         }
     },
     methods: {
-        goTop(scrollProps: any) {
-            scrollProps?.toScroll(0, scrollProps?.scrollY + 50);
-
-            setTimeout(() => scrollProps?.toScroll(0, 0), 500)
-        }
+        ...mapActions(['setToolpic'])
     },
-    mounted() {
-        this.winHeight = window?.innerHeight;
-    }
+    mounted() {}
 });
 
 </script>
@@ -112,9 +108,9 @@ export default defineComponent({
     animation: MenuWidth .2s linear reverse;
 }
 
-.go-top-enter-active,
-.go-top-leave-active {
-    transform: translateY(32px) scale(.6);
+.fade-enter-active,
+.fade-leave-active {
+    transition: .2s;
     opacity: 0;
 }
 
@@ -164,6 +160,10 @@ export default defineComponent({
 
                 &.active {
                     color: var(--main-color);
+                }
+
+                &.hide {
+                    opacity: .5;
                 }
 
                 .hx-icon {
@@ -218,29 +218,6 @@ export default defineComponent({
             }
         }
     }
-
-    .go-top {
-        cursor: pointer;
-        display: flex;
-        width: 48px;
-        height: 48px;
-        position: absolute;
-        right: 32px;
-        bottom: 32px;
-        border-radius: 50%;
-        align-items: center;
-        justify-content: center;
-        background-color: var(--background-secondary);
-        transition: .2s;
-
-        &:hover {
-            background-color: var(--background-secondary-alt);
-        }
-
-        &:active {
-            transform: scale(.85);
-        }
-    }
     
     &.active {
         padding: 72px 8px 8px 8px;
@@ -248,6 +225,7 @@ export default defineComponent({
         .scrollbar {
             max-height: calc(100% - 16px);
             border-radius: 15px;
+            box-shadow: 0 0 0 3px var(--background-secondary);
         }
     }
 }

@@ -1,6 +1,6 @@
 <template>
     <div class="invate-users">
-        <Select :sort="false" label="UserId, username, nickname or email"
+        <Select :sort="false" label="UserId, username, nickname or email" :readonly="false"
             :menu="getSearchUsers"
             @input="searchUsers(($event.target as any)?.value)"
             @select="addMember($event.value)"

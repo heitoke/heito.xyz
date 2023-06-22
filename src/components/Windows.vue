@@ -8,7 +8,7 @@
                 <div class="bg" @click="window?.close ? $windows.close(window?.id!) : null"></div>
                 
                 <div class="blur">
-                    <ScrollBar maxHeight="90vh" :inset="true">
+                    <ScrollBar>
                         <component :is="window?.component" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
                             style="padding: 12px;"
                             :closeWindow="() => $windows.close(window?.id!)"
@@ -148,6 +148,12 @@ export default defineComponent({
                 background-color: var(--background-secondary);
                 opacity: .5;
                 z-index: -1;
+            }
+
+            :deep(.scrollbar) {
+                [scrollbar-body] {
+                    max-height: 90vh;
+                }
             }
 
             .buttons {

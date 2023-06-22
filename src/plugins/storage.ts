@@ -10,6 +10,7 @@ interface IParams {
     effect?: 'blur' | 'transparent';
     blur?: number;
     transparent?: number;
+    super: 'horizontal' | 'vertical';
     [key: string]: TType;
 }
 

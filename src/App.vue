@@ -6,13 +6,28 @@
     <Header
         @changeSuperMode="superMode = $event"
     />
-    <RouterView v-slot="{ Component }">
-        <HorizontalSuper v-if="getSuperMode === 'horizontal'"
-            :component="Component" :active="superMode"
-        />
-        <VerticalSuper v-if="getSuperMode === 'vertical'"
-            :component="Component" :active="superMode"
-        />
+    
+    <RouterView v-slot="{ Component }" v-if="!loading">
+        <component :is="listSupers[getSuperMode!]" :active="superMode">
+            <ScrollBar v-slot="scrollProps" style="width: 100%;">
+                <Transition :name="!blocked ? 'page' : 'fade'">
+                    <component :is="blocked ? Blocked : Component"
+                        :class="['page', { 'to-left': $notifications?.options?.active }]"
+                        :scrollProps="scrollProps"
+                    ></component>
+                </Transition>
+
+                <Transition name="go-top">
+                    <div class="go-top" v-show="!($route.meta?.hide as any)?.includes('go-top') && scrollProps?.scrollY > (getWinHeight / 2)"
+                        @click="goTop(scrollProps)" 
+                    >
+                        <Icon name="arrow-up"/>
+                    </div>
+                </Transition>
+
+                <Footer v-if="!($route.meta?.hide as any)?.includes('footer')"/>
+            </ScrollBar>
+        </component>
     </RouterView>
 </template>
 
@@ -23,9 +38,19 @@ import Notifications from './components/Notifications/Main.vue';
 import Toolpics from './components/Toolpics.vue';
 import Windows from './components/Windows.vue';
 import ContextMenu from './components/ContextMenu.vue';
+import Footer from './components/Footer.vue';
 
 import HorizontalSuper from './components/super/Horizontal.vue';
 import VerticalSuper from './components/super/Vertical.vue';
+
+import ScrollBar, { type IScrollBar } from './components/content/ScrollBar.vue';
+
+import Blocked from './pages/Blocked.vue';
+
+const listSupers = {
+    horizontal: HorizontalSuper,
+    vertical: VerticalSuper
+}
 
 </script>
 
@@ -36,15 +61,16 @@ import { mapGetters, mapActions } from 'vuex';
 
 import { colors, cookies } from './libs/utils';
 
-import Users from './libs/api/routes/users';
+import Users, { EPermissions } from './libs/api/routes/users';
 import Auth from './libs/api/routes/auth';
+import Configs, { IConfigDefault } from './libs/api/routes/configs';
 import { IMessage } from './windows/Message.vue';
 
 export default defineComponent({
     name: 'App',
     components: {},
     computed: {
-        ...mapGetters([]),
+        ...mapGetters(['getUser', 'getWinHeight']),
         getSuperMode() {
             try {
                 if (!process) return this.$local.params?.super || 'vertical';
@@ -55,18 +81,42 @@ export default defineComponent({
     },
     props: {},
     data: () => ({
-        superMode: false
+        superMode: false,
+        blocked: false,
+        loading: true
     }),
-    watch: {},
+    watch: {
+        '$route.path'(newValue) {
+            if (this.blocked && newValue === '/blocked') return;
+
+            this.loading = true;
+
+            this.loadConfig(this.$config);
+        }
+    },
     sockets: {
         'server:cookie'({ name, value, days }) {
             cookies.set(name, value, days);
+        },
+        'configs:update'(config: IConfigDefault) {
+            this.$config.set(config);
+
+            this.$notifications.push({
+                title: 'Update',
+                icon: 'settings',
+                message: 'A configuration update has occurred',
+                color: 'var(--blue)'
+            });
+
+            this.loadConfig(config);
         }
     },
     methods: {
         ...mapActions(['setWinSize', 'setScroll', 'setUser', 'setBroadcastChannel']),
+
         setEffects() {
-            let html = document.querySelector('html'),
+            const
+                html = document.querySelector('html'),
                 style = document.documentElement.style;
 
             html?.classList[this.$local.params?.effect === 'transparent' ? 'add' : 'remove']('no-blur');
@@ -74,8 +124,33 @@ export default defineComponent({
             style.setProperty('--blur', `${this.$local.params?.blur || 5}px`);
             style.setProperty('--transparent', colors.addAlpha('#010101', this.$local.params?.transparent as number));
         },
+        async initConfig() {
+            const [config, status] = await Configs.default();
+            
+            if (status !== 200) return this.$notifications.error({
+                message: 'Failed to load configuration',
+                status
+            });
+
+            this.$config.set(config);
+
+            this.loadConfig(config);
+        },
+        loadConfig(config: IConfigDefault) {
+            const
+                hidePages = config.pages?.filter(p => !p.enabled),
+                page = hidePages.find(p => p.name === this.$route.name || this.$router.currentRoute.value.matched.find(r => r.name === p.name)),
+                isAdmin = this.getUser?.permissions?.includes(EPermissions.Site),
+                user = page?.users.find(u => u.user._id === this.getUser?._id);
+
+            if (isAdmin && !user?.allowed) {
+                this.blocked = Boolean(page);
+            } else this.blocked = false;
+
+            this.loading = false;
+        },
         initCustomization() {
-            let html = document.querySelector('html');
+            const html = document.querySelector('html');
 
             this.setWinSize([window.innerWidth, window.innerHeight]);
 
@@ -180,12 +255,20 @@ export default defineComponent({
             }
 
             if (user?._id) this.setUser(user);
+
+            this.initConfig();
+        },
+
+        goTop(scrollProps: IScrollBar) {
+            scrollProps.toScroll(0, scrollProps.scroll.top + 50);
+
+            setTimeout(() => scrollProps.toScroll(0, 0), 500);
         }
     },
     async mounted() {
-        await this.initCustomization();
+        this.initCustomization();
 
-        await this.initUser();
+        this.initUser();
 
         window.addEventListener('resize', () => {
             this.setWinSize([window.innerWidth, window.innerHeight]);
@@ -195,23 +278,12 @@ export default defineComponent({
 
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 
-.page-enter-active,
-.page-leave-active {
+.fade-enter-active,
+.fade-leave-active {
     transition: .2s;
-    transform: scale(.8) translateY(-25vh);
     opacity: 0;
-}
-
-body {
-    max-width: 100vw;
-    // min-width: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-    transition: all .2s;
-    overflow: hidden;
 }
 
 .page {
@@ -219,7 +291,7 @@ body {
     max-width: 100%;
     width: 100%;
     min-width: 100%;
-    // height: 100%;
+    height: 100%;
     min-height: 100%;
     position: relative;
     box-sizing: border-box;
@@ -230,6 +302,57 @@ body {
         transform: scale(.9) translateX(-4vw);
         overflow: hidden;
     }
+
+    &-enter-active,
+    &-leave-active {
+        transition: .2s;
+        transform: scale(.8) translateY(-25vh);
+        opacity: 0;
+    }
+}
+
+.go-top {
+    cursor: pointer;
+    display: flex;
+    width: 48px;
+    height: 48px;
+    position: absolute;
+    right: 32px;
+    bottom: 32px;
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-secondary);
+    transition: .2s;
+
+    &:hover {
+        background-color: var(--background-secondary-alt);
+    }
+
+    &:active {
+        transform: scale(.85);
+    }
+
+    &-enter-active,
+    &-leave-active {
+        transform: translateY(32px) scale(.6);
+        opacity: 0;
+    }
+}
+    
+
+</style>
+
+<style lang="scss">
+
+body {
+    max-width: 100vw;
+    // min-width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all .2s;
+    overflow: hidden;
 }
 
 .start-loading {

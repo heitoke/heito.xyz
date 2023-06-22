@@ -1,140 +1,162 @@
 <template>
     <div class="scrollbar">
-        <div scrollbar-block :style="{ 'max-height': maxHeight }"
-            @scroll="setScroll($event.target as Element, true)" ref="el"
-        >
-            <slot
-                :scrollPercentY="scroll || 0"
-                :scrollY="y"
-                :scrollHeight="scrollHeight"
-                :scrollMaxHeight="elementHeight.max"
-                :toScroll="toScroll"
-                :element="$el"
-            ></slot>
+        <div scrollbar-body @scroll="setScrollHeight">
+            <div scrollbar-content>
+                <slot
+                    :toScroll="toScroll"
+                    :scroll="{ x, y, top, left, max, client }"
+                ></slot>
+            </div>
         </div>
-        <div :class="['indicator', { active: elementHeight.value }]" v-show="scrollHeight < 100"
-            :style="{ height: `calc(${maxHeight} - 16px)`, right: `${inset ? -8 : 4}px` }"
+
+        <div scrollbar-strip class="y" v-show="orientation !== 'x' && client.height !== max.height"
+            :class="{ active: droped }"
+            :style="{ right: `${inset ? -4 : 0}px` }"
         >
-            <div :style="{ top: `${scroll}%`, height: `${scrollHeight}%` }"></div>
+            <div @pointerdown="down"></div>
         </div>
     </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { PropType, defineComponent } from 'vue';
 
-import { mapGetters } from 'vuex';
+type TSize = {
+    width: number;
+    height: number;
+}
+
+export interface IScrollBar {
+    toScroll(x: number, y: number): void;
+    scroll: {
+        x: number;
+        y: number;
+        top: number;
+        left: number;
+        max: TSize;
+        client: TSize;
+    }
+}
 
 export default defineComponent({
     name: 'ScrollBar',
-    computed: {
-        ...mapGetters(['getWinHeight']),
-        scrollHeight(): number {
-            if (this.show) {
-                return 100 - (100 * (this.elementHeight.value - (this.elementHeight.client || 0)) / this.elementHeight.value);
-            }
-            
-            return 0;
-        },
-        scroll(): number {
-            if (this.show) {
-                const heightMax = 100 - this.scrollHeight;
-                return heightMax * this.y / (this.elementHeight.value - (this.elementHeight.client || 0));
-            }
-
-            return 0;
-        }
-    },
+    computed: {},
     props: {
-        maxHeight: {
-            type: String,
-            default: '100%'
+        orientation: {
+            type: String as PropType<'all' | 'y' | 'x'>,
+            default: 'y'
         },
         inset: {
             type: Boolean,
             default: false
+        },
+        boost: {
+            type: Number,
+            default: 10.5
         }
     },
     data: () => ({
+        droped: false,
+        save: {
+            x: 0,
+            y: 0
+        },
         x: 0,
         y: 0,
-        elementHeight: {
-            max: 0,
-            value: 0,
-            client: 0
+        top: 0,
+        left: 0,
+        max: {
+            width: 0,
+            height: 0
+        },
+        client: {
+            width: 0,
+            height: 0
         },
         show: false
     }),
-    watch: {
-        y(newValue: number) {
-            if ((newValue + 35) >= this.elementHeight.max) {
-                this.setHeight();
-            }
-        }
-    },
     methods: {
-        setScroll(el: Element, set: boolean = false) {
-            if (!el) return;
+        refs() {
+            const
+                container = this.$el as HTMLElement,
+                body = container.querySelector('[scrollbar-body]')! as HTMLElement;
 
-            this.x = 0;
-            this.y = el.scrollTop;
-
-            if (!set) return;
-
-            let coll: HTMLCollection = el?.children;
-
-            this.elementHeight.value = 0;
-
-            for (let i = 0; i < coll.length; i++)
-                this.elementHeight.value += coll[i]?.scrollHeight;
+            return {
+                container,
+                body,
+                content: body.querySelector('[scrollbar-content]')! as HTMLElement,
+                scroll: container.querySelector('[scrollbar-strip]')! as HTMLElement
+            }
         },
-        checkForSlotContent() {
-            let checkForContent = (hasContent: any, node: any) => {
-                return hasContent || node.tag || (node.text && node.text.trim());
+        setScrollHeight() {
+            const { container, body, scroll } = this.refs();
+
+            const
+                height = Math.pow(container.clientHeight, 2) / body.scrollHeight - 16,
+                y = body.clientHeight * body.scrollTop / body.scrollHeight;
+
+            this.y = y;
+
+            this.max = {
+                width: body.scrollWidth,
+                height: body.scrollHeight
             }
 
-            setTimeout(() => {
-                this.setScroll(this.$refs.el as Element);
-            }, 10);
+            this.client = {
+                width: body.clientWidth,
+                height: body.clientHeight
+            }
 
-            return this.$slots.default && this.$slots.default()?.reduce(checkForContent, false);
+            this.top = body.scrollTop;
+            this.left = body.scrollLeft;
+            
+            scroll.querySelector('div')?.setAttribute('style', `height: ${height}px; top: ${body.clientHeight * body.scrollTop / body.scrollHeight}px;`);
         },
         toScroll(x: number, y: number) {
-            const el: Element = this.$refs?.el as Element;
+            const { body } = this.refs();
 
-            el?.scrollTo({
+            body?.scrollTo({
                 top: y,
                 left: x,
                 behavior: 'smooth'
             });
         },
-        setHeight() {
-            const el = (this.$refs?.el as Element);
-    
-            this.elementHeight = {
-                value: el?.scrollHeight,
-                max: (el?.scrollHeight || 0) - document.documentElement?.clientHeight,
-                client: el?.clientHeight
-            }
-        },
         observeHeight() {
-            const el = (this.$refs?.el as Element);
+            const { content } = this.refs();
 
             const resizeObserver = new ResizeObserver(() => {
-                this.setHeight();
+                this.setScrollHeight();
             });
 
-            resizeObserver.observe(el);
+            resizeObserver.observe(content);
+        },
+        down(ev: PointerEvent) {
+            this.droped = true;
+
+            this.save = { x: ev.clientX, y: ev.clientY };
+
+            window.addEventListener('pointermove', this.move);
+
+            window.addEventListener('pointerup', () => {
+                this.droped = false;
+            }, { once: true });
+        },
+        move(ev: PointerEvent) {
+            if (!this.droped) return;
+
+            let y = ev.clientY > this.save.y ? this.top + ((ev.clientY - this.save.y) * this.boost) : this.top - ((this.save.y - ev.clientY) * this.boost);
+
+            this.save = { x: ev.clientX, y: ev.clientY };
+
+            this.toScroll(0, y);
         }
     },
     mounted() {
         if (window) {
             this.show = true;
 
-            this.setScroll(this.$refs.el as Element, true);
-
-            this.setHeight();
+            this.setScrollHeight();
 
             this.observeHeight();
         }
@@ -146,38 +168,78 @@ export default defineComponent({
 <style lang="scss" scoped>
 
 .scrollbar {
+    max-width: 100%;
     position: relative;
+    box-sizing:border-box;
+    overflow: hidden;
 
-    [scrollbar-block] {
-        max-height: 100%;
-        height: 100%;
-        overflow-x: hidden;
-
-        &:hover {
-            & + .indicator {
-                transform: scale(1);
-                opacity: 1;
-            }
+    &:hover {
+        [scrollbar-strip] {
+            transform: scale(1);
+            opacity: 1;
         }
     }
 
-    .indicator {
-        width: 2px;
-        height: calc(100vh - 16px);
+    [scrollbar-body] {
+        width: 100%;
+        height: 100%;
+        overflow-x: hidden;
+
+        &:hover + [scrollbar-strip] {
+            opacity: .5;
+        }
+    }
+
+    [scrollbar-content] {
+        width: 100%;
+        height: 100%;
+    }
+
+    [scrollbar-strip] {
         position: absolute;
-        top: 8px;
-        right: 4px;
-        background-color: #7f7f7f41;
         transform-origin: center right;
         transform: scale(.85);
         transition: .2s;
         z-index: 101;
+        mix-blend-mode: difference;
+        user-select: none;
         overflow: hidden;
         opacity: 0;
 
+        &.y {
+            padding: 8px 4px;
+            width: 2px;
+            height: calc(100% - 16px);
+            top: 0;
+            right: 0;
+        }
+
+        &.x {
+            padding: 4px 8px;
+            width: calc(100% - 16px);
+            height: 2px;
+            left: 0;
+            bottom: 0;
+        }
+
+        &:hover, &.active {
+            width: 8px;
+            background-color: #7f7f7f41;
+            transform: scale(1);
+            mix-blend-mode: normal;
+            opacity: 1 !important;
+        }
+
+        &.active {
+            div {
+                background-color: var(--main-color);
+                mix-blend-mode: normal;
+            }
+        }
+
         div {
             cursor: row-resize;
-            width: 2px;
+            width: 100%;
             position: relative;
             background-color: #fff;
             transition: .2s;

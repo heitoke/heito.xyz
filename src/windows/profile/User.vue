@@ -66,8 +66,6 @@
         </section>
 
         <section class="projects" v-if="block === 'projects'">
-            <Loading v-show="projects.loading"/>
-
             <div class="grid" v-if="!projects.loading && projects.list.length > 0">
                 <Project v-for="(project, idx) of projects.list" :key="project._id"
                     :project="project"

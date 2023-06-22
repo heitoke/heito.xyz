@@ -7,7 +7,7 @@
                 <Text class="text" :text="getItem?.label || ''" style="height: 18px;"/>
             </div> -->
 
-            <Textbox :label="label" :icon="getItem?.icon" :value="getItem?.label" :watchValue="true"
+            <Textbox :label="label" :icon="getItem?.icon" :value="getItem?.label" :watchValue="true" :readonly="readonly"
                 @input="text = ($event.target as any)?.value; open(text); $emit('input', $event)"
             />
         </header>
@@ -64,6 +64,10 @@ export default defineComponent({
             default: true
         },
         sort: {
+            type: Boolean,
+            default: true
+        },
+        readonly: {
             type: Boolean,
             default: true
         }

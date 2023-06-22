@@ -15,6 +15,7 @@ import Langs from './plugins/langs';
 import Windows from './plugins/windows';
 import Notifications from './plugins/notifications';
 import Log from './plugins/log';
+import Config from './plugins/config';
 
 export const createApp = async () => {
     const app = createSSRApp(App);
@@ -29,6 +30,7 @@ export const createApp = async () => {
     app.use(Windows);
     app.use(Notifications);
     app.use(Log);
+    app.use(Config);
 
     const
         components = import.meta.glob('./components/UI/*.vue', { eager: true }),

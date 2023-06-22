@@ -13,6 +13,7 @@ export interface ServerToClientEvents {
 export interface ClientToServerEvents {
     // ? Users
     'users:online'(type: 'count' | 'list'): void;
+    
     // ? Activities
     'activities:track:playing'(): void;
     'activities:list'(): void;

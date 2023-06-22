@@ -6,6 +6,7 @@
         <Icon :name="icon" style="margin: 0 8px 0 0;" v-show="Boolean(icon)"/>
 
         <input :type="type" :placeholder="labelType === 'input' ? label : text" v-model="modelValue"
+            :readonly="readonly"
             :style="{ '--placeholder-color': focus ? 'var(--text-secondary)' : 'var(--T)' }"
             @focus="$emit('focus', $event); focus = true"    
             @blur="$emit('blur', $event); focus = false"
@@ -77,7 +78,8 @@ export default defineComponent({
         min: { type: Number, default: 0 },
         max: { type: Number, default: 256 },
         autofocus: { type: Boolean, default: false },
-        watchValue: { type: Boolean, default: false }
+        watchValue: { type: Boolean, default: false },
+        readonly: { type: Boolean, default: false }
     },
     data: () => ({
         focus: false,

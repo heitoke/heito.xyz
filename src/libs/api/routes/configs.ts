@@ -25,6 +25,31 @@ export interface IAccount {
     type: EAccountType;
 }
 
+export type TPageUser = {
+    user: {
+        _id: string;
+        username: string;
+        nickname: string;
+        avatar: string;
+    };
+    allowed: boolean;
+    updatedAt: Date;
+    addedAt: Date;
+}
+export enum EPageStatus {
+    Stable = 'stable',
+    Dev = 'dev',
+    Beta = 'beta'
+}
+export interface IPage {
+    name: string;
+    enabled: boolean;
+    users: Array<TPageUser>;
+    status: EPageStatus;
+    updatedAt?: Date;
+    addedAt?: Date;
+}
+
 export interface IConfig {
     _id: string;
     name: string;
@@ -32,8 +57,17 @@ export interface IConfig {
     accounts: Array<IAccount>;
     enable: boolean;
     playingTrack: boolean;
+    pages: Array<IPage>;
+    status: EPageStatus;
     updatedAt: Date;
     createdAt: Date;
+}
+
+export interface IConfigDefault {
+    _id: string;
+    name: string;
+    pages: Array<IPage>;
+    status: EPageStatus;
 }
 
 
@@ -71,6 +105,20 @@ class Route {
     })
     get(configId: string): [IConfig, number, any] {
         return $api.get(`/configs/${configId}`) as any;
+    }
+
+    @docs.route({
+        label: 'Get default config',
+        icon: 'settings-alt',
+        path: '/default',
+        statuses: [
+            { code: 200, text: 'OK' },
+            // { code: 404, text: 'There is no such configuration' },
+            { code: 501, text: 'Server error' }
+        ]
+    })
+    default(): [IConfigDefault, number, any] {
+        return $api.get(`/configs/default`) as any;
     }
 
     @docs.route({

@@ -1,7 +1,7 @@
 <template>
     <div :class="['activities', { active }]" ref="activities">
         <Transition name="activities">
-            <div :class="['data', { blur: active }]" v-if="list?.length > 0"
+            <div :class="['data', { blur: active }]" v-if="track?.id || list?.length > 0"
                 @click="open($event, 'activities', () => active = true, () => active = false)"
             >
                 <Activity :show-buttons="active" :content="{

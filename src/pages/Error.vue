@@ -1,20 +1,27 @@
 <template>
     <div class="error">
         <div>404</div>
+        {{ type }}
     </div>
 </template>
 
 <script lang="ts">
 
-import { defineComponent } from 'vue';
+import { defineComponent, PropType } from 'vue';
 
 export default defineComponent({
     name: 'ErrorPage',
     components: {},
     computed: {},
-    data: () => ({}),
+    props: {},
+    data: () => ({
+        type: 'error' as 'error' | 'blocked'
+    }),
     watch: {},
-    mounted() {}
+    mounted() {
+        console.log(this.$route);
+        
+    }
 });
 
 </script>

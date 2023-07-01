@@ -4,21 +4,29 @@
             <div style="width: calc(50% - 8px); margin: 0 16px 0 0;">
                 <div class="title">Popular blogs</div>
 
-                <CarouselTab :gap="12" :column="getWinWidth > 640 ? 2 : 1">
+                <Alert :type="'mini'">
+                    <div>Currently not available o_^</div>
+                </Alert>
+
+                <!-- <CarouselTab :gap="12" :column="getWinWidth > 640 ? 2 : 1">
                     <Blog v-for="blog of blogs" :key="blog?._id" :blog="blog"
                         @click="$router.push(`/blogs/${blog._id}`)"
                     />
-                </CarouselTab>
+                </CarouselTab> -->
             </div>
 
             <div style="width: calc(50% - 8px);">
                 <div class="title">Latest blogs</div>
 
-                <CarouselTab :gap="12">
+                <Alert :type="'mini'">
+                    <div>Currently not available :O</div>
+                </Alert>
+
+                <!-- <CarouselTab :gap="12">
                     <Blog v-for="blog of blogs" :key="blog?._id" :blog="blog"
                         @click="$router.push(`/blogs/${blog._id}`)"
                     />
-                </CarouselTab>
+                </CarouselTab> -->
             </div>
         </header>
 

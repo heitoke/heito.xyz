@@ -98,6 +98,8 @@ export default defineComponent({
                     text: this.blog.likes,
                     color: this.selfBlog.isLiked ? 'var(--green)' : '',
                     click: async () => {
+                        if (this.selfBlog.isLiked) return;
+
                         const [message, status] = await Blogs.action(this.blog._id, 'like');
 
                         if (status !== 200) return;
@@ -117,6 +119,8 @@ export default defineComponent({
                     text: this.blog.dislikes,
                     color: this.selfBlog.isDisliked ? 'var(--red)' : '',
                     click: async () => {
+                        if (this.selfBlog.isDisliked) return;
+
                         const [message, status] = await Blogs.action(this.blog._id, 'dislike');
 
                         if (status !== 200) return;

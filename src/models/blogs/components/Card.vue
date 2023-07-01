@@ -3,7 +3,15 @@
         <div class="image" :style="{
             '--image': `url('${blog?.image || getAvatar({ nameId: blog?._id, type: 'marble', size: 1 })}')`
         }">
-            <div class="date">{{ time.timeago(blog?.createdAt) }}</div>
+            <div class="likes blur" v-show="blog?.likes! > 0 || blog?.dislikes! > 0">
+                <Icon name="like" style="color: var(--green);"/>
+                <span>{{ blog?.likes }}</span>
+
+                <Icon name="dislike" style="color: var(--red);"/>
+                <span style="margin: 0;">{{ blog?.dislikes }}</span>
+            </div>
+
+            <div class="date blur">{{ time.timeago(blog?.createdAt) }}</div>
         </div>
         <header>
             <div style="max-width: calc(100% - 32px);">
@@ -81,16 +89,30 @@ export default defineComponent({
             z-index: -1;
         }
 
-        .date {
+        .likes, .date {
             padding: 4px 8px;
             position: absolute;
-            right: 4px;
-            bottom: 4px;
             font-size: 12px;
             border-radius: 5px;
-            backdrop-filter: blur(5px);
             transition: .2s;
             opacity: 0;
+        }
+
+        .likes {
+            display: flex;
+            left: 4px;
+            bottom: 4px;
+            align-items: center;
+            
+            span, i {
+                margin: 0 4px 0 0;
+                font-size: 12px;
+            }
+        }
+
+        .date {
+            right: 4px;
+            bottom: 4px;
         }
     }
 
@@ -101,7 +123,7 @@ export default defineComponent({
                 // filter: blur(0);
             }
 
-            .date {
+            .date, .likes {
                 opacity: 1;
             }
         }

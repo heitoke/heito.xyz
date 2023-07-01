@@ -1,23 +1,27 @@
 <template>
     <div class="blog">
         <div class="image" :style="{
-            '--image': `url('${blog?.image}')`
+            '--image': `url('${blog?.image || getAvatar({ nameId: blog?._id, type: 'marble', size: 1 })}')`
         }">
-            <div class="date">03.10.23</div>
+            <div class="date">{{ time.timeago(blog?.createdAt) }}</div>
         </div>
         <header>
             <div style="max-width: calc(100% - 32px);">
                 <div class="title">{{ blog?.title }}</div>
                 <div class="description">{{ blog?.description }}</div>
             </div>
-            <div class="author" :style="{ '--avatar': `url('${getAvatar()}')` }"></div>
+
+            <div class="author" :style="{ '--avatar': `url('${blog?.author?.avatar || getAvatar({ nameId: blog?.author?._id })}')` }"
+                @mouseenter="setToolpic({ text: blog?.author?.nickname || blog?.author?.username || blog?.author?._id })"
+                @click.prevent.stop="$windows.create({ component: 'User', data: blog?.author?._id })"
+            ></div>
         </header>
     </div>
 </template>
 
 <script setup lang="ts">
 
-import { getAvatar } from '../../libs/utils';
+import { getAvatar, time } from '../../../libs/utils';
 
 </script>
 
@@ -25,22 +29,21 @@ import { getAvatar } from '../../libs/utils';
 
 import { defineComponent, PropType } from 'vue';
 
-export interface IBlog {
-    title: string;
-    description?: string;
-    image?: string;
-    createdAt: number;
-}
+import { mapActions } from 'vuex';
+
+import type { IBlog } from '../../../libs/api/routes/blogs';
 
 export default defineComponent({
-    name: 'CardBlog',
+    name: 'BlogCard',
     computed: {},
     props: {
         blog: {
             type: Object as PropType<IBlog>
         }
     },
-    methods: {},
+    methods: {
+        ...mapActions(['setToolpic'])
+    },
     mounted() {}
 });
 

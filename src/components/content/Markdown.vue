@@ -24,7 +24,7 @@ export default defineComponent({
     watch: {},
     methods: {
         setText(text: string): string {
-            let md = new Markdown(text);
+            let md = new Markdown(`\n${text}\n`);
             return md.init();
         }
     },

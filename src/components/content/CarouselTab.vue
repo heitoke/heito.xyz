@@ -49,12 +49,10 @@ export default defineComponent({
             default: 12
         }
     },
-    data() {
-        return {
-            countElements: 0,
-            index: 0
-        }
-    },
+    data: () => ({
+        countElements: 0,
+        index: 0
+    }),
     methods: {},
     mounted() {
         this.countElements = (this.$slots as any)?.default()[0]?.children?.length as number;

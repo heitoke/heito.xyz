@@ -4,7 +4,7 @@
             <div v-for="contextMenu of (getListContextMenus as IContextMenu[])" :key="contextMenu.name" :name="contextMenu.name"
                 :class="['context-menu blur', contextMenu.position]"
                 :style="{
-                    top: `${contextMenu.y}px`,
+                    [contextMenu.position?.includes('bottom') ? 'top' : 'bottom']: `${contextMenu.y}px`,
                     left: `${contextMenu.x}px`,
                     'max-width': contextMenu.autoMaxWidth ? 'auto' : '196px'
                 }"
@@ -61,13 +61,12 @@ export default defineComponent({
                 x -= isFix ? (el.width - elPos.width) / 2 : (el.height / 2);
                 y -= isFix ? (el.height - elPos.height) / 2 : (el.height / 2);
             }
-            
 
-            if (has('top')) y = elPos?.y - (el?.height * 2) - 24;
+            if (has('top')) y = window.innerHeight - elPos.top - elPos.height; //elPos?.y - (el?.height * 2) - 24;
             if (has('bottom')) y = elPos?.y + elPos?.height + 8;
             
-            if (has('left')) x -= (el.width + 4);
-            if (has('right')) x += (el.width + 4);
+            if (has('left')) x -= (el.width + 8);
+            if (has('right')) x += (elPos.width + 8);
 
 
             return [x, y];

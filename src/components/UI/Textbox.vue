@@ -5,48 +5,31 @@
     >
         <Icon :name="icon" style="margin: 0 8px 0 0;" v-show="Boolean(icon)"/>
 
-        <input :type="type" :placeholder="labelType === 'input' ? label : text" v-model="modelValue"
+        <input v-model="modelValue" v-if="type !== 'area'"
+            :placeholder="labelType === 'input' ? label : text"
             :readonly="readonly"
-            :style="{ '--placeholder-color': focus ? 'var(--text-secondary)' : 'var(--T)' }"
+            :style="{ '--placeholder-color': `var(--${focus ? 'text-secondary' : 'T'})` }"
             @focus="$emit('focus', $event); focus = true"    
             @blur="$emit('blur', $event); focus = false"
         >
+
+        <textarea v-model="modelValue" v-if="type === 'area'"
+            :placeholder="labelType === 'input' ? label : text"
+            :readonly="readonly"
+            :style="{ '--placeholder-color': `var(--${focus ? 'text-secondary' : 'T'})` }"
+            @focus="$emit('focus', $event); focus = true"    
+            @blur="$emit('blur', $event); focus = false"
+        ></textarea>
         
         <div :class="['label', { active: isValid }]" v-show="labelType === 'block'">{{ label }}</div>
-
-        <Menu v-if="menu === true && buttons?.length > 3" :menu="{
-            name: 'textbox:menu',
-            buttons: (buttons as IContextMenuButton[])
-        }"/>
-
-        <!-- <Transition name="width">
-            <ul class="buttons" v-show="modelValue?.length > 0 && buttons?.length > 0">
-                <li v-for="btn in buttons.slice(0, 3)" :key="btn"
-                    @click.stop.prevent=""
-                >
-                    <Icon name="close" :size="'14px'"/>
-                </li>
-                <li v-show="buttons?.length > 3" @click="menu = !menu">
-                    <Icon name="arrow-down" :size="'14px'"/>
-                </li>
-            </ul>
-        </Transition> -->
     </label>
 </template>
-
-<script lang="ts" setup>
-
-import Menu from '../content/Menu.vue';
-
-</script>
 
 <script lang="ts">
 
 import { defineComponent, PropType } from 'vue';
 
-import type { IContextMenuButton } from '../../store/modules/contextMenu';
-
-export type TInput = 'text' | 'password' | 'number';
+export type TInput = 'text' | 'password' | 'number' | 'area';
 
 export type TLabel = 'block' | 'input';
 
@@ -86,25 +69,7 @@ export default defineComponent({
         modelValue: '',
         menu: false,
         error: false,
-        labelWidth: 0,
-        buttons: [
-            // {
-            //     label: 'Close',
-            //     icon: 'close'
-            // },
-            // {
-            //     label: 'Close',
-            //     icon: 'close'
-            // },
-            // {
-            //     label: 'Close',
-            //     icon: 'close'
-            // },
-            // {
-            //     label: 'Close',
-            //     icon: 'close'
-            // }
-        ]
+        labelWidth: 0
     }),
     watch: {
         modelValue(newValue: string) {
@@ -137,9 +102,9 @@ export default defineComponent({
         });
         
         this.setLabelWidth();
-        
+
         if (this.autofocus) {
-            this.$el?.querySelector('input')?.focus();
+            this.$el?.querySelector(this.type === 'area' ? 'textarea' : 'input')?.focus();
         }
     }
 });
@@ -221,7 +186,7 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
         }
     }
 
-    input {
+    input, textarea {
         padding: 0;
         width: 100%;
         color: var(--text-primary);
@@ -229,6 +194,7 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
         border: none;
         background: var(--T);
         transition: .2s;
+        resize: vertical;
         outline: none;
     
         &:focus + .label {
@@ -261,6 +227,10 @@ $bg: linear-gradient(var(--background-secondary), var(--background-secondary));
         &[placeholder] {
             transition: .2s;
         }
+    }
+
+    textarea {
+        height: auto;
     }
 
     ul.buttons {

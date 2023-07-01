@@ -160,7 +160,7 @@ class Time {
         return input < 10 ? `0${input}` : input.toString();
     }
 
-    unix(unix: number | string = Date.now()) {
+    unix(unix: number | string | Date = Date.now()) {
         let date = new Date(unix),
             year = date.getFullYear(),
             day = this.getString(date.getDate()),
@@ -209,7 +209,7 @@ class Time {
         return format.replace(new RegExp(`${Object.keys(types).join('|')}`, 'g'), (s: string) => types[s]);
     }
 
-    timeago(time: number = Date.now()) {
+    timeago(time: number | Date = Date.now()) {
         let msPerMinute = 60 * 1000,
             msPerHour = msPerMinute * 60,
             msPerDay = msPerHour * 24,

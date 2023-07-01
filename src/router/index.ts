@@ -53,7 +53,7 @@ const routes: RouteRecordRaw[] = [
     {
         name: 'BlogsPage',
         path: '/blogs',
-        component: () => import('../pages/blogs/Main.vue'),
+        component: () => import('../models/blogs/pages/Main.vue'),
         meta: {
             title: 'Blogs',
             icon: 'quill'
@@ -62,7 +62,7 @@ const routes: RouteRecordRaw[] = [
     {
         name: 'BlogPage',
         path: '/blogs/:blogId',
-        component: () => import('../pages/blogs/Blog.vue'),
+        component: () => import('../models/blogs/pages/Blog.vue'),
         meta: {
             hide: ['page']
         }

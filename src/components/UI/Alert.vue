@@ -47,6 +47,7 @@ export default defineComponent({
     border-radius: 15px;
     border: 5px dashed var(--text-primary);
     background-color: var(--main-color-alt);
+    box-sizing: border-box;
     transition: .2s;
     user-select: none;
 

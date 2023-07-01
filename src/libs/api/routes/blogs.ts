@@ -159,6 +159,25 @@ class Route {
     delete(ids: string | Array<string>): [{ deleted: Array<string>, notFound: Array<string> }, number, any] {
         return $api.delete(`/blogs?ids=${(Array.isArray(ids) ? ids : [ids]).join(',')}`) as any;
     }
+
+    @docs.route({
+        label: 'Get list likes or dislikes blog',
+        icon: 'like',
+        path: '/:blogId/:type',
+        // description: 'Switch to the configuration that you like best',
+        params: [
+            { name: 'type', enum: { likes: {}, dislikes: {} } }
+        ],
+        statuses: [
+            { code: 200, text: 'OK' },
+            { code: 404, text: 'There is no such blog' },
+            { code: 501, text: 'Server error' }
+        ],
+        method: 'GET'
+    })
+    likes(blogId: string, type: 'likes' | 'dislikes' = 'likes'): [Array<TBlogUserLike>, number, any] {
+        return $api.get(`/blogs/${blogId}/${type}`) as any;
+    }
 }
 
 export default new Route();

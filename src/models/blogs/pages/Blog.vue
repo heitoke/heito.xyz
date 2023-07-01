@@ -36,13 +36,33 @@
                 @update="changes['content'] = $event; "
             />
 
-            <div class="separator">The End</div>
+            <div class="separator end">The End</div>
 
             <!-- <CarouselTab :gap="12" :column="4">
                 <Blog v-for="(a, id) of new Array(25).fill(blog)" :key="id" :blog="a"
                     @click="$router.push(`/blogs/${id}`)"
                 />
             </CarouselTab> -->
+
+            <NavBar :default-id="0" style="margin: 0 0 12px 0;"
+                :menu="[
+                    { label: 'Comments', icon: 'comments-alt', value: 'comments' },
+                    { label: `Likes [${blog?.likes}]`, icon: 'like', value: 'likes' },
+                    { label: `Dislikes [${blog?.dislikes}]`, icon: 'dislike', value: 'dislikes' }
+                ]"
+                @select="type = $event.value as string"
+            />
+
+            <Alert v-if="type === 'comments'"/>
+
+            <div v-if="type === 'likes' || type === 'dislikes'">
+                <ul class="list" v-if="(type === 'likes' ? likes : dislikes).list.length > 0">
+                    <User v-for="({ user, ratedAt }) of (type === 'likes' ? likes : dislikes).list" :key="user._id" :user="user"
+                        :text="`Rated at ` + time.timeago(ratedAt)"
+                    />
+                </ul>
+                <Alert v-else/>
+            </div>
         </div>
 
     </div>
@@ -53,6 +73,10 @@
 import { getAvatar, time, copy } from '../../../libs/utils';
 
 import Content from '../components/Content.vue';
+
+import NavBar from '../../../components/content/NavBar.vue';
+
+import User from '../../../components/cards/User.vue';
 
 // import Blog from '../components/Card.vue';
 
@@ -68,7 +92,7 @@ import { mapGetters, mapActions } from 'vuex';
 
 import type { IScrollBar } from '../../../components/content/ScrollBar.vue';
 
-import Blogs, { IBlog, IBlogContent } from '../../../libs/api/routes/blogs';
+import Blogs, { IBlog, IBlogContent, TBlogUserLike } from '../../../libs/api/routes/blogs';
 import { EPermissions } from '../../../libs/api/routes/users';
 
 import type { IContextMenu } from '../../../store/modules/contextMenu';
@@ -139,15 +163,24 @@ export default defineComponent({
                     icon: 'arrow-left',
                     click: () => this.$router.back()
                 },
-                ...[this.isAdmin ? {
+                ...(this.isAdmin ? [{
                     label: 'Edit mode',
                     icon: 'pencil',
                     click: () => this.edit = !this.edit
-                } : {}],
+                }] : []),
                 {
                     label: 'Options',
                     icon: 'ellipsis',
                     click: () => this.contextMenu()
+                },
+                {
+                    label: 'To the end',
+                    icon: 'arrow-down',
+                    click: () => {
+                        const el = (this.$el as Element).querySelector('.separator.end')! as HTMLElement;
+
+                        this.scrollProps?.toScroll(0, el?.offsetTop);
+                    }
                 },
                 ...(Object.keys(this.changes).length > 0 ? [
                     {
@@ -179,13 +212,32 @@ export default defineComponent({
         }
     },
     data: () => ({
+        type: 'comments' as string,
         selfBlog: {} as IBlog,
         changes: {} as IBlog,
+        likes: {
+            list: [] as Array<TBlogUserLike>,
+            lastedAt: 0
+        },
+        dislikes: {
+            list: [] as Array<TBlogUserLike>,
+            lastedAt: 0
+        },
         edit: false
     }),
     watch: {
         headerActive(newValue) {
             this.setHeaderOptions({ blur: { enable: newValue, value: '5px' } });
+        },
+        type(newValue) {
+            switch(newValue) {
+                case 'likes':
+                case 'dislikes':
+                    if ((this[newValue as ('likes' | 'dislikes')].lastedAt + 30000) > Date.now()) return;
+
+                    this.loadLikes(newValue);
+                    break;
+            }
         }
     },
     methods: {
@@ -196,6 +248,18 @@ export default defineComponent({
             if (status !== 200) return;
 
             this.selfBlog = blog;
+        },
+        async loadLikes(type: 'likes' | 'dislikes') {
+            const [list, status] = await Blogs.likes(this.selfBlog._id, type);
+
+            if (status !== 200) return;
+
+            this[type] = {
+                list,
+                lastedAt: Date.now()
+            }
+
+            this.selfBlog[type] = list.length;
         },
         blogSettings() {
             const text = (title: string, icon: string, label: string, callback: (text: string) => void, value: string = '', type: 'area' | 'text' = 'text') => {
@@ -614,8 +678,48 @@ export default defineComponent({
             padding: 0 0 8px 0;
             font-size: 16px;
         }
+
+        .list {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr 1fr;
+        }
+
+        @media (max-width: 1140px) {
+            .list {
+                grid-template-columns: 1fr 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .list {
+                grid-template-columns: 1fr;
+            }
+        }
     }
 
+    @media (max-width: 840px) {
+        header {
+            padding: 15% 10%;
+
+            & + div {
+                .list {
+                    grid-template-columns: 1fr 1fr;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 1140px) {
+        header + div .list {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 640px) {
+        header + div .list {
+            grid-template-columns: 1fr;
+        }
+    }
 }
 
 </style>

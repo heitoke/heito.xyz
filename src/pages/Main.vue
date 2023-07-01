@@ -64,6 +64,26 @@ export default defineComponent({
             }
         }
     }
+
+    @media (max-width: 740px) {
+        .hello-world {
+            .content {
+                .text {
+                    max-width: 70vw;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 540px) {
+        .hello-world {
+            .content {
+                .text {
+                    max-width: 90vw;
+                }
+            }
+        }
+    }
 }
 
 </style>

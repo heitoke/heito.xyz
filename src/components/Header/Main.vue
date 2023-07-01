@@ -11,6 +11,7 @@
         <div class="left">
             <div class="logo">
                 <Icon name="logo" style="color: var(--main-color); font-size: 32px;"/>
+
                 <div style="margin: 0 0 0 12px;">
                     <RouterLink to="/"
                         @contextmenu="getUser?.permissions?.includes(EPermissions.Site) ? setContextMenu(getAdminContext) : null"
@@ -145,6 +146,7 @@ export default defineComponent({
     components: {},
     computed: {
         ...mapGetters([
+            'getWinWidth',
             'getHeaderLoading',
             'getHeaderOptions',
             'getUser',

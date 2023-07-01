@@ -695,6 +695,22 @@ export default defineComponent({
             }
         }
     }
+
+    @media (max-width: 512px) {
+        min-width: 256px;
+
+        // header {
+        //     .image {
+        //         ul {
+        //             li {
+        //                 i { margin: 0; }
+
+        //                 span { display: none; }
+        //             }
+        //         }
+        //     }
+        // }
+    }
 }
 
 </style>

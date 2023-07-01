@@ -341,6 +341,12 @@ export default defineComponent({
             align-items: flex-end;
         }
     }
+
+    @media (max-width: 740px) {
+        .panel {
+            width: 100vw;
+        }
+    }
 }
 
 </style>

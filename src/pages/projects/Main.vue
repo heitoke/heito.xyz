@@ -1,28 +1,30 @@
 <template>
     <div class="projects">
-        <NavBar orientation="vertical" :menu="[
-            {
-                icon: 'images',
-                label: 'Projects',
-                value: 'projects',
-                click: () => $router.push(`/projects`)
-            },
-            {
-                icon: 'repo',
-                label: 'Repositories',
-                value: 'repos',
-                click: () => $router.push(`/repositories`)
-            }
-        ]" style="margin: 0 12px 0 0; max-width: 196px;"
+        <NavBar :orientation="getWinWidth > 840 ? 'vertical' : 'horizontal'"
+            :menu="[
+                {
+                    icon: 'images',
+                    label: 'Projects',
+                    value: 'projects',
+                    click: () => $router.push(`/projects`)
+                },
+                {
+                    icon: 'repo',
+                    label: 'Repositories',
+                    value: 'repos',
+                    click: () => $router.push(`/repositories`)
+                }
+            ]"
             :default-id="['projects', 'repos'].findIndex(t => t === type)"
             @select="$router.push(`/${$event.value}`)"
         />
 
         <div style="width: 100%;">
-            <div class="filters" style="display: flex; margin: 0 0 12px 0; align-items: center;">
-                <Textbox label="Search" style="margin: 0 12px 0 0;"
+            <div class="filters">
+                <Textbox
                     @input="filters.text = ($event.target as any)?.value"
                 />
+
                 <Select label="Sort" :value="filters.type" @select="filters.type = $event.value"
                     :menu="[
                         {
@@ -33,7 +35,8 @@
                         ...(type === 'repos' ? filters.reposMenu : filters.projectsMenu)
                     ]"
                 />
-                <Button style="margin: 0 0 0 12px; width: 96px;" color="var(--green)" v-if="isAdmin"
+
+                <Button color="var(--green)" v-if="isAdmin"
                     @click="createProject"
                 >Create</Button>
             </div>
@@ -83,7 +86,7 @@ export default defineComponent({
     name: 'ProjectsPage',
     components: {},
     computed: {
-        ...mapGetters(['getUser']),
+        ...mapGetters(['getUser', 'getWinWidth']),
         isAdmin() {
             return this.getUser?.permissions?.includes(EPermissions.Projects);
         },
@@ -305,6 +308,25 @@ export default defineComponent({
     min-height: 100%;
     align-items: flex-start;
 
+    .nav-bar {
+        margin: 0 12px 0 0;
+        max-width: 196px;
+    }
+
+    .filters {
+        display: flex;
+        margin: 0 0 12px 0;
+        align-items: center;
+
+        .ui-select {
+            margin: 0 12px;
+        }
+
+        .ui-button {
+            width: 96px;
+        }
+    }
+
     .menu {
         margin: 0 12px 0 0;
         min-width: 215px;
@@ -316,6 +338,40 @@ export default defineComponent({
         grid-template-columns: 1fr 1fr 1fr;
         column-gap: 12px;
         row-gap: 12px;
+    }
+
+    @media (max-width: 1140px) {
+        .grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    @media (max-width: 840px) {
+        display: block;
+        padding: 0 5%;
+
+        .nav-bar {
+            margin: 0 0 16px 0;
+            min-width: 100%;
+        }
+    }
+
+    @media (max-width: 640px) {
+        .filters {
+            display: block;
+
+            .ui-select {
+                margin: 12px 0;
+            }
+
+            .ui-button {
+                width: 100%;
+            }
+        }
+
+        .grid {
+            grid-template-columns: 1fr;
+        }
     }
 }
 

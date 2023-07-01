@@ -1,28 +1,36 @@
 <template>
-    <div :class="['activities', { active }]" ref="activities">
+    <div :class="['activities', { active }]" ref="activities" v-if="getWinWidth < 740 ? miniActive : true">
         <Transition name="activities">
-            <div :class="['data', { blur: active }]" v-if="track?.id || list?.length > 0"
+            <div :class="['data', { blur: active || getWinWidth < 740 }]" v-if="track?.id || list?.length > 0"
                 @click="open($event, 'activities', () => active = true, () => active = false)"
             >
                 <Activity :show-buttons="active" :content="{
                     ...(track?.id ? track : list[0]),
                     type: active ? 'default' : 'mini'
                 }"/>
-    
-                <ScrollBar :max-height="'256px'" v-if="active && list?.length > (track.id ? 0 : 1)">
-                    <Transition name="fadeHeight">
-                        <div class="list">
-                            <div>
-                                <Activity v-for="(activity, idx) in list.slice(track?.id ? 0 : 1)" :key="idx" :show-buttons="true"
-                                    :content="activity"
-                                />
+
+                <AnimationHeight :showed="active && list?.length > (track?.id ? 0 : 1)">
+                    <ScrollBar max-height="60vh">
+                        <Transition name="fadeHeight">
+                            <div class="list">
+                                <div>
+                                    <Activity v-for="(activity, idx) in list.slice(track?.id ? 0 : 1)" :key="idx" :show-buttons="true"
+                                        :content="activity"
+                                    />
+                                </div>
                             </div>
-                        </div>
-                    </Transition>
-                </ScrollBar>
+                        </Transition>
+                    </ScrollBar>
+                </AnimationHeight>
+    
             </div>
         </Transition>
     </div>
+
+    <Icon name="music-note" v-if="getWinWidth < 740 && (track?.id || list?.length > 0)"
+        :style="`margin: 0 0 0 12px; ${miniActive ? 'color: var(--main-color);' : ''}`"
+        @click="miniActive = !miniActive"
+    />
 </template>
 
 <script lang="ts" setup>
@@ -31,6 +39,8 @@ import Activity, { type IContent } from '../content/Activity.vue';
 
 import ScrollBar from '../content/ScrollBar.vue';
 
+import AnimationHeight from '../animations/Height.vue';
+
 </script>
 
 <script lang="ts">
@@ -38,6 +48,7 @@ import ScrollBar from '../content/ScrollBar.vue';
 import { defineComponent, PropType } from 'vue';
 
 import { time } from '../../libs/utils';
+import { mapGetters } from 'vuex';
 
 type TTrack = {
     id?: string;
@@ -53,10 +64,13 @@ type TTrack = {
 
 export default defineComponent({
     name: 'HeaderActivities',
-    computed: {},
+    computed: {
+        ...mapGetters(['getWinWidth'])
+    },
     // props: {},
     data: () => ({
         active: false,
+        miniActive: false,
         track: {} as IContent,
         list: [] as Array<IContent>,
         timer: {} as NodeJS.Timeout
@@ -258,16 +272,11 @@ export default defineComponent({
 
     &.active {
         .data {
+            cursor: auto;
             padding: 12px;
             top: calc(50% - 24px);
             left: -12px;
             border-color: var(--background-secondary);
-        }
-    }
-
-    &.active {
-        .data {
-            cursor: auto;
 
             &::before {
                 opacity: .5;
@@ -314,6 +323,21 @@ export default defineComponent({
         }
     }
 
+    @media (max-width: 740px) {
+        margin: 0;
+        position: absolute;
+        top: 72px;
+        left: 50% !important;
+        transform: translateX(-50%);
+
+        .data {
+            padding: 12px !important;
+            min-width: 70vw;
+            position: relative;
+            top: auto !important;
+            left: auto !important;
+        }
+    }
 }
 
 </style>

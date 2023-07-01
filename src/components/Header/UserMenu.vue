@@ -409,6 +409,21 @@ export default defineComponent({
             }
         }
     }
+
+    @media (max-width: 740px) {
+        &.active {
+            min-width: auto;
+
+            .data {
+                min-width: 196px;
+                right: -64px;
+            }
+        }
+
+        .data {
+            z-index: 1;
+        }
+    }
 }
 
 </style>

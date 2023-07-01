@@ -93,7 +93,7 @@ export default defineComponent({
         .btn {
             cursor: pointer;
             display: flex;
-            margin: 0 12px 0 0;
+            margin: 0 2px 0 0;
             padding: 8px 0;
             width: 100%;
             position: relative;

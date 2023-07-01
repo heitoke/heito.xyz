@@ -7,10 +7,10 @@
             </div>
         </div>
 
-        <div class="grid" style="display: grid; grid-template-columns: repeat(2, calc(100% / 2));">
-            <div style="display: flex; margin: 0 16px 0 0; flex-direction: column; justify-content: space-between;">
+        <div class="grid">
+            <div class="tops">
                 <section class="recently">
-                    <header>
+                    <header style="display: flex;">
                         <Text class="title" text="Recently"/>
 
                         <Skeleton style="width: 24px; height: 24px;" :show="!recently.loading && recently.list.length > 0">
@@ -21,7 +21,7 @@
                         </Skeleton>
                     </header>
 
-                    <CarouselTab :gap="12" :column="2" v-if="!recently.loading && recently.list.length > 0">
+                    <CarouselTab :gap="12" :column="getWinWidth > 740 ? 2 : 1" v-if="!recently.loading && recently.list.length > 0">
                         <Track v-for="track of recently.list" :key="track.id"
                             :track="(track as ITrack)"
                             style="margin: 4px 0;"
@@ -42,7 +42,7 @@
                         </Skeleton>
                     </header>
 
-                    <CarouselTab :gap="12" :column="2" v-if="!top.tracks.loading && top.tracks.list.length > 0">
+                    <CarouselTab :gap="12" :column="getWinWidth > 740 ? 2 : 1" v-if="!top.tracks.loading && top.tracks.list.length > 0">
                         <Track v-for="track of top.tracks.list" :key="track.id"
                             :track="track"
                             style="margin: 4px 0;"
@@ -64,7 +64,7 @@
                     </Skeleton>
                 </header>
 
-                <CarouselTab :gap="12" :column="3" v-if="!top.artists.loading && top.artists.list.length > 0">
+                <CarouselTab :gap="12" :column="getWinWidth > 540 ? 3 : 2" v-if="!top.artists.loading && top.artists.list.length > 0">
                     <Artist v-for="artist of top.artists.list" :key="artist.id"
                         :artist="artist"
                         style="margin: 2px 0;"
@@ -119,15 +119,17 @@ import Playlist from '../../components/cards/music/Playlist.vue';
 
 import { defineComponent, PropType } from 'vue';
 
-import { mapActions } from 'vuex';
+import { mapActions, mapGetters } from 'vuex';
 
 import Music, { IArtist, IPlaylist, IRecentlyTrack, ITrack } from '../../libs/api/routes/music';
 
 import type { IScrollBar } from '../../components/content/ScrollBar.vue';
 
 export default defineComponent({
-    name: "MusicPage",
-    computed: {},
+    name: 'MusicPage',
+    computed: {
+        ...mapGetters(['getWinWidth'])
+    },
     props: {
         scrollProps: {
             type: Object as PropType<IScrollBar>
@@ -247,6 +249,18 @@ export default defineComponent({
         border: 3px dashed var(--main-color-alt);
     }
 
+    .grid {
+        display: grid;
+        grid-template-columns: repeat(2, calc(100% / 2));
+    }
+
+    .tops {
+        display: flex;
+        margin: 0 16px 0 0;
+        flex-direction: column;
+        justify-content: space-between;
+    }
+
     .title {
         font-size: 24px;
         font-weight: 600;
@@ -275,6 +289,73 @@ export default defineComponent({
         ul {
             display: grid;
             grid-template-columns: repeat(6, calc(100% / 6));
+        }
+    }
+
+    @media (max-width: 1040px) {
+        .grid {
+            display: block;
+        }
+
+        .tops {
+            display: block;
+            margin: 0;
+        }
+
+        .top {
+            margin: 0 !important;
+        }
+
+        section {
+            header {
+                margin: 12px 0;
+            }
+        }
+
+        section.playlists {
+            ul {
+                display: grid;
+                grid-template-columns: repeat(5, calc(100% / 5));
+            }
+        }
+    }
+
+    @media (max-width: 840px) {
+        section.playlists {
+            ul {
+                display: grid;
+                grid-template-columns: repeat(4, calc(100% / 4));
+            }
+        }
+    }
+
+    @media (max-width: 740px) {
+        padding: 0 5%;
+
+        section {
+            header {
+                display: block;
+
+                .ui-select {
+                    margin: 12px 0 0 0;
+                }
+            }
+        }
+
+        section.playlists {
+            ul {
+                display: grid;
+                grid-template-columns: repeat(3, calc(100% / 3));
+            }
+        }
+    }
+
+    @media (max-width: 540px) {
+        section.playlists {
+            ul {
+                display: grid;
+                grid-template-columns: repeat(2, calc(100% / 2));
+            }
         }
     }
 }

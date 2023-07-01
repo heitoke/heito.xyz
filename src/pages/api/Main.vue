@@ -1,8 +1,8 @@
 <template>
     <div class="api">
-        <NavBar style="max-width: 215px; min-width: 215px;"
+        <NavBar
             :default-id="getButtons.findIndex(b => b.value === getCategoty?.name)"
-            :orientation="'vertical'"
+            :orientation="getWinWidth > 740 ? 'vertical' : 'horizontal'"
             :menu="getButtons"
             @select="$router.push(`/api/${$event.value}`)"
         />
@@ -85,6 +85,7 @@
                 <Alert v-else/>
             </Transition>
         </main>
+
         <main v-else>
             We could not find such an API
         </main>
@@ -124,7 +125,7 @@ export default defineComponent({
     name: 'APIPage',
     components: {},
     computed: {
-        ...mapGetters([]),
+        ...mapGetters(['getWinWidth']),
         getCategories(): Array<ICategory> {
             return categories || [];
         },
@@ -197,6 +198,11 @@ export default defineComponent({
     margin: 32px 0 0 0;
     padding: 0 10%;
     position: relative;
+
+    .nav-bar {
+        max-width: 215px;
+        min-width: 215px;
+    }
 
     main {
         margin: 0 0 0 16px;
@@ -426,6 +432,19 @@ export default defineComponent({
                     transition: .2s;
                 }
             }
+        }
+    }
+
+    @media (max-width: 740px) {
+        display: block;
+        padding: 0 5%;
+
+        .nav-bar {
+            max-width: 100%;
+        }
+    
+        main {
+            margin: 16px 0 0 0;
         }
     }
 }

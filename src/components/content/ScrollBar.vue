@@ -1,6 +1,6 @@
 <template>
     <div class="scrollbar">
-        <div scrollbar-body @scroll="setScrollHeight">
+        <div scrollbar-body :style="{ maxHeight }" @scroll="setScrollHeight">
             <div scrollbar-content>
                 <slot
                     :toScroll="toScroll"
@@ -54,6 +54,10 @@ export default defineComponent({
         boost: {
             type: Number,
             default: 10.5
+        },
+        maxHeight: {
+            type: String,
+            default: '100%'
         }
     },
     data: () => ({

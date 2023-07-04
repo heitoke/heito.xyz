@@ -6,6 +6,12 @@ export default defineNuxtConfig({
     css: [
         '~/assets/styles/root.scss'
     ],
+    components: [
+        {
+            path: '~/components/UI',
+            pathPrefix: false
+        }
+    ],
     modules: ['@pinia/nuxt'],
     runtimeConfig: {
         public: {

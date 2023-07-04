@@ -62,3 +62,36 @@ export interface IUser {
     updatedAt?: Date;
     createdAt?: Date;
 }
+
+export const listPermissions = [
+    {
+        label: 'Self',
+        text: 'Manage yourself',
+        value: EPermissions.Self,
+        icon: 'heart'
+    },
+    {
+        label: 'Users',
+        text: 'Allows you to manage users',
+        value: EPermissions.Users,
+        icon: 'user-circle'
+    },
+    {
+        label: 'Projects',
+        text: 'Allows you to manage projects',
+        value: EPermissions.Projects,
+        icon: 'lab'
+    },
+    {
+        label: 'Blogs',
+        text: 'Allows you to manage blogs',
+        value: EPermissions.Blogs,
+        icon: 'quill'
+    },
+    {
+        label: 'Site',
+        text: 'Allows you to manage the site',
+        value: EPermissions.Site,
+        icon: 'damage-void'
+    }
+] as Array<IButtonPermission>;

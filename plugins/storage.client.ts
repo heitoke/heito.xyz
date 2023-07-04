@@ -25,7 +25,7 @@ let local = {},
     session = {};
 
 export default defineNuxtPlugin({
-    name: 'my-plugin',
+    name: 'storage',
     parallel: true,
     async setup(nuxtApp) {
         function getStorage(storage: TStorage) {

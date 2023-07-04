@@ -90,7 +90,7 @@ class API implements IAPI {
                 result = await res.json(),
                 props = { ...result };
 
-            if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+            if (props?.token?.guast && process.client) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
 
             delete props['result'];
 
@@ -127,7 +127,7 @@ export default defineNuxtPlugin({
     name: 'api',
     parallel: true,
     async setup(nuxtApp) {
-        const api = new API(nuxtApp.$config.public.apiURL || '', cookies.get('HX_AT') || cookies.get('HX_GUAST') || '');
+        const api = new API(nuxtApp.$config.public.apiURL || '', cookies?.get('HX_AT') || cookies?.get('HX_GUAST') || '');
 
         return { provide: { api } };
     }

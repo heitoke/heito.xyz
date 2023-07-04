@@ -22,7 +22,7 @@ class Cookies {
             date.setTime(date.getTime() + (options.days * 24 * 60 * 60 * 1000));
             options['expires'] = date.toUTCString();
         }
-      
+
         let updatedCookie = encodeURIComponent(name) + '=' + encodeURIComponent(value);
       
         for (let optionKey in options) {
@@ -40,6 +40,8 @@ class Cookies {
     }
 
     get(name: string) {
+        if (!process.client) return undefined;
+        
         const matches = document.cookie.match(new RegExp('(?:^|; )' + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + '=([^;]*)'));
     
         return matches ? decodeURIComponent(matches[1]) : undefined;

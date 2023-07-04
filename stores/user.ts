@@ -1,19 +1,19 @@
 import { defineStore } from 'pinia';
 
-import { IUser } from 'types/user';
+import { IUser } from 'types/api/user';
 
-export const useTestStore = defineStore('test', {
+export const useUserStore = defineStore('user', {
     state: () => ({
         user: {} as IUser
     }),
     actions: {
-        setUser(user: IUser) {
+        set(user: IUser) {
             this.user = user;
         }
     },
     getters: {
-        getUser(): IUser {
-            return this.user;
+        getUser(state): IUser {
+            return state.user;
         }
     }
 });

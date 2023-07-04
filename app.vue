@@ -1,27 +1,29 @@
 <template>
-    <div>
-        hello
-    </div>
+    <NuxtLayout>
+        <NuxtPage class="page"/>
+    </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
 
+// import { useUserStore } from '~/stores/user';
+
 const { $local } = useNuxtApp();
 
-if (process.client) {
+function initCustomization() {
     const
         html = document.querySelector('html')!,
         style = document.documentElement.style,
         theme = $local.get('theme'),
         color = $local.get('color');
-
-
+    
+    
     // * Theme
     if (!theme) $local.set('theme', 'dark');
-
+    
     html.setAttribute('theme', $local.get('theme') as string || 'dark');
-
-
+    
+    
     // * Color
     if (color) {
         style.setProperty('--main-color', color as string);
@@ -30,13 +32,32 @@ if (process.client) {
         $local.set('color', '#FFBF34');
     }
     
-
+    
     // * Effects
     html?.classList[$local.params?.effect === 'transparent' ? 'add' : 'remove']('no-blur');
         
     style.setProperty('--blur', `${$local.params?.blur || 5}px`);
     style.setProperty('--transparent', colors.addAlpha('#010101', $local.params?.transparent as number));
 }
+
+// async function initUser() {}
+
+// async function initConfig() {}
+
+
+// * Meta
+useHead({
+    titleTemplate: (title) => {
+        return (title ? `${title} | ` : '') + 'heito.xyz';
+    }
+})
+
+
+onMounted(() => {
+    // const user = useUserStore();
+
+    initCustomization();
+});
 
 
 </script>

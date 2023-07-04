@@ -1,0 +1,27 @@
+{
+  "name": "heito.xyz",
+  "private": true,
+  "version": "0.0.41",
+  "scripts": {
+    "build": "nuxt build",
+    "dev": "nuxt dev",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare"
+  },
+  "author": "heito",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heitoke/heito.xyz"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@pinia/nuxt": "^0.4.11",
+    "@types/node": "^18",
+    "nuxt": "^3.6.1",
+    "sass": "^1.63.6"
+  },
+  "dependencies": {
+    "pinia": "^2.1.4"
+  }
+}

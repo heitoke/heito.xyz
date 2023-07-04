@@ -29,3 +29,11 @@ Locally preview production build:
 ```bash
 npm run preview
 ```
+
+## ENV File
+
+Create ` .env ` file.
+
+```ts
+API_URL=<string>
+```

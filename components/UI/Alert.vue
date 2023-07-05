@@ -20,10 +20,7 @@ const isSlot = computed(() => {
 });
 
 const props = defineProps({
-    hover: {
-        type: Boolean,
-        default: false
-    },
+    hover: { type: Boolean, default: false },
     type: {
         type: String as PropType<'default' | 'mini'>,
         default: () => 'default'

@@ -19,18 +19,18 @@ const isSlot = computed(() => {
 });
 
 const props = defineProps({
-    value: {
-        type: Boolean
-    }
+    value: { type: Boolean }
 });
 
-const modelValue = ref(false);
+const modelValue = ref<boolean>(false);
 
-modelValue.value = props.value;
+watch(() => props.value, (newValue: boolean) => {
+    modelValue.value = newValue;
+});
 
-// watch(props.value, (newValue: boolean) => {
-//     modelValue.value = newValue;
-// });
+onMounted(() => {
+    modelValue.value = props.value;
+});
 
 </script>
 

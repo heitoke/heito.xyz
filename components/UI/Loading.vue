@@ -13,17 +13,14 @@
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
 const props = defineProps({
-    size: {
-        type: String,
-        default: '48px'
-    },
+    size: { type: String, default: '48px' },
     type: {
         type: String as PropType<'default' | 'circle'>,
         default: () => 'default'
     }
 });
 
-const value = ref('');
+const value = ref<string>('');
 
 const titles = [
     'In search of something...',

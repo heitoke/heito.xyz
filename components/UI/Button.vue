@@ -17,14 +17,8 @@ const props = defineProps({
         type: String as PropType<'default' | 'border'>,
         default: 'border'
     },
-    color: {
-        type: String,
-        default: 'var(--main-color)'
-    },
-    runline: {
-        type: Boolean,
-        default: true
-    }
+    color: { type: String, default: 'var(--main-color)' },
+    runline: { type: Boolean, default: true }
 });
 
 </script>

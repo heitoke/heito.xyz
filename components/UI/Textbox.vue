@@ -21,7 +21,7 @@
             @blur="emit('blur', $event); focus = false"
         ></textarea>
         
-        <div :class="['label', { active: isValid }]" v-show="labelType === 'block'">{{ label }}</div>
+        <div :class="['label',isValid, { active: isValid }]">{{ label }}</div>
     </label>
 </template>
 
@@ -33,9 +33,15 @@ export type TInput = 'text' | 'password' | 'number' | 'area';
 
 export type TLabel = 'block' | 'input';
 
-const root = ref<HTMLElement | null>();
+const root = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['update', 'focus', 'blur']);
+
+const
+    focus = ref<boolean>(false),
+    modelValue = ref<string>(''),
+    error = ref<boolean>(false),
+    labelWidth = ref<number>(0);
 
 const props = defineProps({
     label: { type: String, default: 'Test' },
@@ -43,7 +49,7 @@ const props = defineProps({
         type: String as PropType<TLabel>,
         default: 'block'
     },
-    value: { type: String },
+    value: { type: String, default: '' },
     icon: { type: String },
     text: { type: String },
     type: {
@@ -59,19 +65,12 @@ const props = defineProps({
 });
 
 const isValid = computed(() => {
-    let is = modelValue.value?.length > 0 || focus;
+    const is = modelValue.value?.length > 0 || focus.value;
 
     if (is) setLabelWidth();
 
     return is;
 });
-
-const
-    focus = ref(false),
-    modelValue = ref(''),
-    menu = ref(false),
-    error = ref(false),
-    labelWidth = ref(0);
 
 
 watch(modelValue, (newValue: string) => {
@@ -97,6 +96,8 @@ function setLabelWidth() {
 
 onMounted(() => {
     modelValue.value = props.value || '';
+    console.log(props.value);
+    
 
     if (props.watchValue) watch(props.value, (newValue: any) => {
         modelValue.value = newValue || '';

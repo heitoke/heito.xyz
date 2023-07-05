@@ -4,7 +4,8 @@ export default defineNuxtConfig({
         enabled: true
     },
     css: [
-        '~/assets/styles/root.scss'
+        '~/assets/styles/root.scss',
+        '~/assets/fonts/icons/style.css'
     ],
     components: [
         {

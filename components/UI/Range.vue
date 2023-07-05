@@ -5,14 +5,8 @@
 <script lang="ts" setup>
 
 const props = defineProps({
-    min: {
-        type: Number,
-        default: 1
-    },
-    max: {
-        type: Number,
-        default: 10
-    }
+    min: { type: Number, default: 1 },
+    max: { type: Number, default: 10 }
 });
 
 </script>

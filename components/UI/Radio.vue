@@ -10,21 +10,18 @@
 
 <script lang="ts" setup>
 
-import { defineComponent, PropType } from 'vue';
-
 const props = defineProps({
-    value: {
-        type: Boolean,
-        default: false
-    },
-    name: {
-        type: String
-    }
+    value: { type: Boolean, default: false },
+    name: { type: String }
 });
 
-const id = ref(0);
+const
+    id = ref<number>(0),
+    modelValue = ref<boolean>(false);
 
-const modelValue = ref(false);
+watch(() => props.value, (newValue: boolean) => {
+    modelValue.value = newValue;
+});
 
 onMounted(() => {
     id.value = Date.now() + Math.random();

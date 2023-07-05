@@ -5,10 +5,7 @@
 <script lang="ts" setup>
 
 const props = defineProps({
-    name: {
-        type: String,
-        default: 'pacman'
-    }
+    name: { type: String, default: 'pacman' }
 });
 
 </script>

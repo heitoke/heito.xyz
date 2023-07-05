@@ -12,7 +12,7 @@
 
         <Button>asd</Button>
 
-        <Textbox :text="'testest'"/>
+        <Textbox :value="'testest'" style="margin: 12px 0 0 0;"/>
     </div>
 </template>
 

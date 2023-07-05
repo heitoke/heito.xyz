@@ -5,9 +5,7 @@
 <script lang="ts" setup>
 
 const props = defineProps({
-    text: {
-        type: String
-    }
+    text: { type: String }
 });
 
 const
@@ -16,7 +14,7 @@ const
 
 let timer: NodeJS.Timer;
 
-watch(props.text as any, () => {
+watch(() => props.text as any, () => {
     if (!props.text) return;
 
     n.value = 0;

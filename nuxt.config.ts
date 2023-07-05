@@ -14,6 +14,10 @@ export default defineNuxtConfig({
         }
     ],
     modules: ['@pinia/nuxt'],
+    plugins: ['~/plugins/api/index.ts'],
+    imports: {
+        dirs: ['stores']
+    },
     runtimeConfig: {
         public: {
             apiURL: process.env.API_URL

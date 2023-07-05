@@ -1,16 +1,18 @@
-import { DocumentationAPI } from '../';
+import { DocumentationAPI, type IAPI } from '../';
 
 
-const docs = new DocumentationAPI('logs', {
-    path: '/logs',
-    label: 'Logs',
-    icon: 'book',
-    version: 'disabled'
-});
+// const docs = new DocumentationAPI('logs', {
+//     path: '/logs',
+//     label: 'Logs',
+//     icon: 'book',
+//     version: 'disabled'
+// });
 
 
-class Route {
-    constructor() {}
+export default class Route {
+    private $api: IAPI;
+
+    constructor(api: IAPI) {
+        this.$api = api;
+    }
 }
-
-export default new Route();

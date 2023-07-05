@@ -1,8 +1,16 @@
 import type { IFetch, ICategory, ICategoryOptions, IRoute } from 'types/api';
 
+import Auth from './routes/auth';
+import Blogs from './routes/blogs';
+import Configs from './routes/configs';
+import Logs from './routes/logs';
+import Music from './routes/music';
+import Projects from './routes/projects';
+import Users from './routes/users';
+
 type TE = Promise<[any, number, object]>;
 
-interface IAPI {
+export interface IAPI {
     readonly domain: string;
     readonly accessToken: string;
 
@@ -15,6 +23,14 @@ interface IAPI {
     patch(uri: string, options?: IFetch): TE;
     put(uri: string, options?: IFetch): TE;
     delete(uri: string, options?: IFetch): TE;
+
+    auth: Auth;
+    blogs: Blogs;
+    configs: Configs;
+    logs: Logs;
+    music: Music;
+    projects: Projects;
+    users: Users;
 }
 
 export let categories: Array<ICategory> = [];
@@ -61,11 +77,19 @@ export class DocumentationAPI {
     }
 }
 
-class API implements IAPI {
+export class API implements IAPI {
     domain: string;
     accessToken: string;
 
     categories: Array<ICategory> = categories;
+
+    auth: Auth = new Auth(this);
+    blogs: Blogs = new Blogs(this);
+    configs: Configs = new Configs(this);
+    logs: Logs = new Logs(this);
+    music: Music = new Music(this);
+    projects: Projects = new Projects(this);
+    users: Users = new Users(this);
 
     constructor(domain: string, accessToken: string) {
         this.domain = domain;
@@ -73,28 +97,26 @@ class API implements IAPI {
     }
 
     async fetch(uri: string, { body = {}, method = 'GET', json = true, headers = { 'Content-Type': `application/json` }, token = '' }: IFetch): TE {   
-        const options: RequestInit = {
-            body: method === 'GET' ? undefined : (json ? JSON.stringify(body) : body) as any,
-            headers: {
-                Authorization: `Bearer ${token || this.accessToken}`,
-                ...headers
-            },
-            mode: 'cors',
-            method
-        };
-
         try {
-            const res = await fetch(this.domain + (uri[0] !== '/' ? '/' : '') + uri.slice(1), options);
+            const { data, error } = await useFetch(this.domain + (uri[0] === '/' ? '' : '/') + uri, {
+                body: method === 'GET' ? undefined : (json ? JSON.stringify(body) : body) as any,
+                headers: {
+                    Authorization: `Bearer ${token || this.accessToken}`,
+                    ...headers
+                },
+                mode: 'cors',
+                method
+            });
 
             const
-                result = await res.json(),
+                result = data.value as any,
                 props = { ...result };
 
             if (props?.token?.guast && process.client) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
 
             delete props['result'];
 
-            return [result?.result || result, await res.status, props];
+            return [result?.result || result, error.value?.statusCode || 501, props];
         } catch (error) {
             console.error('ERROR', error);
 

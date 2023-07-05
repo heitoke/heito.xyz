@@ -17,8 +17,8 @@
 
             <div></div>
 
-            <!-- @mouseenter="setToolpic({ text: 'Reload colors' })" -->
             <Icon name="damage-void" style="cursor: pointer;"
+                @mouseenter="toolpics.set({ text: 'Reload colors' })"
                 @click="rollRandomColors"
             />
         </ul>
@@ -43,6 +43,8 @@
 </template>
 
 <script lang="ts" setup>
+
+const toolpics = useToolpicsStore();
 
 const root = ref<HTMLElement | null>(null);
 

@@ -1,4 +1,8 @@
 <template>
+    <ClientOnly>
+        <Notifications/>
+    </ClientOnly>
+
     <NuxtLayout>
         <NuxtPage class="page"/>
     </NuxtLayout>
@@ -6,9 +10,11 @@
 
 <script lang="ts" setup>
 
+import Notifications from '~/components/notifications/Main.vue';
+
 // import { useUserStore } from '~/stores/user';
 
-const { $local } = useNuxtApp();
+const { $local, $api } = useNuxtApp();
 
 function initCustomization() {
     const
@@ -53,7 +59,7 @@ useHead({
 })
 
 
-onMounted(() => {
+onMounted(async () => {
     // const user = useUserStore();
 
     initCustomization();

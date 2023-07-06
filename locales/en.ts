@@ -1,4 +1,4 @@
-import type { ILocale } from './';
+import type { ILocale } from '~/types/locale';
 
 export default {
     global: {

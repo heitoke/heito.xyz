@@ -1,20 +1,43 @@
 <template>
     <ClientOnly>
+        <!-- <Toolpics/> -->
+        <!-- <ContextMenu/> -->
         <Notifications/>
+        <!-- <Windows/> -->
+        <Header/>
     </ClientOnly>
 
     <NuxtLayout>
-        <NuxtPage class="page"/>
+        <ScrollBar v-slot="scrollProps" style="width: 100%">
+            <NuxtPage :scrollProps="scrollProps"
+                :class="['page', { 'to-left': notifications.getActive }]"
+            />
+
+            <div class="go-top" v-show="scrollProps.scroll.top > (winSize[0] / 2)"
+                @click="goTop(scrollProps)"
+            >
+                <Icon name="arrow-up"/>
+            </div>
+        </ScrollBar>
     </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
 
+import Header from '~/components/header/Main.vue';
 import Notifications from '~/components/notifications/Main.vue';
 
-// import { useUserStore } from '~/stores/user';
+import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
 const { $local, $api } = useNuxtApp();
+
+const notifications = useNotificationsStore();
+
+const winSize = computed(() => {
+    if (process.server) return [0, 0];
+
+    return [window?.innerWidth || 0, window?.innerHeight || 0];
+});
 
 function initCustomization() {
     const
@@ -51,6 +74,13 @@ function initCustomization() {
 // async function initConfig() {}
 
 
+function goTop(scrollProps: IScrollBar) {
+    scrollProps.toScroll(0, scrollProps.scroll.top + 50);
+
+    setTimeout(() => scrollProps.toScroll(0, 0), 500);
+}
+
+
 // * Meta
 useHead({
     titleTemplate: (title) => {
@@ -67,3 +97,8 @@ onMounted(async () => {
 
 
 </script>
+
+<style lang="scss" scoped>
+
+
+</style>

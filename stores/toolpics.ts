@@ -4,10 +4,10 @@ export type TToolpicPosition = 'top' | 'left' | 'bottom' | 'right';
 
 export interface IToolpic {
     id?: number;
-    name?: number;
+    name?: string;
     component?: string;
     title?: string;
-    text: string;
+    text?: string;
     event?: Event;
     position?: TToolpicPosition;
     x?: number;

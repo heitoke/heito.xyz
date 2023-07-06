@@ -78,6 +78,10 @@ watch(() => user.getUser._id, (newValue: string) => {
 //     this.$notifications.push(this.getNotification(notification));
 // }
 
+notifications.push({
+    title: 'Hello',
+    color: 'var(--blue)'
+});
 
 function enterNotification(el: Element) {
     setTimeout(() => {

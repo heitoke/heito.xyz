@@ -2,6 +2,7 @@
   "name": "heito.xyz",
   "private": true,
   "version": "0.0.41",
+  "type": "module",
   "scripts": {
     "build": "nuxt build",
     "dev": "nuxt dev --port 3002",
@@ -16,6 +17,7 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
+    "@nuxtjs/i18n": "^8.0.0-beta.12",
     "@pinia/nuxt": "^0.4.11",
     "@types/node": "^18",
     "nuxt": "^3.6.1",

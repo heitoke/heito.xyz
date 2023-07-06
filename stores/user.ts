@@ -1,6 +1,6 @@
-import { defineStore } from 'pinia';
+import { defineStore, acceptHMRUpdate } from 'pinia';
 
-import { IUser } from 'types/api/user';
+import { EPermissions, IUser } from 'types/api/user';
 
 export const useUserStore = defineStore('user', {
     state: () => ({
@@ -9,6 +9,9 @@ export const useUserStore = defineStore('user', {
     actions: {
         set(user: IUser) {
             this.user = user;
+        },
+        getPer(permission: EPermissions) {
+            return this.user?.permissions?.includes(permission) || false;
         }
     },
     getters: {
@@ -17,3 +20,7 @@ export const useUserStore = defineStore('user', {
         }
     }
 });
+
+if (import.meta.hot) {
+    import.meta.hot.accept(acceptHMRUpdate(useUserStore, import.meta.hot));
+}

@@ -13,10 +13,24 @@
         <Button>asd</Button>
 
         <Textbox :value="'testest'" style="margin: 12px 0 0 0;"/>
+
+        <Text :text="$t('global.exit[0]')"/>
+
+        <Button style="width: 128px;" @click="switchLang">Switch lang</Button>
     </div>
 </template>
 
 <script lang="ts" setup>
+
+const { locale, locales, setLocale } = useI18n();
+
+function switchLang() {
+    setLocale(locale.value === 'en' ? 'ru' : 'en');
+}
+
+useSeoMeta({
+    title: 'Home'
+})
 
 </script>
 

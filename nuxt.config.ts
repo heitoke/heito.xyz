@@ -11,9 +11,16 @@ export default defineNuxtConfig({
         {
             path: '~/components/UI',
             pathPrefix: false
+        },
+        {
+            path: '~/components/animation',
+            pathPrefix: true
         }
     ],
-    modules: ['@pinia/nuxt'],
+    modules: [
+        '@pinia/nuxt',
+        '@nuxtjs/i18n'
+    ],
     plugins: ['~/plugins/api/index.ts'],
     imports: {
         dirs: ['stores']
@@ -25,5 +32,24 @@ export default defineNuxtConfig({
     },
     nitro: {
         preset: 'vercel-edge'
+    },
+
+    i18n: {
+        defaultLocale: 'en',
+        langDir: '/locales/',
+        locales: [
+            {
+                code: 'en',
+                iso: 'en-US',
+                name: 'English',
+                file: 'en.ts',
+            },
+            {
+                code: 'ru',
+                iso: 'ru-RU',
+                name: 'Russian',
+                file: 'ru.ts'
+            }
+        ]
     }
 });

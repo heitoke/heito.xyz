@@ -27,7 +27,7 @@ export const useContextMenusStore = defineStore('context-menus', {
         }
     },
     getters: {
-        getListContextMenus(state): IContextMenu[] {
+        getList(state): IContextMenu[] {
             return state.list;
         }
     }

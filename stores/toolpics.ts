@@ -36,7 +36,7 @@ export const useToolpicsStore = defineStore('toolpics', {
         }
     },
     getters: {
-        getListToolpics(state): IToolpic[] {
+        getList(state): IToolpic[] {
             return state.list;
         }
     }

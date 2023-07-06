@@ -1,5 +1,5 @@
 <template>
     <div>
-        <slot/>
+        <Text :text="`Loading`"/>
     </div>
 </template>

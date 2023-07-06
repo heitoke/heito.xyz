@@ -12,6 +12,8 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
+import type { IContextMenuButton } from '~/types/stores/contextMenu';
+
 export interface IMenuButton {
     label: string;
     text: string;
@@ -21,6 +23,8 @@ export interface IMenuButton {
     img: string;
 }
 
+const contextMenu = useContextMenusStore();
+
 const root = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['select']);
@@ -28,7 +32,7 @@ const emit = defineEmits(['select']);
 const props = defineProps({
     label: { type: String },
     value: { type: String },
-    menu: { type: Object as PropType<Array<any>> }, // IContextMenuButton
+    menu: { type: Object as PropType<Array<IContextMenuButton>> },
     position: {
         type: String as PropType<'bottom' | 'top'>,
         default: 'bottom'
@@ -55,44 +59,44 @@ watch(() => props.menu?.length, () => {
 
 
 function open(text: string = '') {
-    // this.closeContextMenu('ui-select');
+    contextMenu.close('ui-select');
 
-    // const regex = new RegExp(text, 'g');
+    const regex = new RegExp(text, 'g');
 
-    // const sort = props.sort ? props.menu?.filter(x => regex.test(x.label) || regex.test(x?.value as any)) : props.menu;
+    const sort = props.sort ? props.menu?.filter(x => regex.test(x.label) || regex.test(x?.value as any)) : props.menu;
 
-    // isOpen.value = false;
+    isOpen.value = false;
 
-    // this.setContextMenu({
-    //     name: 'ui-select',
-    //     position: [props.position, 'center', 'fixed-target'],
-    //     event: root?.value,
-    //     components: sort?.length! < 1 ? [
-    //         {
-    //             name: 'alert',
-    //             component: 'Alert',
-    //             props: {
-    //                 type: 'mini'
-    //             }
-    //         }
-    //     ] : [],
-    //     buttons: sort?.length! < 1 ? [] : sort?.map(btn => {
-    //         return {
-    //             ...btn,
-    //             click: (e: MouseEvent) => {
-    //                 if (btn?.click) btn?.click(e);
+    contextMenu.create({
+        name: 'ui-select',
+        position: [props.position, 'center', 'fixed-target'],
+        event: root?.value!,
+        components: sort?.length! < 1 ? [
+            {
+                name: 'alert',
+                component: 'Alert',
+                props: {
+                    type: 'mini'
+                }
+            }
+        ] : [],
+        buttons: sort?.length! < 1 ? [] : sort?.map(btn => {
+            return {
+                ...btn,
+                click: (e: MouseEvent) => {
+                    if (btn?.click) btn?.click(e);
 
-    //                 selected.value = btn.value as string;
+                    selected.value = btn.value as string;
 
-    //                 emit('select', getItem);
+                    emit('select', getItem);
 
-    //                 this.closeContextMenu('ui-select');
+                    contextMenu.close('ui-select');
 
-    //                 isOpen.value = false;
-    //             }
-    //         }
-    //     })
-    // }); // IContextMenu
+                    isOpen.value = false;
+                }
+            }
+        })
+    });
 }
 
 </script>

@@ -1,3 +1,5 @@
+// import Module from './module';
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
     devtools: {
@@ -19,7 +21,8 @@ export default defineNuxtConfig({
     ],
     modules: [
         '@pinia/nuxt',
-        '@nuxtjs/i18n'
+        // Module,
+        // '@nuxtjs/i18n'
     ],
     plugins: ['~/plugins/api/index.ts'],
     imports: {
@@ -34,35 +37,25 @@ export default defineNuxtConfig({
     //     preset: 'vercel-edge'
     // },
 
-    i18n: {
-        experimental: {
-            jsTsFormatResource: true
-        },
-        precompile: {
-            strictMessage: false,
-            escapeHtml: true
-        },
-        baseUrl: 'http://localhost:3000',
-        lazy: true,
-        defaultLocale: 'en',
-        langDir: 'locales',
-        locales: [
-            {
-                code: 'en',
-                iso: 'en-US',
-                name: 'English',
-                file: 'en.ts',
-            },
-            {
-                code: 'ru',
-                iso: 'ru-RU',
-                name: 'Russian',
-                file: 'ru.ts'
-            }
-        ],
-        dynamicRouteParams: true,
-        detectBrowserLanguage: {
-            useCookie: true
-        }
-    }
+    // i18n: {
+    //     defaultLocale: 'en',
+    //     langDir: 'locales',
+    //     locales: [
+    //         {
+    //             code: 'en',
+    //             iso: 'en-US',
+    //             name: 'English',
+    //             file: 'en.ts',
+    //         },
+    //         {
+    //             code: 'ru',
+    //             iso: 'ru-RU',
+    //             name: 'Russian',
+    //             file: 'ru.ts'
+    //         }
+    //     ],
+    //     detectBrowserLanguage: {
+    //         useCookie: true
+    //     }
+    // }
 });

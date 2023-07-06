@@ -2,8 +2,8 @@
     <div class="main">
         <div class="hello-world">
             <div class="content">
-                <Text class="title" :text="$t('page.main.title')"/>
-                <Text class="text" :text="$t('page.main.text')"/>
+                <Text class="title" :text="'Title'"/>
+                <Text class="text" :text="'Message'"/>
             </div>
 
             <div class="space">

@@ -58,8 +58,8 @@ import type { IContextMenu } from '~/types/stores/contextMenu';
 const
     { $local } = useNuxtApp(),
     user = useUserStore(),
-    windows = useWindowsStore(),
-    { locale, t, locales, setLocale } = useI18n();
+    windows = useWindowsStore();
+    // { locale, t, locales, setLocale } = useI18n();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -84,14 +84,14 @@ const getProfileMenu = computed(() => {
         { separator: true },
         ...(!user.getUser?.isRegistered ? [
             {
-                label: t('global.sign.in'),
+                label: 'Sign in', // t('global.sign.in'),
                 icon: 'hand',
                 click: () => {
                     // this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth' });
                 }
             },
             {
-                label: t('user.create.title[0]'),
+                label: 'Create account', //t('user.create.title[0]'),
                 icon: 'user-circle',
                 click: () => {
                     // this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth', data: 'register' });
@@ -99,7 +99,7 @@ const getProfileMenu = computed(() => {
             }
         ] : [
             {
-                label: t('global.exit[1]'),
+                label: 'Exit', // t('global.exit[1]'),
                 icon: 'exit',
                 class: 'exit',
                 click: async () => {
@@ -157,14 +157,14 @@ const getProfileMenu = computed(() => {
         name: 'header:profile:menu',
         buttons: [
             {
-                label: t('global.settings'),
+                label: 'Settings', // t('global.settings'),
                 icon: 'settings',
                 click: () => {
                     // this.$windows.create({ title: 'Setting', component: 'Setting' });
                 }
             },
             {
-                label: t('global.theme.dark'),
+                label: 'Dark theme', // t('global.theme.dark'),
                 icon: 'sun-moon',
                 value: $local.params?.theme === 'dark',
                 checkbox: (value: boolean) => {
@@ -175,29 +175,29 @@ const getProfileMenu = computed(() => {
                 }
             },
             {
-                label: t('global.lang[1]'),
+                label: 'Language',// t('global.lang[1]'),
                 icon: 'translate',
                 // @ts-ignore
-                text: `${locales.value.find(l => l.code === locale.value).name} (Beta)`,
-                children: {
-                    name: 'header:lang',
-                    title: t('global.lang[1]'),
-                    buttons: Object.keys(locales.value).map(idx => {
-                        const lang = locales.value[Number(idx)] as any;
+                // text: `${locales.value.find(l => l.code === locale.value).name} (Beta)`,
+                // children: {
+                //     name: 'header:lang',
+                //     title: t('global.lang[1]'),
+                //     buttons: Object.keys(locales.value).map(idx => {
+                //         const lang = locales.value[Number(idx)] as any;
 
-                        return {
-                            label: lang.name,
-                            text:  locale.value === lang.code ? 'Used' : '',
-                            icon: 'translate',
-                            click: () => {
-                                setLocale(lang.code);
+                //         return {
+                //             label: lang.name,
+                //             text:  locale.value === lang.code ? 'Used' : '',
+                //             icon: 'translate',
+                //             click: () => {
+                //                 // setLocale(lang.code);
                         
-                                $local.set('lang', lang.code);
-                                document.querySelector('html')?.setAttribute('lang', lang.code);
-                            }
-                        }
-                    })
-                }
+                //                 $local.set('lang', lang.code);
+                //                 document.querySelector('html')?.setAttribute('lang', lang.code);
+                //             }
+                //         }
+                //     })
+                // }
             },
             ...(user.getUser?._id ? userButtons : [])
         ]

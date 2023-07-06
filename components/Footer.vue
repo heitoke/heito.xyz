@@ -40,7 +40,7 @@
 
 const { $local } = useNuxtApp();
 
-const { locale, locales, availableLocales, setLocale } = useI18n();
+// const { locale, locales, availableLocales, setLocale } = useI18n();
 
 const groups = [
     {
@@ -68,30 +68,30 @@ const groups = [
 ];
 
 const getLangName = computed(() => {
-    return locale.value;
+    return 'en'; //locale.value;
 });
 
 const getListLangs = computed(() => {
     let list: any[] = [];
 
-    for (let lang of locales.value) {
-        list.push({
-            label: (lang as any).name,
-            text:  locale.value === (lang as any).code ? 'Used' : '',
-            icon: 'translate',
-            value: (lang as any).code,
-            click: () => {
-                setLang((lang as any).code);
-            }
-        });
-    }
+    // for (let lang of locales.value) {
+    //     list.push({
+    //         label: (lang as any).name,
+    //         text:  locale.value === (lang as any).code ? 'Used' : '',
+    //         icon: 'translate',
+    //         value: (lang as any).code,
+    //         click: () => {
+    //             setLang((lang as any).code);
+    //         }
+    //     });
+    // }
 
     return list;
 });
 
 
 function setLang(name: string) {
-    setLocale(name);
+    // setLocale(name);
     
     $local.set('lang', name);
     document.querySelector('html')?.setAttribute('lang', name);

@@ -17,7 +17,6 @@
   },
   "devDependencies": {
     "@nuxt/devtools": "latest",
-    "@nuxtjs/i18n": "npm:@nuxtjs/i18n-edge",
     "@pinia/nuxt": "^0.4.11",
     "@types/node": "^18",
     "nuxt": "^3.6.1",

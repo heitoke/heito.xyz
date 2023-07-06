@@ -1,43 +1,87 @@
 <template>
     <div class="main">
-        Main Page
+        <div class="hello-world">
+            <div class="content">
+                <Text class="title" :text="$t('page.main.title')"/>
+                <Text class="text" :text="$t('page.main.text')"/>
+            </div>
 
-        <Alert :type="'mini'">das</Alert>
-
-        <Checkbox>hello</Checkbox>
-
-        <Icon/>
-
-        <Loading/>
-
-        <Button>asd</Button>
-
-        <Textbox :value="'testest'" style="margin: 12px 0 0 0;"/>
-
-        <Text :text="$t('global.exit[0]')"/>
-
-        <Button style="width: 128px;" @click="switchLang">Switch lang</Button>
+            <div class="space">
+                The planets are not working at the moment, but soon...
+            </div>
+        </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 
-const { locale, locales, setLocale } = useI18n();
-
-function switchLang() {
-    setLocale(locale.value === 'en' ? 'ru' : 'en');
-}
-
-useSeoMeta({
-    title: 'Home'
-})
+// import SpaceOfStars from '../components/content/SpaceOfStars.vue';
 
 </script>
 
 <style lang="scss" scoped>
 
-.main {
-    padding: 12px;
+.page.main {
+    padding: 0 !important;
+
+    .hello-world {
+        width: 100%;
+        height: 100%;
+        // position: relative;
+
+        .content {
+            position: absolute;
+            left: 5%;
+            bottom: 5%;
+            z-index: 1;
+
+            .title {
+                font-size: clamp(32px, calc(var(--font) - 4vmin), 90px);
+                text-transform: uppercase;
+                letter-spacing: .07em;
+            }
+
+            .text {
+                max-width: 35vw;
+                font-size: clamp(16px, calc(var(--font) - 8vmin), 48px);
+                letter-spacing: .03em;
+            }
+        }
+    }
+
+    .space {
+        padding: 24px;
+        max-width: 70%;
+        width: auto;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        color: var(--text-secondary);
+        font-size: 20px;
+        border: 3px dashed var(--background-secondary);
+        border-radius: 5px;
+        transform: translate(-50%, -50%);
+    }
+
+    @media (max-width: 740px) {
+        .hello-world {
+            .content {
+                .text {
+                    max-width: 70vw;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 540px) {
+        .hello-world {
+            .content {
+                .text {
+                    max-width: 90vw;
+                }
+            }
+        }
+    }
 }
 
 </style>

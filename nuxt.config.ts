@@ -30,9 +30,9 @@ export default defineNuxtConfig({
             apiURL: process.env.API_URL
         }
     },
-    nitro: {
-        preset: 'vercel-edge'
-    },
+    // nitro: {
+    //     preset: 'vercel-edge'
+    // },
 
     i18n: {
         defaultLocale: 'en',

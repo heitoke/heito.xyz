@@ -50,6 +50,7 @@
                         <Textbox :label="'Search'" :autofocus="true"
                             @input="search.text = $event.target?.value; searchUsers()"
                         />
+                        
                         <!-- <div class="result blur">
                             <ScrollBar :max-height="'50vh'">
                                 <User v-for="user of search.users" :key="user._id" :user="user"/>
@@ -80,12 +81,12 @@
                 </Transition>
             </div> -->
 
-            <!-- <div :class="['notifications', { 'new-message': notifications.getList?.filter((n: any) => !n?.hide)?.length > 0 }]"
+            <div :class="['notifications', { 'new-message': notifications.getList?.filter((n: any) => !n?.hide)?.length > 0 }]"
                 @click="notifications.setActive(!notifications.getActive)"
-                @mouseenter="setToolpic({ name: 'notification', title: $lang.params.global.notification[0], position: 'bottom' })"
+                @mouseenter="toolpics.set({ name: 'notification', title: $t('global.notification[0]'), position: 'bottom' })"
             >
                 <Icon name="notification"/>
-            </div> -->
+            </div>
 
             <UserMenu/>
 

@@ -173,4 +173,53 @@ onMounted(async () => {
     }
 }
 
+body {
+    max-width: 100vw;
+    // min-width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    transition: all .2s;
+    overflow: hidden;
+}
+
+.start-loading {
+    &-enter-active,
+    &-leave-active {
+        opacity: 0;
+    }
+}
+
+
+* {
+    scrollbar-width: none;
+    
+    &::-webkit-scrollbar-button {
+        background-repeat: no-repeat;
+        width: 0px !important;
+        height: 0px !important;
+    }
+
+    &::-webkit-scrollbar-track {
+        background-color: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        -webkit-border-radius: 0px;
+        border-radius: 0px;
+        background-color: var(--background-darked);
+    }
+
+    &::-webkit-resizer {
+        background-repeat: no-repeat;
+        width: thin !important;
+        height: 0px !important;
+    }
+
+    &::-webkit-scrollbar {
+        width: 0px !important;
+        background: var(--T);
+    }
+}
+
 </style>

@@ -35,6 +35,15 @@ export default defineNuxtConfig({
     // },
 
     i18n: {
+        experimental: {
+            jsTsFormatResource: true
+        },
+        precompile: {
+            strictMessage: false,
+            escapeHtml: true
+        },
+        baseUrl: 'http://localhost:3000',
+        lazy: true,
         defaultLocale: 'en',
         langDir: 'locales',
         locales: [
@@ -50,6 +59,10 @@ export default defineNuxtConfig({
                 name: 'Russian',
                 file: 'ru.ts'
             }
-        ]
+        ],
+        dynamicRouteParams: true,
+        detectBrowserLanguage: {
+            useCookie: true
+        }
     }
 });

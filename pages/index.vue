@@ -17,6 +17,10 @@
 
 // import SpaceOfStars from '../components/content/SpaceOfStars.vue';
 
+useSeoMeta({
+    title: 'Home'
+});
+
 </script>
 
 <style lang="scss" scoped>

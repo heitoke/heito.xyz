@@ -36,7 +36,7 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-const { $local, $api } = useNuxtApp();
+const { $local, $api, $win } = useNuxtApp();
 
 const notifications = useNotificationsStore();
 
@@ -100,6 +100,8 @@ onMounted(async () => {
     // const user = useUserStore();
 
     initCustomization();
+
+    $win.init();
 });
 
 

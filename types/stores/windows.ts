@@ -12,7 +12,7 @@ export interface IWindow {
     id?: number;
     title?: string;
     message?: string;
-    component: Component | string;
+    component: string;
     icon?: string;
     color?: string;
     position?: TPosition;

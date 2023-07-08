@@ -2,13 +2,13 @@
     <div :class="['account', { active }]" ref="root">
         <div :class="['data', { blur: active }]">
             <div class="header"
+                @click="active ? openProfile() : false"
                 :style="{
                     padding: active ? `${user.getUser?.banner ? 20 : 16}px 8px` : undefined,
                     '--color': user.getUser?.color || 'var(--main-color)',
                     '--image': `url('${user.getUser?.banner || null}')`
                 }"
             >
-            <!-- @click="active ? $windows.create({ component: 'User', data: user.getUser?._id }) : false" -->
                 <Transition name="account-username">
                     <div class="username" v-show="active"
                         :style="{
@@ -17,9 +17,8 @@
                     >{{ user.getUser?.nickname || user.getUser?.username || user.getUser?._id || 'Guest' }}</div>
                 </Transition>
 
-                <!-- $windows.create({ component: 'User', data: user.getUser?._id }) -->
                 <div :class="['avatar', { 'a-loading': !user.getUser?._id }]"
-                    @click.prevent.stop="active ? null : open($event, root, () => active = true, () => active = false)"
+                    @click.prevent.stop="active ? openProfile() : open($event, root, () => active = true, () => active = false)"
                 >
                     <div :style="{ '--avatar': `url('${user.getUser?.avatar || getAvatar({ nameId: user.getUser?._id })}')` }" v-if="user.getUser?._id"></div>
                     
@@ -161,7 +160,7 @@ const getProfileMenu = computed(() => {
                 label: t('global.settings'),
                 icon: 'settings',
                 click: () => {
-                    // this.$windows.create({ title: 'Setting', component: 'Setting' });
+                    windows.create({ title: 'setting', component: 'Setting' });
                 }
             },
             {
@@ -179,7 +178,7 @@ const getProfileMenu = computed(() => {
                 label: t('global.lang[1]'),
                 icon: 'translate',
                 // @ts-ignore
-                // text: `${locales.value.find(l => l.code === locale.value).name} (Beta)`,
+                text: `${$langs.list.find(l => l.code === locale.value).names[locale.value]} (Beta)`,
                 children: {
                     name: 'header:lang',
                     title: t('global.lang[1]'),
@@ -197,19 +196,6 @@ const getProfileMenu = computed(() => {
                                 document.querySelector('html')?.setAttribute('lang', lang.code);
                             }
                         }
-                        // const lang = locales.value[Number(idx)] as any;
-
-                        // return {
-                        //     label: lang.name,
-                        //     text:  locale.value === lang.code ? 'Used' : '',
-                        //     icon: 'translate',
-                        //     click: () => {
-                        //         // setLocale(lang.code);
-                        
-                        //         $local.set('lang', lang.code);
-                        //         document.querySelector('html')?.setAttribute('lang', lang.code);
-                        //     }
-                        // }
                     })
                 }
             },
@@ -231,6 +217,13 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
     }
 
     setTimeout(() => close(), 10);
+}
+
+function openProfile() {
+    windows.create({
+        component: 'User',
+        data: user.getUser?._id
+    });
 }
 
 </script>

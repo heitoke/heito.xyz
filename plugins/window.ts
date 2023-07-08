@@ -4,6 +4,8 @@ interface IWin {
         height: number;
     };
 
+    init(): void;
+
     set(width: number, height: number): void;
 }
 
@@ -24,7 +26,7 @@ export default defineNuxtPlugin({
             if (height >= 0) size.height = height;
         }
 
-        if (process.client) {
+        function init() {
             const s = () => set(window.innerWidth, window.innerHeight);
 
             s();
@@ -36,6 +38,7 @@ export default defineNuxtPlugin({
             provide: {
                 win: {
                     size,
+                    init,
                     set
                 }
             }

@@ -13,7 +13,7 @@
                     >
                         <span>{{ route?.meta?.title || route.name }}</span>
 
-                        <Icon :name="route.meta?.icon as string" v-if="route.meta?.icon"/>
+                        <Icon :name="route.meta?.icon as string"/>
                     </li>
                 </ul>
 

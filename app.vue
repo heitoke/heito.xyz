@@ -13,13 +13,13 @@
                 :class="['page', { 'to-left': notifications.getActive }]"
             />
 
-            <div class="go-top" v-show="scrollProps.scroll.top > (winSize[0] / 2)"
+            <div class="go-top" v-show="scrollProps.scroll.top > ($win.size?.width / 2)"
                 @click="goTop(scrollProps)"
             >
                 <Icon name="arrow-up"/>
             </div>
 
-            <Footer/>
+            <Footer v-if="!($route.meta.hide as any)?.includes('footer')"/>
         </ScrollBar>
     </NuxtLayout>
 </template>
@@ -45,12 +45,6 @@ const
     superMode = ref<boolean>(false),
     blocked = ref<boolean>(false),
     loading = ref<boolean>(true);
-
-const winSize = computed(() => {
-    if (process.server) return [0, 0];
-
-    return [window?.innerWidth || 0, window?.innerHeight || 0];
-});
 
 function initCustomization() {
     const

@@ -96,8 +96,6 @@ function setLabelWidth() {
 
 onMounted(() => {
     modelValue.value = props.value || '';
-    console.log(props.value);
-    
 
     if (props.watchValue) watch(props.value, (newValue: any) => {
         modelValue.value = newValue || '';

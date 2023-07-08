@@ -2,13 +2,6 @@
     <div class="main">
         <div class="hello-world">
             <div class="content">
-                <select id="locale-select" v-model="$i18n.locale">
-                    <option v-for="(locale, index) in $i18n.availableLocales"
-                        :key="index"
-                        :value="locale"
-                    >{{ locale }}</option>
-                </select>
-
                 <Text class="title" :text="$t('page.main.title')"/>
                 <Text class="text" :text="$t('page.main.text')"/>
             </div>
@@ -26,6 +19,12 @@
 
 useSeoMeta({
     title: 'Home'
+});
+
+definePageMeta({
+    title: 'Main',
+    icon: 'earth',
+    hide: ['footer']
 });
 
 </script>

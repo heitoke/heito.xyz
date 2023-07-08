@@ -44,6 +44,7 @@
 
 <script lang="ts" setup>
 
+import { useI18n } from 'vue-i18n';
 import Menu from '~/components/content/Menu.vue';
 
 // import { mapActions, mapGetters } from 'vuex';
@@ -56,10 +57,10 @@ import type { IContextMenu } from '~/types/stores/contextMenu';
 // import type { TLangName } from '../../plugins/langs';
 
 const
-    { $local } = useNuxtApp(),
+    { $local, $langs } = useNuxtApp(),
     user = useUserStore(),
-    windows = useWindowsStore();
-    // { locale, t, locales, setLocale } = useI18n();
+    windows = useWindowsStore(),
+    { locale, t, availableLocales } = useI18n();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -84,14 +85,14 @@ const getProfileMenu = computed(() => {
         { separator: true },
         ...(!user.getUser?.isRegistered ? [
             {
-                label: 'Sign in', // t('global.sign.in'),
+                label: t('global.sign.in'),
                 icon: 'hand',
                 click: () => {
                     // this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth' });
                 }
             },
             {
-                label: 'Create account', //t('user.create.title[0]'),
+                label: t('user.create.title[0]'),
                 icon: 'user-circle',
                 click: () => {
                     // this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth', data: 'register' });
@@ -99,7 +100,7 @@ const getProfileMenu = computed(() => {
             }
         ] : [
             {
-                label: 'Exit', // t('global.exit[1]'),
+                label: t('global.exit[1]'),
                 icon: 'exit',
                 class: 'exit',
                 click: async () => {
@@ -157,14 +158,14 @@ const getProfileMenu = computed(() => {
         name: 'header:profile:menu',
         buttons: [
             {
-                label: 'Settings', // t('global.settings'),
+                label: t('global.settings'),
                 icon: 'settings',
                 click: () => {
                     // this.$windows.create({ title: 'Setting', component: 'Setting' });
                 }
             },
             {
-                label: 'Dark theme', // t('global.theme.dark'),
+                label: t('global.theme.dark'),
                 icon: 'sun-moon',
                 value: $local.params?.theme === 'dark',
                 checkbox: (value: boolean) => {
@@ -175,29 +176,42 @@ const getProfileMenu = computed(() => {
                 }
             },
             {
-                label: 'Language',// t('global.lang[1]'),
+                label: t('global.lang[1]'),
                 icon: 'translate',
                 // @ts-ignore
                 // text: `${locales.value.find(l => l.code === locale.value).name} (Beta)`,
-                // children: {
-                //     name: 'header:lang',
-                //     title: t('global.lang[1]'),
-                //     buttons: Object.keys(locales.value).map(idx => {
-                //         const lang = locales.value[Number(idx)] as any;
+                children: {
+                    name: 'header:lang',
+                    title: t('global.lang[1]'),
+                    buttons: $langs.list.map(lang => {
+                        return {
+                            // @ts-ignore
+                            label: lang.names[locale.value],
+                            // @ts-ignore
+                            text: locale.value === lang.code ? 'Used' : lang.names[lang.code],
+                            icon: 'translate',
+                            click: () => {
+                                locale.value = lang.code;
 
-                //         return {
-                //             label: lang.name,
-                //             text:  locale.value === lang.code ? 'Used' : '',
-                //             icon: 'translate',
-                //             click: () => {
-                //                 // setLocale(lang.code);
+                                $local.set('lang', lang.code);
+                                document.querySelector('html')?.setAttribute('lang', lang.code);
+                            }
+                        }
+                        // const lang = locales.value[Number(idx)] as any;
+
+                        // return {
+                        //     label: lang.name,
+                        //     text:  locale.value === lang.code ? 'Used' : '',
+                        //     icon: 'translate',
+                        //     click: () => {
+                        //         // setLocale(lang.code);
                         
-                //                 $local.set('lang', lang.code);
-                //                 document.querySelector('html')?.setAttribute('lang', lang.code);
-                //             }
-                //         }
-                //     })
-                // }
+                        //         $local.set('lang', lang.code);
+                        //         document.querySelector('html')?.setAttribute('lang', lang.code);
+                        //     }
+                        // }
+                    })
+                }
             },
             ...(user.getUser?._id ? userButtons : [])
         ]

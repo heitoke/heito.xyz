@@ -26,7 +26,7 @@
                         <li v-for="btn of (getWindowButtons(window) as IButton[])" :key="btn.icon"
                             :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                             @click="btn?.click ? btn?.click($event) : null;"
-                            @mouseenter="btn?.label ? toolpics.set({ title: btn.label, position: winSize[0] > 540 ? 'left' : 'right' }) : null"
+                            @mouseenter="btn?.label ? toolpics.set({ title: btn.label, position: $win.size.width > 540 ? 'left' : 'right' }) : null"
                         >
                             <Icon :name="btn?.icon" :style="{ color: btn?.color }"/>
                         </li>
@@ -46,12 +46,6 @@ import type { IWindow, IButton } from '~/types/stores/windows';
 const
     windows = useWindowsStore(),
     toolpics = useToolpicsStore();
-
-const winSize = computed(() => {
-    if (process.server) return [0, 0];
-
-    return [window?.innerWidth || 0, window?.innerHeight || 0];
-});
 
 function getWindowButtons(window: IWindow): Array<IButton> {
     let closeButton: IButton = {

@@ -1,7 +1,7 @@
 <template>
-    <div :class="['activities', { active }]" ref="root" v-if="winSize[0] < 740 ? miniActive : true">
+    <div :class="['activities', { active }]" ref="root" v-if="$win.size?.width < 740 ? miniActive : true">
         <Transition name="activities">
-            <div :class="['data', { blur: active || winSize[0] < 740 }]" v-if="track?.id || list?.length > 0"
+            <div :class="['data', { blur: active || $win.size?.width < 740 }]" v-if="track?.id || list?.length > 0"
                 @click="open($event, root, () => active = true, () => active = false)"
             >
                 <Activity :show-buttons="active" :content="{
@@ -26,7 +26,7 @@
         </Transition>
     </div>
 
-    <Icon name="music-note" v-if="winSize[0] < 740 && (track?.id || list?.length > 0)"
+    <Icon name="music-note" v-if="$win.size?.width < 740 && (track?.id || list?.length > 0)"
         :style="`margin: 0 0 0 12px; ${miniActive ? 'color: var(--main-color);' : ''}`"
         @click="miniActive = !miniActive"
     />
@@ -53,12 +53,6 @@ type TTrack = {
 }
 
 const root = ref<HTMLElement | null>(null);
-
-const winSize = computed(() => {
-    if (process.server) return [0, 0];
-
-    return [window?.innerWidth || 0, window?.innerHeight || 0];
-});
 
 const
     active = ref<boolean>(false),

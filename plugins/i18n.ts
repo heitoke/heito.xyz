@@ -8,11 +8,42 @@ export default defineNuxtPlugin(({ vueApp }) => {
         legacy: false,
         globalInjection: true,
         locale: 'en',
+        availableLocales: [
+            {
+                code: 'en',
+            },
+            {
+                code: 'ru'
+            }
+        ],
         messages: {
             en: { ...en },
             ru: { ...ru }
         }
-    })
+    });
 
     vueApp.use(i18n);
-})
+
+    return {
+        provide: {
+            langs: {
+                list: [
+                    {
+                        names: {
+                            en: 'English',
+                            ru: 'Английский'
+                        },
+                        code: 'en'
+                    },
+                    {
+                        names: {
+                            en: 'Russian',
+                            ru: 'Русский'
+                        },
+                        code: 'ru'
+                    }
+                ]
+            }
+        }
+    }
+});

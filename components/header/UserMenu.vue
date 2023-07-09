@@ -56,9 +56,10 @@ import type { IContextMenu } from '~/types/stores/contextMenu';
 // import type { TLangName } from '../../plugins/langs';
 
 const
-    { $local, $langs } = useNuxtApp(),
+    { $local, $langs, $api } = useNuxtApp(),
     user = useUserStore(),
     windows = useWindowsStore(),
+    notifications = useNotificationsStore(),
     { locale, t, availableLocales } = useI18n();
 
 const root = ref<HTMLElement | null>(null);
@@ -72,13 +73,13 @@ const getProfileMenu = computed(() => {
             label: 'Sessions',
             icon: 'users',
             click: () => {
-                // this.$windows.create({
-                //     component: 'Sessions',
-                //     data: {
-                //         userId: user.getUser?._id,
-                //         token: ''
-                //     }
-                // });
+                windows.create({
+                    component: 'user/sessions',
+                    data: {
+                        userId: user.getUser?._id,
+                        token: ''
+                    }
+                });
             }
         },
         { separator: true },
@@ -87,14 +88,14 @@ const getProfileMenu = computed(() => {
                 label: t('global.sign.in'),
                 icon: 'hand',
                 click: () => {
-                    // this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth' });
+                    windows.create({ component: 'user/auth' });
                 }
             },
             {
                 label: t('user.create.title[0]'),
                 icon: 'user-circle',
                 click: () => {
-                    // this.$windows.create({ title: this.$lang.params.user.create.title[0], component: 'Auth', data: 'register' });
+                    windows.create({ component: 'user/auth', data: 'register' });
                 }
             }
         ] : [
@@ -103,51 +104,51 @@ const getProfileMenu = computed(() => {
                 icon: 'exit',
                 class: 'exit',
                 click: async () => {
-                    // const { windowId } = this.$windows.create({
-                    //     component: 'Message',
-                    //     data: {
-                    //         title: 'Warning',
-                    //         icon: 'info-circle',
-                    //         text: 'When you log out of the account, the ip from which you are currently sitting will be deleted, you will have to log in again. Do you want to get out?',
-                    //         buttons: [
-                    //             {
-                    //                 label: 'Bye Bye',
-                    //                 color: 'var(--main-color)',
-                    //                 click: async () => {
-                    //                     const [result, logoutStatus] = await Auth.logout();
+                    const { windowId } = windows.create({
+                        component: 'Message',
+                        data: {
+                            title: 'Warning',
+                            icon: 'info-circle',
+                            text: 'When you log out of the account, the ip from which you are currently sitting will be deleted, you will have to log in again. Do you want to get out?',
+                            buttons: [
+                                {
+                                    label: 'Bye Bye',
+                                    color: 'var(--main-color)',
+                                    click: async () => {
+                                        const [result, logoutStatus] = await $api.auth.logout();
 
-                    //                     if (logoutStatus !== 200) return;
+                                        if (logoutStatus !== 200) return;
 
-                    //                     this.$notifications.push({
-                    //                         title: 'Parting words',
-                    //                         message: 'You are logged out',
-                    //                         icon: 'exit',
-                    //                         color: 'var(--yellow)'
-                    //                     });
+                                        notifications.push({
+                                            title: 'Parting words',
+                                            message: 'You are logged out',
+                                            icon: 'exit',
+                                            color: 'var(--yellow)'
+                                        });
 
-                    //                     const [user, status, props] = await Users.me('exit');
+                                        const [userInfo, status, props] = await $api.users.me('exit');
 
-                    //                     if (status !== 200) return;
+                                        if (status !== 200) return;
 
-                    //                     cookies.delete(['HX_AT', 'HX_RT']);
+                                        cookies.delete(['HX_AT', 'HX_RT']);
 
-                    //                     if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+                                        if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
 
-                    //                     this.setUser(user);
+                                        user.set(userInfo);
 
-                    //                     this.$windows.close(windowId);
-                    //                 }
-                    //             },
-                    //             {
-                    //                 label: 'To stay',
-                    //                 color: 'var(--green)',
-                    //                 click: () => {
-                    //                     this.$windows.close(windowId);
-                    //                 }
-                    //             }
-                    //         ]
-                    //     }
-                    // });
+                                        windows.close(windowId);
+                                    }
+                                },
+                                {
+                                    label: 'To stay',
+                                    color: 'var(--green)',
+                                    click: () => {
+                                        windows.close(windowId);
+                                    }
+                                }
+                            ]
+                        }
+                    });
                 }
             }
         ])

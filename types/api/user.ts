@@ -1,3 +1,5 @@
+export type TMergeScopes = 'stats';
+
 export interface IEMail {
     email: string;
     enable: boolean;

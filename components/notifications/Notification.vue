@@ -16,9 +16,9 @@
             </div>
         </header>
 
-        <!-- <NavBar style="margin: 8px 0 0 0;" v-if="notification?.buttons?.length! > 0 && showButtons"
+        <NavBar style="margin: 8px 0 0 0;" v-if="notification?.buttons?.length! > 0 && showButtons"
             :menu="notification.buttons"    
-        /> -->
+        />
     </div>
 </template>
 
@@ -26,7 +26,7 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-// import NavBar from '../content/NavBar.vue';
+import NavBar from '~/components/content/NavBar.vue';
 
 import type { INotification } from 'types/stores/notifications';
 

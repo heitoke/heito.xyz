@@ -73,6 +73,7 @@ import type { IProject } from '~/types/api/project';
 import { EPermissions } from '~/types/api/user';
 
 import type { IScrollBar } from '~/components/content/ScrollBar.vue';
+import type { IMessage } from '~/windows/Message.vue';
 
 const { $api } = useNuxtApp();
 
@@ -265,7 +266,7 @@ async function createProject() {
                     }
                 }
             ]
-        } as any
+        } as IMessage
     })
 }
 

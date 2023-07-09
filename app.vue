@@ -10,7 +10,7 @@
     <NuxtLayout :name="layoutName" :active="superMode">
         <ScrollBar v-slot="scrollProps" style="width: 100%">
             <NuxtPage :scrollProps="scrollProps"
-                :class="['page', { 'to-left': notifications.getActive }]"
+                :class="['page', { 'to-left': $notifications.getActive }]"
             />
 
             <div class="go-top" v-show="scrollProps.scroll.top > ($win.size?.width / 2)"
@@ -36,9 +36,20 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-const { $local, $api, $win } = useNuxtApp();
+import { type IUser, EPermissions } from '~/types/api/user';
+import type { IConfigDefault } from '~/types/api/config';
 
-const notifications = useNotificationsStore();
+import type { IMessage } from '~/windows/Message.vue';
+
+const { $local, $api, $win, $router } = useNuxtApp();
+
+const route = useRoute();
+
+const
+    $user = useUserStore(),
+    $notifications = useNotificationsStore(),
+    $windows = useWindowsStore(),
+    $config = useConfigStore();
 
 const
     layoutName = ref<string>('super-vertical'),
@@ -76,10 +87,120 @@ function initCustomization() {
     style.setProperty('--transparent', colors.addAlpha('#010101', $local.params?.transparent as number));
 }
 
-// async function initUser() {}
+function loadConfig(config: IConfigDefault) {
+    const
+        hidePages = config.pages?.filter(p => !p.enabled),
+        page = hidePages.find(p => p.name === route.name || $router.currentRoute.value.matched.find(r => r.name === p.name)),
+        isAdmin = $user.getUser?.permissions?.includes(EPermissions.Site),
+        user = page?.users.find(u => u.user._id === $user.getUser?._id);
 
-// async function initConfig() {}
+    if (!isAdmin && !user?.allowed) {
+        blocked.value = Boolean(page);
+    } else blocked.value = false;
 
+    loading.value = false;
+}
+
+async function initConfig() {
+    const [config, status] = await $api.configs.default();
+    
+    if (status !== 200) return $notifications.error({
+        message: 'Failed to load configuration',
+        status
+    });
+
+    $config.set(config);
+
+    loadConfig(config);
+}
+
+async function initUser() {
+    const [user, status, props] = await $api.users.me();
+
+    if (status !== 200) return $notifications.error({ message: 'Failed to load the user.' });
+
+    function setTokens(props: any) {
+        if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });
+        if (props?.token?.access) cookies.set('HX_AT', props?.token?.access, { days: 7 });
+        if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+    }
+    
+    if (props?.confirmation?.userId) {
+        let password = '';
+
+        $windows.create({
+            component: 'Message',
+            close: false,
+            data: {
+                title: 'Account confirmation',
+                text: 'Enter the password of the account that was previously authorized. If you don\'t want to log in or don\'t know the password, you can just skip it.',
+                components: [
+                    {
+                        name: 'password',
+                        component: 'Textbox',
+                        props: {
+                            label: 'Password',
+                            type: 'password'
+                        },
+                        events: {
+                            input: (e: MouseEvent) => {
+                                password = (e.target as any)?.value as string;
+                            }
+                        }
+                    }
+                ],
+                buttons: [
+                    {
+                        label: 'Confirm',
+                        color: 'var(--green)',
+                        click: async (e: MouseEvent, data: any, windowId: number) => {
+                            const [user, status] = await $api.auth.login({ login: props?.confirmation?.userId, password });
+
+                            if (status !== 200) return $notifications.error({
+                                status,
+                                message: user?.message
+                            });
+                            
+                            $windows.close(windowId);
+                        }
+                    },
+                    {
+                        label: 'Leave it as it is',
+                        color: 'var(--red)',
+                        click: async (e: MouseEvent, data: any, windowId: number) => {
+                            const [user, status, props] = await $api.users.me('none');
+
+                            if (status !== 200) return $notifications.push({ message: 'Failed to load the user.' });
+
+                            setTokens(props);
+
+                            cookies.delete(['HX_RT', 'HX_AT']);
+
+                            $user.set(user);
+
+                            $windows.close(windowId);
+                        }
+                    }
+                ]
+            } as IMessage
+        });
+        return;
+    }
+
+    setTokens(props);
+
+    if (props?.merge) {
+        $windows.create({
+            component: 'Merge',
+            close: false,
+            data: props.merge
+        });
+    }
+
+    if (user?._id) $user.set(user);
+
+    initConfig();
+}
 
 function goTop(scrollProps: IScrollBar) {
     scrollProps.toScroll(0, scrollProps.scroll.top + 50);
@@ -96,10 +217,10 @@ useHead({
 })
 
 
-onMounted(async () => {
-    // const user = useUserStore();
-
+onMounted(() => {
     initCustomization();
+
+    initUser();
 
     $win.init();
 });

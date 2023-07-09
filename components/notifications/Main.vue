@@ -13,7 +13,7 @@
 
                 <ScrollBar max-height="calc(100vh - 48px)">
                     <ul class="list menu" v-if="notifications.getList.length > 0">
-                        <Notification v-for="(notification, idx) of notifications.getList.sort((a, b) => a?.createdAt! < b?.createdAt! ? 1 : -1)" :key="notification.id"
+                        <Notification v-for="(notification, idx) of getListNotifications" :key="notification.id"
                             :id="notification.id"
                             :notification="notification"
                             :showButtons="true"
@@ -27,7 +27,7 @@
         </Transition>
 
         <ul :class="['list global', notifications.getPosition, { active: !notifications.getActive }]">
-            <TransitionGroup name="notification" @enter="enterNotification($event)">
+            <TransitionGroup name="notification" @enter="enterNotification">
                 <Notification v-for="notification of notifications.getList.filter(n => !n.hide).slice(0, getMaxCountNotification)" :key="notification.id"
                     style="cursor: pointer;"
                     :id="notification.id"
@@ -68,6 +68,10 @@ const getMaxCountNotification = computed<number>(() => {
     return count > 7 ? 7 : count;
 });
 
+const getListNotifications = computed(() => {
+    return notifications.getList.sort((a, b) => a?.createdAt! < b?.createdAt! ? 1 : -1);
+});
+
 watch(() => user.getUser._id, (newValue: string) => {
     if (!newValue) return;
 
@@ -77,11 +81,6 @@ watch(() => user.getUser._id, (newValue: string) => {
 // 'notifications:push'(notification: ILog) {
 //     this.$notifications.push(this.getNotification(notification));
 // }
-
-notifications.push({
-    title: 'Hello',
-    color: 'var(--blue)'
-});
 
 function enterNotification(el: Element) {
     setTimeout(() => {
@@ -203,6 +202,27 @@ async function loadUserNotifications(userId: string) {
         color: 'var(--main-color)'
     });
 }
+
+
+onMounted(() => {
+    notifications.push({
+        title: 'Hello',
+        color: 'var(--blue)',
+        icon: 'pacman',
+        message: 'Lorem text',
+        buttons: [
+            {
+                icon: 'pacman',
+                label: 'Hello world',
+                color: 'var(--main-color)'
+            },
+            {
+                icon: 'git',
+                label: 'Git'
+            }
+        ]
+    });
+});
 
 </script>
 

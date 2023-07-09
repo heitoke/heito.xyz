@@ -85,7 +85,7 @@ import { PropType } from 'nuxt/dist/app/compat/capi';
 
 import NavBar, { IButton } from '~/components/content/NavBar.vue';
 
-import Links from '~/components/content/lists/Links.vue';
+import Links from '~/components/content/containers/Links.vue';
 
 import User from '~/components/models/user/Card.vue';
 
@@ -498,7 +498,7 @@ async function loadProject(projectId: string) {
 
 function openInvateWindow() {
     const { windowId } = windows.create({
-        component: 'InvateUsers',
+        component: 'UserInvateUsers',
         data: {
             save: async (members: Array<{ id: string, permission: EProjectPermission }>) => {
                 if (members.length < 1) return;

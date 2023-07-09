@@ -98,7 +98,7 @@ export class API implements IAPI {
 
     async fetch(uri: string, { body = {}, method = 'GET', json = true, headers = { 'Content-Type': `application/json` }, token = '' }: IFetch): TE {   
         try {
-            const { data, error } = await useFetch(this.domain + (uri[0] === '/' ? '' : '/') + uri, {
+            const res = await fetch(this.domain + (uri[0] === '/' ? '' : '/') + uri, {
                 body: method === 'GET' ? undefined : (json ? JSON.stringify(body) : body) as any,
                 headers: {
                     Authorization: `Bearer ${token || this.accessToken}`,
@@ -109,14 +109,14 @@ export class API implements IAPI {
             });
 
             const
-                result = data.value as any,
+                result = await res.json(),
                 props = { ...result };
 
             if (props?.token?.guast && process.client) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
 
             delete props['result'];
 
-            return [result?.result || result, error.value?.statusCode || 501, props];
+            return [result?.result || result, res.status || 501, props];
         } catch (error) {
             console.error('ERROR', error);
 

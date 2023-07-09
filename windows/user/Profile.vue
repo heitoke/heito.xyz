@@ -47,6 +47,8 @@
             </div>
         </header>
 
+        <div class="description" v-if="user?.description">{{ user?.description }}</div>
+
         <NavBar style="margin: 0 0 12px 0;" :menu="navBarButtons"
             @select="block = $event.value || $event.label.toLocaleLowerCase()"
         />
@@ -87,7 +89,7 @@
 
 import NavBar, { type IButton } from '~/components/content/NavBar.vue';
 
-import Links from '~/components/content/lists/Links.vue';
+import Links from '~/components/content/containers/Links.vue';
 
 import Project from '~/components/models/project/Card.vue';
 
@@ -228,7 +230,7 @@ function buttonAdmin() {
 }
 
 function buttonUserSettings() {
-    const buttonText = (name: 'nickname' | 'username' = 'nickname', icon: string = 'id-card', label: string = 'Nickname') => {
+    const buttonText = (name: 'nickname' | 'username' | 'description' = 'nickname', icon: string = 'id-card', label: string = 'Nickname') => {
         return {
             label,
             icon,
@@ -390,6 +392,7 @@ function buttonUserSettings() {
                 { separator: true },
                 buttonText(),
                 buttonText('username', 'username', 'Username'),
+                buttonText('description', 'text', 'Description'),
 
                 { separator: true },
                 buttonColor,
@@ -617,6 +620,11 @@ onMounted(() => {
                 overflow: hidden;
             } 
         }
+    }
+
+    .description {
+        margin: 0 0 12px 0;
+        padding: 0 4px;
     }
 
     section.projects {

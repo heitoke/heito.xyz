@@ -191,7 +191,7 @@ async function initUser() {
 
     if (props?.merge) {
         $windows.create({
-            component: 'Merge',
+            component: 'UserMerge',
             close: false,
             data: props.merge
         });

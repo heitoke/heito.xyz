@@ -21,7 +21,7 @@
 
             <div class="author" :style="{ '--avatar': `url('${blog?.author?.avatar || getAvatar({ nameId: blog?.author?._id })}')` }"
                 @mouseenter="toolpics.set({ text: blog?.author?.nickname || blog?.author?.username || blog?.author?._id })"
-                @click.prevent.stop="windows.create({ component: 'User', data: blog?.author?._id })"
+                @click.prevent.stop="windows.create({ component: 'UserProfile', data: blog?.author?._id })"
             ></div>
         </header>
     </div>

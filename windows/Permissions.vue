@@ -11,7 +11,7 @@
             </li>
         </ul>
 
-        <Select :menu="listPermissions"
+        <Select :menu="listPermissions" label="Select permission"
             @select="permissions.find(per => $event.value === per) ? null : permissions = [...permissions, $event.value]"
         />
 

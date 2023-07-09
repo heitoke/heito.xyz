@@ -39,6 +39,7 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
+import SelectIcon from '~/components/content/SelectIcon.vue';
 
 import type { ILink } from '~/types/api/user';
 
@@ -67,7 +68,6 @@ const props = defineProps({
     }
 });
 
-// SelectIcon: markRaw(defineAsyncComponent(() => import('../SelectIcon.vue'))),
 const
     filter = ref({ text: '' }),
     list = ref<Array<ILink>>([]);
@@ -75,7 +75,7 @@ const
 
 const getListLinks = computed(() => {
     const
-        links = [...list.value],
+        links = [...list.value || []],
         regex = new RegExp(filter.value.text.trim(), 'gi');
 
     return links.filter(({ label, text, url }) => regex.test(label) || regex.test(text || '') || regex.test(url));
@@ -90,7 +90,7 @@ const isSlotVoid = computed(() => {
 });
 
 
-watch(props.links, (newValue) => {
+watch(() => props.links, (newValue) => {
     list.value = newValue;
 });
 
@@ -158,15 +158,17 @@ function addNewLink(link?: ILink, id: number = -1) {
                         }
                     }
                 },
-                // {
-                //     component: this.SelectIcon,
-                //     props: { icon: newLink?.icon, color: newLink?.color },
-                //     events: {
-                //         select(iconName: string) {
-                //             newLink['icon'] = iconName;
-                //         }
-                //     }
-                // }
+                {
+                    component: SelectIcon,
+                    props: { icon: newLink?.icon, color: newLink?.color },
+                    events: {
+                        select(iconName: string) {
+                            console.log(iconName);
+                            
+                            newLink['icon'] = iconName;
+                        }
+                    }
+                }
             ],
             buttons: [
                 {

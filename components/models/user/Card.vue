@@ -1,6 +1,6 @@
 <template>
     <div :class="['user', { hover: hovered }]"
-        @click="clicked ? windows.create({ component: 'User', data: user?._id }) : null"
+        @click="clicked ? windows.create({ component: 'UserProfile', data: user?._id }) : null"
     >
         <div class="avatar" :style="{ '--avatar': `url('${user?.avatar || getAvatar({ nameId: user?._id })}')` }"></div>
         

@@ -38,7 +38,7 @@
 
                         <div class="user" :style="{ 'background-image': `url(${config.user?.avatar || getAvatar({ nameId: config.user?._id })})` }"
                             @mouseenter="toolpics.set({ text: config?.user?.nickname || config?.user?.username || config?.user?._id })"
-                            @click="windows.create({ component: 'User', data: config?.user?._id })"
+                            @click="windows.create({ component: 'UserProfile', data: config?.user?._id })"
                         ></div>
 
                         <div class="l"></div>
@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 
-import ScrollBar from '../../components/content/ScrollBar.vue';
+import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import type { IConfig } from '~/types/api/config';
 
@@ -174,7 +174,7 @@ async function changeConfig(configId: string) {
     if (configIndex < 0) return;
     
     windows.create({
-        component: 'ChangeConfig',
+        component: 'AdminConfigsChange',
         data: {
             id: configs.value[configIndex]._id,
             save: async (newConfig: IConfig, type: 'update' | 'create', windowId: number) => {

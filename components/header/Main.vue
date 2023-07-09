@@ -122,7 +122,8 @@ const
     user = useUserStore(),
     toolpics = useToolpicsStore(),
     contextMenu = useContextMenusStore(),
-    notifications = useNotificationsStore();
+    notifications = useNotificationsStore(),
+    windows = useWindowsStore();
 
 const
     root = ref<HTMLElement | null>(null),
@@ -159,7 +160,7 @@ const getAdminContext = computed(() => {
                 label: 'Configs',
                 icon: 'configs',
                 click: () => {
-                    // this.$windows.create({ component: 'Configs' });
+                    windows.create({ component: 'AdminConfigsList' });
                 }
             }
         ]

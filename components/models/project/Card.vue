@@ -14,7 +14,7 @@
                         '--avatar': `url('${member?.avatar || getAvatar({ nameId: member._id })}')`
                     }"
                     @mouseenter="toolpics.set({ title: member.nickname || member.username || member._id })"
-                    @click.prevent.stop="windows.create({ component: 'User', data: member._id })"
+                    @click.prevent.stop="windows.create({ component: 'UserProfile', data: member._id })"
                 ></li>
 
                 <li v-show="p?.members?.length! > 5">
@@ -57,7 +57,7 @@ const p = computed(() => {
 
 function open() {
     windows.create({
-        component: 'Project',
+        component: 'ProjectProfile',
         data: p.value?._id,
         props: {
             update: (newProject: IProject) => {

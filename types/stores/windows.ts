@@ -1,3 +1,6 @@
+import { DefineComponent } from "nuxt/dist/app/compat/capi";
+import { Component } from "nuxt/schema";
+
 export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
 export interface IButton {

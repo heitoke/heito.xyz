@@ -60,7 +60,8 @@ const root = ref<HTMLElement | null>(null);
 const
     user = useUserStore(),
     notifications = useNotificationsStore(),
-    contextMenus = useContextMenusStore();
+    contextMenus = useContextMenusStore(),
+    windows = useWindowsStore();
 
 const getMaxCountNotification = computed<number>(() => {
     const count: number = Math.floor(window.innerHeight / 70) - 2;
@@ -123,7 +124,7 @@ function getNotification(notification: ILog): INotification {
                     label: 'Open project',
                     icon: 'image',
                     click: () => {
-                        // this.$windows.create({ component: 'Project', data: notification.props?.project });
+                        windows.create({ component: 'ProjectProfile', data: notification.props?.project });
                     }
                 }
             ];
@@ -139,14 +140,14 @@ function getNotification(notification: ILog): INotification {
                     label: 'User profile',
                     icon: 'user-circle',
                     click: () => {
-                        // this.$windows.create({ component: 'User', data: notification.props?.member });
+                        windows.create({ component: 'UserProfile', data: notification.props?.member });
                     }
                 },
                 {
                     label: 'Project',
                     icon: 'image',
                     click: () => {
-                        // this.$windows.create({ component: 'Project', data: notification.props?.project });
+                        windows.create({ component: 'ProjectProfile', data: notification.props?.project });
                     }
                 }
             ];

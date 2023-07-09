@@ -9,7 +9,7 @@
                 
                 <div class="blur">
                     <ScrollBar>
-                        <component :is="importComponent(window?.component as string)" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
+                        <component :is="windowComponent(window.component)" class="block" :windowId="window?.id" :data="window?.data" v-if="!window?.error"
                             style="padding: 12px;"
                             :closeWindow="() => windows.close(window?.id!)"
                             v-bind="window?.props"
@@ -39,6 +39,7 @@
 
 <script lang="ts" setup>
 
+
 import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import type { IWindow, IButton } from '~/types/stores/windows';
@@ -60,8 +61,8 @@ function getWindowButtons(window: IWindow): Array<IButton> {
     return [window?.close ? closeButton : {} as IButton, ...(window?.buttons || [])];
 }
 
-function importComponent(name: string) {
-    return markRaw(defineAsyncComponent(() => import(`~/windows/${name}.vue`)));
+function windowComponent(name: string) {
+    return resolveComponent(name);
 }
 
 </script>

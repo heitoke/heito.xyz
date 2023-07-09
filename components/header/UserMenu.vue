@@ -44,6 +44,7 @@
 <script lang="ts" setup>
 
 import { useI18n } from 'vue-i18n';
+
 import Menu from '~/components/content/Menu.vue';
 
 // import { mapActions, mapGetters } from 'vuex';
@@ -74,7 +75,7 @@ const getProfileMenu = computed(() => {
             icon: 'users',
             click: () => {
                 windows.create({
-                    component: 'user/sessions',
+                    component: 'UserSessions',
                     data: {
                         userId: user.getUser?._id,
                         token: ''
@@ -88,14 +89,14 @@ const getProfileMenu = computed(() => {
                 label: t('global.sign.in'),
                 icon: 'hand',
                 click: () => {
-                    windows.create({ component: 'user/auth' });
+                    windows.create({ component: 'UserAuth' });
                 }
             },
             {
                 label: t('user.create.title[0]'),
                 icon: 'user-circle',
                 click: () => {
-                    windows.create({ component: 'user/auth', data: 'register' });
+                    windows.create({ component: 'UserAuth', data: 'register' });
                 }
             }
         ] : [
@@ -153,7 +154,7 @@ const getProfileMenu = computed(() => {
             }
         ])
     ];
-
+    
     return {
         name: 'header:profile:menu',
         buttons: [
@@ -161,7 +162,9 @@ const getProfileMenu = computed(() => {
                 label: t('global.settings'),
                 icon: 'settings',
                 click: () => {
-                    windows.create({ title: 'setting', component: 'Setting' });
+                    windows.create({
+                        component: 'Setting'
+                    });
                 }
             },
             {
@@ -222,7 +225,7 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
 
 function openProfile() {
     windows.create({
-        component: 'User',
+        component: 'UserProfile',
         data: user.getUser?._id
     });
 }

@@ -104,7 +104,7 @@ async function loadSessions() {
 
 function openSession(sessionId: string) {
     windows.create({
-        component: 'Session',
+        component: 'UserSession',
         data: {
             sessionId,
             close: (id: string) => {

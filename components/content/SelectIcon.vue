@@ -7,7 +7,7 @@
 				value: icon,
 				color
 			}))"
-			@select="$emit('select', $event.value)"
+			@select="$emit('select', $event?.value)"
 		/>
 	</div>
 </template>

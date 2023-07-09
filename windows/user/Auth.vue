@@ -1,7 +1,7 @@
 <template>
     <div :class="['auth', type]">
         <div class="banner" :style="{ '--image': `url('${image}')` }"></div>
-        
+
         <div>
             <Text class="title" :text="$t(`user.${type === 'login' ? 'auth' : 'create'}.title[0]`)"/>
             <Text class="text" :text="$t('user.create.text')" v-show="type === 'register'"/>
@@ -23,7 +23,7 @@
                 @input="repeatPassword = $event?.target?.value"
             />
     
-            <Button @click="auth()" :disabled="isValid">
+            <Button @click="auth()" :disabled="!isValid">
                 {{ type === 'login' ? $t('global.sign.in') : $t('user.create.title[1]') }}
             </Button>
 
@@ -95,12 +95,12 @@ const images = {
 
 
 const isValid = computed(() => {
-    let _login = valid(login.value),
-        _email = valid(email.value),
+    let _login = valid(login.value, type.value === 'login' ? /(^[a-zA-Z0-9\_]+$)|(\S+@\S+\.\S+)/ : /^[a-zA-Z0-9\_]+$/),
+        _email = valid(email.value, /(\S+@\S+\.\S+)/),
         _password = valid(password.value),
         _repeatPassword = valid(repeatPassword.value);
 
-    return type.value === 'login' ? (_login || _password) : (_login || _email || _password || _repeatPassword || password.value !== repeatPassword.value);
+    return type.value === 'login' ? (_login && _password) : (_login && _email && _password && _repeatPassword && password.value === repeatPassword.value);
 });
 
 
@@ -111,12 +111,12 @@ watch(type, (newValue: TypeAuth) => {
 });
 
 
-function valid(key: string) {
-    return !key || key.trim() === '';
+function valid(value: string, regex: RegExp = /(.*)/) {
+    return (value.trim() !== '' || value !== '') && regex.test(value);
 }
 
 async function auth() {
-    if (isValid) {
+    if (!isValid) {
         return notifications.push({
             title: 'Missing fields',
             message: 'You missed a field, or you entered too many spaces.',
@@ -159,7 +159,7 @@ async function auth() {
 
     if (merge) {
         windows.create({
-            component: 'Merge',
+            component: 'UserMerge',
             close: false,
             data: {
                 ...(merge || {}),

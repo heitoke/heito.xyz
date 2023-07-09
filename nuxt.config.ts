@@ -12,16 +12,23 @@ export default defineNuxtConfig({
         '~/assets/styles/root.scss',
         '~/assets/fonts/icons/style.css'
     ],
-    components: [
-        {
-            path: '~/components/UI',
-            pathPrefix: false
-        },
-        {
-            path: '~/components/animation',
-            pathPrefix: true
-        }
-    ],
+    components: {
+        global: true,
+        dirs: [
+            {
+                path: '~/components/UI',
+                pathPrefix: false
+            },
+            {
+                path: '~/components/animation',
+                pathPrefix: true
+            },
+            {
+                path: '~/windows',
+                pathPrefix: true
+            }
+        ]
+    },
     modules: [
         '@pinia/nuxt',
         '@vite-pwa/nuxt'

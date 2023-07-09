@@ -296,7 +296,7 @@ function contextMenuPage(name: string) {
 
     const addUser = (allowed: boolean) => {
         const { windowId } = windows.create({
-            component: 'InvateUsers',
+            component: 'UserInvateUsers',
             data: {
                 save: (users: any) => {
                     for (let user of users) {

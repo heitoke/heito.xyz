@@ -22,7 +22,7 @@ useSeoMeta({
 });
 
 definePageMeta({
-    title: 'Main',
+    title: 'Home',
     icon: 'earth',
     hide: ['footer']
 });

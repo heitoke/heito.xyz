@@ -88,7 +88,7 @@ function open(text: string = '') {
 
                     selected.value = btn.value as string;
 
-                    emit('select', getItem);
+                    emit('select', getItem.value);
 
                     contextMenu.close('ui-select');
 

@@ -41,7 +41,6 @@ import type { IProject } from '~/types/api/project';
 
 const
     toolpics = useToolpicsStore(),
-    contextMenu = useContextMenusStore(),
     windows = useWindowsStore();
 
 const props = defineProps({

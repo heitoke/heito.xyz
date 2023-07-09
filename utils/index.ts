@@ -10,13 +10,13 @@ export interface IUserAvatar {
 
 export function getAvatar(options: IUserAvatar = {}): string {
     const
-        color = localStorage['color'],
+        color = process.client ? (localStorage.getItem('color') ? JSON.parse(localStorage['color'])?.slice(1) : 'FFBF34') : 'FFBF34',
         defaultValues: IUserAvatar = {
             type: 'beam',
             size: 512,
             nameId: 'guast',
             square: true,
-            colors: ['0b0b0b', '171717', color ? JSON.parse(color)?.slice(1) : 'FFBF34'],
+            colors: ['0b0b0b', '171717', color],
         };
 
     options = { ...defaultValues, ...options }

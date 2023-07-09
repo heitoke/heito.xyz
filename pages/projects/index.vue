@@ -62,8 +62,8 @@
 
 <script lang="ts" setup>
 
-import Project from '~/components/cards/Project.vue';
-import Repository, { type IRepository } from '~/components/cards/Repository.vue';
+import Project from '~/components/models/project/Card.vue';
+import Repository, { type IRepository } from '~/components/models/project/Repository.vue';
 
 import NavBar from '~/components/content/NavBar.vue';
 

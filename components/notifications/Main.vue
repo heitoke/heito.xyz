@@ -46,7 +46,7 @@ import { defineComponent } from 'vue';
 
 import { useUserStore } from '~/stores/user';
 
-// import ScrollBar from '../content/ScrollBar.vue';
+import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import Notification from './Notification.vue';
 

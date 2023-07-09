@@ -45,7 +45,7 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-import User from '~/components/cards/User.vue';
+import User from '~/components/models/user/Card.vue';
 
 import type { IUser, TMergeScopes } from '~/types/api/user';
 

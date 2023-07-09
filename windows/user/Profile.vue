@@ -89,7 +89,7 @@ import NavBar, { type IButton } from '~/components/content/NavBar.vue';
 
 import Links from '~/components/content/lists/Links.vue';
 
-import Project from '~/components/cards/Project.vue';
+import Project from '~/components/models/project/Card.vue';
 
 import { type IUser, EPermissions, listPermissions, type IButtonPermission } from '~/types/api/user';
 import type { IProject } from '~/types/api/project';

@@ -217,7 +217,7 @@ useHead({
 })
 
 
-onMounted(() => {
+onMounted(async () => {
     initCustomization();
 
     initUser();

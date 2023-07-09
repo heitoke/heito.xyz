@@ -25,7 +25,7 @@ import { PropType } from 'nuxt/dist/app/compat/capi';
 
 import ScrollBar from '~/components/content/ScrollBar.vue';
 
-import User from '~/components/cards/User.vue';
+import User from '~/components/models/user/Card.vue';
 
 import type { IUser } from '~/types/api/user';
 import { EProjectPermission } from '~/types/api/project';

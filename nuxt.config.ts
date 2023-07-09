@@ -20,10 +20,6 @@ export default defineNuxtConfig({
         {
             path: '~/components/animation',
             pathPrefix: true
-        },
-        {
-            path: '~/windows',
-            pathPrefix: false
         }
     ],
     modules: [

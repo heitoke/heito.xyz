@@ -1,18 +1,18 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
-import type { IConfig } from 'types/api/config';
+import type { IConfigDefault } from 'types/api/config';
 
 export const useConfigStore = defineStore('config', {
     state: () => ({
-        config: {} as IConfig
+        config: {} as IConfigDefault
     }),
     actions: {
-        set(config: IConfig) {
+        set(config: IConfigDefault) {
             this.config = config;
         }
     },
     getters: {
-        getConfig(state): IConfig {
+        getConfig(state): IConfigDefault {
             return state.config;
         }
     }

@@ -160,7 +160,7 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-import User from '~/components/cards/User.vue';
+import User from '~/components/models/user/Card.vue';
 import NavBar from '~/components/content/NavBar.vue';
 import ScrollBar from '~/components/content/ScrollBar.vue';
 

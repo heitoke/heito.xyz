@@ -20,11 +20,13 @@
 
 <script lang="ts" setup>
 
-// import PanelForColorPicker from '~/components/other/PanelForColorPicker.vue';
+import PanelForColorPicker from '~/components/other/PanelForColorPicker.vue';
 
-const root = ref<HTMLElement | null>(null);
+const header = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['color']);
+
+const contextMenu = useContextMenusStore();
 
 const props = defineProps({
     value: { type: String, default: 'ffffff' },
@@ -50,26 +52,26 @@ function keypress(e: KeyboardEvent) {
 }
 
 function open() {
-    // this.setContextMenu({
-    //     name: 'color-picker',
-    //     position: ['bottom', 'fixed-target', 'center'],
-    //     event: this.$refs.header,
-    //     autoMaxWidth: true,
-    //     components: [
-    //         {
-    //             component: this.panel,
-    //             name: 'panel-for-color-picker',
-    //             props: {
-    //                 color: this.value
-    //             },
-    //             events: {
-    //                 color: (color: string) => {
-    //                     this.color = color.slice(1);
-    //                 }
-    //             }
-    //         }
-    //     ]
-    // });
+    contextMenu.create({
+        name: 'color-picker',
+        position: ['bottom', 'fixed-target', 'center'],
+        event: header.value!,
+        autoMaxWidth: true,
+        components: [
+            {
+                component: PanelForColorPicker,
+                name: 'panel-for-color-picker',
+                props: {
+                    color: props.value
+                },
+                events: {
+                    color: (newColor: string) => {
+                        color.value = newColor.slice(1);
+                    }
+                }
+            }
+        ]
+    });
 }
 
 

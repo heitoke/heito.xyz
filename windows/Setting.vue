@@ -6,11 +6,10 @@
 
         <!-- * Sections -->
         <!-- <ComponentsSlider :name="section" style="margin: 12px 0 0 0;"
-            :components="[
-                { name: 'personalization', component: personalization },
-                { name: 'about', component: about }
-            ]"
+            :components="components"
         /> -->
+
+        <Personalization/>
 
         <Text class="footer-alert" text="Beta"/>
     </div>
@@ -20,10 +19,10 @@
 
 import NavBar, { type IButton } from '~/components/content/NavBar.vue';
 
-// import ComponentsSlider from '~/components/content/ComponentsSlider.vue';
+import ComponentsSlider from '~/components/content/containers/ComponentsSlider.vue';
 
-// import personalization from '~/components/windows/setting/Personalization.vue';
-// import about from '~/components/windows/setting/About.vue';
+import Personalization from '~/components/models/setting/Personalization.vue';
+import About from '~/components/models/setting/About.vue';
 
 
 const props = defineProps({
@@ -46,6 +45,11 @@ const menuButtons: Array<IButton> = [
         label: 'About',
         value: 'about'
     }
+];
+
+const components = [
+    { name: 'personalization', component: Personalization },
+    { name: 'about', component: About }
 ];
 
 

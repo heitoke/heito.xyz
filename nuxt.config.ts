@@ -24,9 +24,11 @@ export default defineNuxtConfig({
     ],
     modules: [
         '@pinia/nuxt',
+        '@vite-pwa/nuxt'
         // Module,
         // '@nuxtjs/i18n'
     ],
+    
     plugins: [
         '~/plugins/api/index.ts',
         '~/plugins/i18n.ts'
@@ -61,4 +63,19 @@ export default defineNuxtConfig({
     //         useCookie: true
     //     }
     // }
+
+    pwa: {
+        manifest: {
+            name: 'heito.xyz',
+            short_name: 'heito.xyz',
+            description: 'Website'
+        },
+        workbox: {
+            navigateFallback: '/'
+        },
+        // devOptions: {
+        //     enabled: true,
+        //     type: 'module'
+        // }
+    }
 });

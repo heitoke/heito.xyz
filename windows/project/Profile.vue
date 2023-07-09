@@ -42,17 +42,17 @@
 
         <section v-show="block === 'links'">
             <Links :links="project?.links || []" :filters="project?.links?.length! < 1 ? [] : ['search', 'add']"
-                @add="add = $event"
-                @update="changes.links = []; changes.links = $event.list as any;"
+            @update="changes.links = []; changes.links = $event.list as any;"
             >
+            <!-- @add="add = $event" -->
                 <template v-slot:void>
                     <Alert type="mini" v-if="project?.links?.length! < 1">
                         <div>Soon everything may appear :D</div>
 
                         <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="isModer"
                             color="var(--green)"
-                            @click="add ? add() : null"
-                        >Create first link</Button>
+                            >Create first link</Button>
+                            <!-- @click="add ? add() : null" -->
                     </Alert>
                 </template>
             </Links>

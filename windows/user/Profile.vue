@@ -55,18 +55,18 @@
 
         <section class="links" v-show="block === 'links'">
             <Links :links="user?.links || []" :filters="user?.links?.length! < 1 ? [] : ['search', 'add']"
-                @add="add = $event"
                 @update="changes.links = []; changes.links = $event.list;"
             >
+            <!-- @add="add = $event" -->
                 <template v-slot:void>
                     <Alert type="mini" v-if="user?.links?.length! < 1">
                         <div>Soon everything may appear :D</div>
 
                         <Button style="margin: 12px 0 0 0; max-width: max-content;" v-if="authUser.getUser?._id === user?._id || isAdmin"
                             color="var(--green)"
-                            @click="add ? add() : null"
                         >Create first link</Button>
                     </Alert>
+                        <!-- @click="add ? add() : null" -->
                 </template>
             </Links>
         </section>

@@ -21,7 +21,8 @@ if (status === 200) {
         ogImage: image,
         twitterImage: image,
         colorScheme: project?.color,
-        themeColor: project?.color
+        themeColor: project?.color,
+        twitterCard: 'summary_large_image'
     });
 }
 

@@ -135,7 +135,8 @@ if (status === 200) {
         ogImage: image,
         twitterImage: image,
         colorScheme: '#FFBF34',
-        themeColor: '#FFBF34'
+        themeColor: '#FFBF34',
+        twitterCard: 'summary_large_image'
     });
 }
 

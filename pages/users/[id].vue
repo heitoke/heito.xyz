@@ -24,7 +24,8 @@ if (status === 200) {
         ogImage: image,
         twitterImage: image,
         colorScheme: user?.color,
-        themeColor: user?.color
+        themeColor: user?.color,
+        twitterCard: 'summary_large_image'
     });
 }
 

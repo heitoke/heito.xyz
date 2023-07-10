@@ -142,11 +142,11 @@ function down(ev: PointerEvent) {
 }
 
 onMounted(() => {
-    setTimeout(() => {
-        setScrollHeight();
+    // setTimeout(() => {
+    //     setScrollHeight();
 
-        observeHeight();
-    }, 500);
+    //     observeHeight();
+    // }, 500);
 });
 
 </script>

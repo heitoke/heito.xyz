@@ -12,6 +12,9 @@ const windows = useWindowsStore();
 
 const [user, status] = await $api.users.get(route.params.id as string);
 
+console.log(user, status);
+
+
 if (status === 200) {
     const image = user?.banner || user?.avatar || '';
 

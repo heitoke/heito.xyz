@@ -217,9 +217,12 @@ useHead({
         return (title ? `${title} | ` : '') + 'heito.xyz';
     },
     meta: [
-        { name: 'twitter:site', content: 'heito.xyz' }
+        { name: 'twitter:site', content: '@heito.xyz' },
+        { name: 'og:site_name', content: 'heito.xyz' },
+        { name: 'og:type', content: 'website' }
     ]
-})
+});
+
 
 
 onMounted(async () => {

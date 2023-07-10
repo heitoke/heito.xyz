@@ -16,7 +16,7 @@ console.log(user, status);
 
 
 if (status === 200) {
-    const image = user?.banner || user?.avatar || '';
+    const image = user?.banner || user?.avatar || getAvatar({ nameId: user?._id });
 
     useSeoMeta({
         title: `${user?.nickname || user?.username || user?._id} | User`,

@@ -122,6 +122,24 @@ const
     edit = ref<boolean>(false);
 
 
+const [_blog, status] = await $api.blogs.get(route.params.id as string);
+
+if (status === 200) {
+    selfBlog.value = _blog;
+
+    const image = _blog?.image || getAvatar({ nameId: _blog?._id, type: 'marble' });
+
+    useSeoMeta({
+        title: `${_blog?.title || _blog?.name || _blog?._id} | Blog`,
+        description: _blog?.description || '',
+        ogImage: image,
+        twitterImage: image,
+        colorScheme: '#FFBF34',
+        themeColor: '#FFBF34'
+    });
+}
+
+
 const isHeaderActive = computed(() => {
     return props.scrollProps?.scroll.top! > ($win.size.width / 3);
 });
@@ -244,14 +262,6 @@ watch(type, (newValue) => {
     }
 });
 
-
-async function loadBlog(blogId: string) {
-    const [blog, status] = await $api.blogs.get(blogId);
-
-    if (status !== 200) return;
-
-    selfBlog.value = blog;
-}
 
 async function loadLikes(type: 'likes' | 'dislikes') {
     const [list, status] = await $api.blogs.likes(selfBlog.value._id, type);
@@ -466,8 +476,6 @@ function blogContextMenu() {
 
 onMounted(() => {
     header.setOptions({ blur: { enable: false, value: '5px' } });
-
-    loadBlog(route.params.id as string);
 });
 
 onUnmounted(() => {

@@ -185,6 +185,11 @@ function createNewBlog() {
 }
 
 
+useSeoMeta({
+    title: 'Blogs'
+});
+
+
 onMounted(() => {
     loadBlogs();
 });

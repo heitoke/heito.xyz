@@ -215,7 +215,10 @@ function goTop(scrollProps: IScrollBar) {
 useHead({
     titleTemplate: (title) => {
         return (title ? `${title} | ` : '') + 'heito.xyz';
-    }
+    },
+    meta: [
+        { name: 'twitter:site', content: 'heito.xyz' }
+    ]
 })
 
 

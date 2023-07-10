@@ -4,29 +4,31 @@
 
 <script lang="ts" setup>
 
-const { $api } = useNuxtApp();
+const { $api, $router } = useNuxtApp();
 
 const route = useRoute();
 
 const windows = useWindowsStore();
 
-const [user, status] = await $api.users.get(route.params?.id as string);
+const [user, status] = await $api.users.get(route.params.id as string);
 
 if (status === 200) {
-    const image = user.banner || user.avatar || '';
-    
+    const image = user?.banner || user?.avatar || '';
+
     useSeoMeta({
         title: `${user?.nickname || user?.username || user?._id} | User`,
         description: user?.description || '',
         ogImage: image,
         twitterImage: image,
-        colorScheme: user.color,
-        themeColor: user.color
+        colorScheme: user?.color,
+        themeColor: user?.color
     });
 }
 
 
 onMounted(() => {
+    $router.push('/');
+    
     if (status !== 200) return;
 
     windows.create({

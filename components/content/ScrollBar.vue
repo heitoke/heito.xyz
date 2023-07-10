@@ -59,8 +59,7 @@ const
     top = ref<number>(0),
     left = ref<number>(0),
     max = ref({ width: 0, height: 0 }),
-    client = ref({ width: 0, height: 0 }),
-    show = ref<boolean>(false);
+    client = ref({ width: 0, height: 0 });
 
 function refs() {
     const
@@ -143,11 +142,11 @@ function down(ev: PointerEvent) {
 }
 
 onMounted(() => {
-    // this.show = true;
+    setTimeout(() => {
+        setScrollHeight();
 
-    setScrollHeight();
-
-    observeHeight();
+        observeHeight();
+    }, 500);
 });
 
 </script>

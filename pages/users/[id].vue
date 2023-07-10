@@ -4,6 +4,8 @@
 
 <script lang="ts" setup>
 
+import { createUserMetaImage } from '~/libs/canvas';
+
 const { $api, $router } = useNuxtApp();
 
 const route = useRoute();
@@ -12,11 +14,8 @@ const windows = useWindowsStore();
 
 const [user, status] = await $api.users.get(route.params.id as string);
 
-console.log(user, status);
-
-
 if (status === 200) {
-    const image = user?.banner || user?.avatar || getAvatar({ nameId: user?._id });
+    const image = await createUserMetaImage(user?.nickname as string, getAvatar({ nameId: user?._id }));// user?.banner || user?.avatar || getAvatar({ nameId: user?._id });
 
     useSeoMeta({
         title: `${user?.nickname || user?.username || user?._id} | User`,

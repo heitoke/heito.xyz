@@ -13,7 +13,7 @@ const windows = useWindowsStore();
 const [project, status] = await $api.projects.get(route.params.id as string);
 
 if (status === 200) {
-    const image = project?.image || '';
+    const image = project?.banner || project?.image || '';
 
     useSeoMeta({
         title: `${project?.displayName || project?.name || project?._id} | Project`,

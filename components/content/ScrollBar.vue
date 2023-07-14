@@ -34,10 +34,12 @@ export interface IScrollBar {
         y: number;
         top: number;
         left: number;
-        max: TSize;
+        max: TSize & { left: number; top: number; };
         client: TSize;
     }
 }
+
+const { $win } = useNuxtApp();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -58,7 +60,7 @@ const
     y = ref<number>(0),
     top = ref<number>(0),
     left = ref<number>(0),
-    max = ref({ width: 0, height: 0 }),
+    max = ref({ width: 0, height: 0, left: 0, top: 0 }),
     client = ref({ width: 0, height: 0 });
 
 let lastPosition: { x: number; y: number; } = {
@@ -90,7 +92,9 @@ function setScrollHeight() {
 
     max.value = {
         width: body?.scrollWidth,
-        height: body?.scrollHeight
+        height: body?.scrollHeight,
+        left: body?.scrollWidth - $win.size.width,
+        top: body?.scrollHeight - $win.size.height,
     }
 
     client.value = {

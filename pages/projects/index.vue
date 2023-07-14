@@ -356,6 +356,8 @@ useSeoMeta({
 
 
 definePageMeta({
+    title: 'Projects',
+    icon: 'images',
     path: '/:name(projects|repos)',
     alias: [
         '/:name(repos)/:id'

@@ -392,7 +392,7 @@ function buttonUserSettings() {
                 { separator: true },
                 buttonText(),
                 buttonText('username', 'username', 'Username'),
-                buttonText('description', 'text', 'Description'),
+                buttonText('description', 'text-align-left', 'Description'),
 
                 { separator: true },
                 buttonColor,

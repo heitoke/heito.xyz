@@ -191,6 +191,12 @@ useSeoMeta({
 });
 
 
+definePageMeta({
+    title: 'Blogs',
+    icon: 'quill'
+});
+
+
 onMounted(() => {
     loadBlogs();
 });

@@ -2,14 +2,19 @@
     <div class="setting">
         <div class="title">Setting</div>
 
-        <NavBar :menu="menuButtons" @select="set"/>
+        <NavBar :menu="menuButtons" @select="set" style="margin: 0 0 12px 0;"/>
 
         <!-- * Sections -->
         <!-- <ComponentsSlider :name="section" style="margin: 12px 0 0 0;"
             :components="components"
         /> -->
 
-        <Personalization/>
+        <Height :showed="show">
+            <component :is="getComponent!"/>
+        </Height>
+
+        <!-- <Personalization v-if="section === 'personalization'"/>
+        <About v-if="section === 'about'"/> -->
 
         <Text class="footer-alert" text="Beta"/>
     </div>
@@ -19,10 +24,12 @@
 
 import NavBar, { type IButton } from '~/components/content/NavBar.vue';
 
-import ComponentsSlider from '~/components/content/containers/ComponentsSlider.vue';
+// import ComponentsSlider from '~/components/content/containers/ComponentsSlider.vue';
 
 import Personalization from '~/components/models/setting/Personalization.vue';
 import About from '~/components/models/setting/About.vue';
+
+type Section = 'personalization' | 'about';
 
 
 const props = defineProps({
@@ -31,8 +38,9 @@ const props = defineProps({
 });
 
 const
-    section = ref<string>('about'),
-    swipe = ref<'left' | 'right'>('right');
+    section = ref<Section>('personalization'),
+    swipe = ref<'left' | 'right'>('right'),
+    show = ref<boolean>(false);
 
 const menuButtons: Array<IButton> = [
     {
@@ -53,18 +61,31 @@ const components = [
 ];
 
 
+
+const getComponent = computed(() => {
+    return components.find(component => component.name === section.value)?.component;
+});
+
+
+
 function set(btn: IButton) {
+    show.value = false;
+
     let old = menuButtons.findIndex(b => b.value === section.value),
         now = menuButtons.findIndex(b => b.value === btn.value);
 
     swipe.value = old < now ? 'right' : 'left' 
 
-    section.value = btn.value!;
+    section.value = btn.value! as Section;
+
+    setTimeout(() => show.value = true, 500);
 }
 
 
 onMounted(() => {
-    section.value = menuButtons[0].value!;
+    section.value = menuButtons[0].value! as Section;
+
+    setTimeout(() => show.value = true, 1000);
 });
 
 </script>

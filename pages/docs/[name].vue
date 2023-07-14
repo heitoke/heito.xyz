@@ -150,6 +150,13 @@ const getRoutes = computed(() => {
     return getCategoty.value.routes as Array<Route> || [];
 });
 
+
+
+definePageMeta({
+    title: 'Documentations',
+    path: '/docs/:name?'
+});
+
 </script>
 
 

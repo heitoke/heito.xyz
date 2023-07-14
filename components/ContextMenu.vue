@@ -105,7 +105,7 @@ async function showContextMenu(e: Element) {
         border: 1px solid var(--background-secondary);
         transition: .2s;
         overflow: hidden;
-        z-index: 109;
+        z-index: 110;
 
         &-enter-active,
         &-leave-active {

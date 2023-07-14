@@ -1,6 +1,8 @@
 <template>
     <div :class="['ui-loading', type]">
-        <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg">
+        <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"
+            :style="{ width: size, height: size }"
+        >
             <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
         </svg>
 
@@ -13,7 +15,7 @@
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
 const props = defineProps({
-    size: { type: String, default: '48px' },
+    size: { type: String, default: '32px' },
     type: {
         type: String as PropType<'default' | 'circle'>,
         default: () => 'default'
@@ -96,8 +98,6 @@ $duration: 1.4s;
     }
 
     .spinner {
-        width: 32px;
-        height: 32px;
         animation: Rotator $duration linear infinite;
     }
 

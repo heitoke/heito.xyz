@@ -7,6 +7,7 @@ export default defineNuxtConfig({
         '~/assets/styles/root.scss',
         '~/assets/fonts/icons/style.css'
     ],
+
     components: {
         global: true,
         dirs: [
@@ -24,6 +25,7 @@ export default defineNuxtConfig({
             }
         ]
     },
+
     modules: [
         '@pinia/nuxt',
         '@vite-pwa/nuxt'
@@ -32,9 +34,11 @@ export default defineNuxtConfig({
         '~/plugins/api/index.ts',
         '~/plugins/i18n.ts'
     ],
+
     imports: {
         dirs: ['stores']
     },
+
     runtimeConfig: {
         public: {
             apiURL: process.env.API_URL

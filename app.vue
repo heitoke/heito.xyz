@@ -7,10 +7,14 @@
         <Header @changeSuperMode="superMode = $event"/>
     </ClientOnly>
 
-    <NuxtLayout :name="layoutName" :active="superMode">
+    <Waiting :show="loading" :stage="stage"/>
+
+    <NuxtLayout :name="layoutName" :active="superMode" v-if="!loading">
         <ScrollBar v-slot="scrollProps" style="width: 100%">
-            <NuxtPage :scrollProps="scrollProps"
+            <NuxtPage
                 :class="['page', { 'to-left': $notifications.getActive }]"
+                :scrollProps="scrollProps"
+                :transition="{ name: 'slide-top', mode: 'out-in' }"
             />
 
             <ClientOnly>
@@ -27,6 +31,8 @@
 </template>
 
 <script lang="ts" setup>
+
+import Waiting from '~/components/Waiting.vue';
 
 import Header from '~/components/header/Main.vue';
 import Notifications from '~/components/notifications/Main.vue';
@@ -47,6 +53,7 @@ const { $local, $api, $win, $router } = useNuxtApp();
 
 const route = useRoute();
 
+
 const
     $user = useUserStore(),
     $notifications = useNotificationsStore(),
@@ -57,7 +64,9 @@ const
     layoutName = ref<string>('super-vertical'),
     superMode = ref<boolean>(false),
     blocked = ref<boolean>(false),
-    loading = ref<boolean>(true);
+    loading = ref<boolean>(true),
+    stage = ref<number>(0);
+
 
 function initCustomization() {
     const
@@ -90,6 +99,8 @@ function initCustomization() {
 }
 
 function loadConfig(config: IConfigDefault) {
+    stage.value = 5; // Install config
+
     const
         hidePages = config.pages?.filter(p => !p.enabled),
         page = hidePages.find(p => p.name === route.name || $router.currentRoute.value.matched.find(r => r.name === p.name)),
@@ -100,10 +111,14 @@ function loadConfig(config: IConfigDefault) {
         blocked.value = Boolean(page);
     } else blocked.value = false;
 
-    loading.value = false;
+    stage.value = 6; // Finish
+
+    setTimeout(() => loading.value = false, 1000);
 }
 
 async function initConfig() {
+    stage.value = 3; // Loading config
+
     const [config, status] = await $api.configs.default();
     
     if (status !== 200) return $notifications.error({
@@ -113,10 +128,14 @@ async function initConfig() {
 
     $config.set(config);
 
+    stage.value = 4; // Scan config
+
     loadConfig(config);
 }
 
 async function initUser() {
+    stage.value = 1; // Connecting user
+    
     const [user, status, props] = await $api.users.me();
 
     if (status !== 200) return $notifications.error({ message: 'Failed to load the user.' });
@@ -126,6 +145,8 @@ async function initUser() {
         if (props?.token?.access) cookies.set('HX_AT', props?.token?.access, { days: 7 });
         if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
     }
+
+    stage.value = 2; // Connected user
     
     if (props?.confirmation?.userId) {
         let password = '';
@@ -244,6 +265,18 @@ onMounted(async () => {
     opacity: 0;
 }
 
+
+
+.slide-top {
+    &-enter-active,
+    &-leave-active {
+        transition: .3s !important;
+        transform: scale(.8) translateY(-25vh);
+        opacity: 0;
+    }
+}
+
+
 .page {
     padding-top: 64px !important;
     max-width: 100%;
@@ -259,13 +292,6 @@ onMounted(async () => {
         border-radius: 15px;
         transform: scale(.9) translateX(-4vw);
         overflow: hidden;
-    }
-
-    &-enter-active,
-    &-leave-active {
-        transition: .2s;
-        transform: scale(.8) translateY(-25vh);
-        opacity: 0;
     }
 }
 

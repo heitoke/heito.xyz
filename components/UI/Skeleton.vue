@@ -1,5 +1,7 @@
 <template>
-    <div class="ui-skeleton" v-if="!show"></div>
+    <div class="ui-skeleton" v-if="!show">
+        <slot name="before"></slot>
+    </div>
     <slot v-else/>
 </template>
 
@@ -14,9 +16,12 @@ const props = defineProps({
 <style lang="scss" scoped>
 
 .ui-skeleton {
+    display: flex;
     min-width: 16px;
     min-height: 16px;
     border-radius: 5px;
+    align-items: center;
+    justify-content: center;
     background-color: var(--background-secondary);
     background: linear-gradient(100deg, rgba(255, 255, 255, 0) 40%, var(--background-secondary-alt) 50%, rgba(255, 255, 255, 0) 60%) var(--background-secondary);
     background-size: 200% 100%;

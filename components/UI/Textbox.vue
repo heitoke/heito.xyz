@@ -81,6 +81,12 @@ watch(modelValue, (newValue: string) => {
     emit('update', newValue);
 });
 
+watch(() => props.value, (newValue: string) => {
+    if (newValue === modelValue.value) return;
+    
+    modelValue.value = newValue;
+});
+
 function setLabelWidth() {
     let label = root.value?.querySelector('.label'),
         oldWidth = label?.scrollWidth as number;

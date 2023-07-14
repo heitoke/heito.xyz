@@ -1,6 +1,6 @@
 <template>
     <div class="projects">
-        <NavBar :orientation="$win.size.width > 840 ? 'vertical' : 'horizontal'"
+        <NavBar class="menu" :orientation="$win.size.width > 840 ? 'vertical' : 'horizontal'"
             :menu="[
                 {
                     icon: 'images',
@@ -16,7 +16,7 @@
             :default-id="['projects', 'repos'].findIndex(p => p === type)"
         />
 
-        <div style="width: 100%;">
+        <div>
             <div class="filters">
                 <Textbox :label="`Search ${type === 'repos' ? 'repositories' : 'projects'}`"
                     @input="filters.text = ($event.target as any)?.value"
@@ -37,6 +37,15 @@
                     @click="createProject"
                 >Create</Button>
             </div>
+            
+            
+            <NavBar class="topics"
+                :menu="topics"
+                :multiselect="true"
+                :clear-id="0"
+                @select="selectTopic($event.label)"
+            />
+
 
             <Loading style="margin: 12px 0 0 0;" v-if="loading"/>
 
@@ -64,19 +73,25 @@
 <script lang="ts" setup>
 
 import Project from '~/components/models/project/Card.vue';
-import Repository, { type IRepository } from '~/components/models/project/Repository.vue';
+import Repository from '~/components/models/project/Repository.vue';
 
-import NavBar from '~/components/content/NavBar.vue';
+import NavBar, { IButton } from '~/components/content/NavBar.vue';
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-import type { IProject } from '~/types/api/project';
+import type { IProject, IRepository } from '~/types/api/project';
 import { EPermissions } from '~/types/api/user';
 
 import type { IScrollBar } from '~/components/content/ScrollBar.vue';
 import type { IMessage } from '~/windows/Message.vue';
 
 type Type = 'projects' | 'repos';
+
+type Filters = {
+    text: string;
+    type: string;
+    topics: Array<string>;
+}
 
 const { $api } = useNuxtApp();
 
@@ -89,19 +104,16 @@ const
 
 const props = defineProps({
     login: { type: String, default: 'heitoke' },
-    // type: {
-    //     type: String as PropType<'projects' | 'repos'>,
-    //     default: 'projects'
-    // },
     scrollProps: { type: Object as PropType<IScrollBar> }
 });
 
 const
     type = ref<Type>(route.params?.name as Type),
-    filters = ref({ text: '', type: 'name' }),
+    filters = ref<Filters>({ text: '', type: 'name', topics: [] }),
     projects = ref<Array<IProject>>([]),
     repos = ref<Array<IRepository>>([]),
-    loading = ref<boolean>(true);
+    loading = ref<boolean>(true),
+    topics = ref<Array<IButton>>([{ label: 'All' }]);
 
 const menu = {
     repos: [
@@ -150,7 +162,9 @@ const getListProjects = computed(() => {
 
     let regex = new RegExp(filters.value.text.trim(), 'gi');
 
-    return sort.filter(({ name, displayName, description }) => regex.test(name || '') || regex.test(displayName || '') || regex.test(description || ''));
+    return sort
+        .filter(({ tags }) => hasTopics(tags || []))
+        .filter(({ name, displayName, description }) => regex.test(name || '') || regex.test(displayName || '') || regex.test(description || ''));
 });
 
 const getListRepos = computed(() => {
@@ -166,7 +180,9 @@ const getListRepos = computed(() => {
 
     let regex = new RegExp(filters.value.text.trim(), 'gi');
 
-    return sort.filter(({ name, description, owner, language }) => regex.test(name) || regex.test(description) || regex.test(owner?.login) || regex.test(language));
+    return sort
+        .filter(({ topics }) => hasTopics(topics))
+        .filter(({ name, description, owner, language }) => regex.test(name) || regex.test(description) || regex.test(owner?.login) || regex.test(language));
 });
 
 const getReposId = computed(() => {
@@ -203,7 +219,11 @@ async function loadProjects() {
         return loading.value = false;
     }
 
-    projects.value = [...projects.value || [], ..._projects?.results];
+    for (let project of _projects?.results) {
+        projects.value = [...projects.value || [], project];
+
+        loadTopics(project?.tags || []);
+    }
 
     loading.value = false;
 }
@@ -212,7 +232,7 @@ async function loadRepos(page: number = 1) {
     loading.value = true;
 
     let res = await fetch(`https://api.github.com/users/${route.params.id || 'heitoke'}/repos?page=${page}`),
-        _repos = await res.json();
+        _repos = await res.json() as Array<IRepository>;
 
     if (res.status !== 200) {
         notifications.error({
@@ -223,8 +243,12 @@ async function loadRepos(page: number = 1) {
 
         return loading.value = false;
     }
-    
-    repos.value = [...repos.value || [], ..._repos];
+
+    for (let repo of _repos) {
+        repos.value = [...repos.value || [], repo];
+
+        loadTopics(repo.topics);
+    }
 
     loading.value = false;
 }
@@ -280,6 +304,38 @@ async function createProject() {
     })
 }
 
+function loadTopics(array: Array<string>) {
+    for (let topic of array) {
+        if (!topics.value?.find(t => t.label === topic)) {
+            topics.value = [...topics.value || [], {
+                label: topic,
+                icon: 'tag',
+                color: colors.stringToHexColor(topic)
+            }];
+        }
+    }
+
+    topics.value = topics.value.sort((a, b) => a.label > b.label ? 1 : 0);
+}
+
+function hasTopics(listTopics: Array<string>) {
+    const _topics = filters.value?.topics;
+
+    if (_topics?.length < 1) return true;
+
+    return _topics?.find(topic => listTopics?.find(t => t === topic));
+}
+
+function selectTopic(topic: string) {
+    if (topic === 'All') {
+        filters.value.topics = [];
+    } else {
+        const _topics = filters.value.topics;
+
+        filters.value.topics = _topics?.includes(topic) ? _topics.filter(t => t !== topic) : [..._topics || [], topic];
+    }
+}
+
 
 onMounted(() => {
     switch(type.value) {
@@ -297,24 +353,6 @@ useSeoMeta({
     title: type.value === 'repos' ? 'Repositories' + (getReposId.value ? ` (${getReposId.value})` : '') : 'Projects'
 });
 
-
-/*
-
-{
-            name: 'projects',
-            path: '/:name(projects|repos)',
-            component: Projects,
-            props: ({ params, query }) => ({
-                login: query?.login || 'heitoke',
-                type: params?.name
-            })
-        },
-        {
-            name: 'user-repos',
-            path: '/repos/:login',
-            redirect: (to) => `/repos?login=${to.params.login || 'heitoke'}`
-        }
-*/
 
 definePageMeta({
     path: '/:name(projects|repos)',
@@ -339,19 +377,23 @@ definePageMeta({
     display: flex;
     margin: 32px 0 0 0;
     padding: 0 10%;
-    width: 100vw;
+    width: 100%;
     height: auto;
     min-height: 100%;
     align-items: flex-start;
 
-    .nav-bar {
+    .nav-bar.menu {
         margin: 0 12px 0 0;
         max-width: 196px;
+        min-width: 196px;
+
+        & + div {
+            width: calc(100% - 196px);
+        }
     }
 
     .filters {
         display: flex;
-        margin: 0 0 12px 0;
         align-items: center;
 
         .ui-select {
@@ -363,9 +405,8 @@ definePageMeta({
         }
     }
 
-    .menu {
-        margin: 0 12px 0 0;
-        min-width: 215px;
+    .nav-bar.topics {
+        margin: 12px 0;
     }
 
     .grid {
@@ -386,9 +427,13 @@ definePageMeta({
         display: block;
         padding: 0 5%;
 
-        .nav-bar {
+        .nav-bar.menu {
             margin: 0 0 16px 0;
             min-width: 100%;
+        
+            & + div {
+                width: 100%;
+            }
         }
     }
 

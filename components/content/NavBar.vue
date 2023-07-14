@@ -1,13 +1,13 @@
 <template>
-    <div :class="`nav-bar ${orientation}`" ref="root"
+    <div :class="['nav-bar', orientation, { multiselect }]" ref="root"
         @wheel.prevent.stop="orientation === 'vertical' ? null : setScroll($event)"
     >
         <ul>
             <li v-for="(btn, idx) of menu" :key="btn.label"
-                :class="{ active: id === idx }"
+                :class="{ active: ids?.includes(idx) }"
                 :style="{ '--color': btn?.color }"
                 @click="click(idx, $event)"
-                @mouseenter="hover($event, idx)"
+                @mouseenter="hover(idx)"
                 @mouseleave="hoverId = -1"
             >
                 <img :src="btn?.img" v-if="btn?.img">
@@ -54,25 +54,24 @@ const props = defineProps({
         type: String as PropType<'vertical' | 'horizontal'>,
         default: 'horizontal'
     },
-    selected: { type: Boolean, default: true }
+    selected: { type: Boolean, default: true },
+    multiselect: { type: Boolean, default: false },
+    clearId: { type: Number }
 });
 
 const
-    id = ref<number>(-1),
+    ids = ref<Array<number>>([]),
     width = ref<number>(0),
     height = ref<number>(0),
     top = ref<number>(0),
     left = ref<number>(0),
     hoverId = ref<number>(-1);
 
-watch(() => id.value, (newValue: number) => {
-    set(newValue + 1);
-
-    emit('select', props.menu[id.value]);
-});
 
 watch(() => hoverId.value, (newValue: number) => {
-    set((newValue < 0 ? id.value : newValue) + 1);
+    const _ids = ids.value;
+
+    set((newValue < 0 ? _ids[_ids.length - 1] : newValue) + 1);
 });
 
 function setScroll(e: WheelEvent) {
@@ -98,13 +97,31 @@ function set(position: number = 0) {
 function click(idx: number, e: MouseEvent) {
     const btn = props.menu[idx];
 
-    props.selected ? id.value = idx : emit('select', btn);
-    
+    if (props.clearId === idx || !props.multiselect) {
+        ids.value = [idx];
+
+        set(idx + 1);
+    } else {
+        const _ids = ids.value;
+
+        if (props.clearId !== undefined && _ids.includes(props.clearId)) ids.value.splice(props.clearId, props.clearId + 1);
+        
+        ids.value = _ids?.includes(idx) ? _ids.filter(id => id !== idx) : [..._ids || [], idx];
+    }
+
+    if (ids.value.length < 1) {
+        ids.value = [0];
+
+        set(1);
+    }
+
+    if (props.selected) emit('select', btn);
+
     if (btn?.click) btn?.click(e, btn);
 }
 
-function hover(e: MouseEvent, idx: number) {
-    if (props.selected && id.value !== idx) {
+function hover(idx: number) {
+    if (props.selected && !ids.value.includes(idx)) {
         hoverId.value = idx;
     }
 }
@@ -112,9 +129,9 @@ function hover(e: MouseEvent, idx: number) {
 onMounted(() => {
     if (!props.selected) return;
 
-    id.value = props.defaultId || 0;
+    ids.value = [props.defaultId || 0];
         
-    set(id.value + 1);
+    set(ids.value[0]);
 });
 
 </script>
@@ -149,6 +166,16 @@ onMounted(() => {
         }
     }
 
+    &.multiselect {
+        ul {
+            li {
+                &.active {
+                    background-color: var(--background-secondary);
+                }
+            }
+        }
+    }
+
     ul {
         display: flex;
         position: relative;
@@ -159,6 +186,7 @@ onMounted(() => {
             display: flex;
             margin: 0 12px 0 0;
             padding: 6px 14px;
+            border-radius: 5px;
             align-items: center;
             transition: .2s;
             z-index: 2;
@@ -181,6 +209,7 @@ onMounted(() => {
 
             .hx-icon {
                 margin: 0 8px 0 0;
+                color: var(--color);
             }
 
             span {

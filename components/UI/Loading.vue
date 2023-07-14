@@ -1,7 +1,13 @@
 <template>
     <div :class="['ui-loading', type]">
         <svg class="spinner" width="65px" height="65px" viewBox="0 0 66 66" xmlns="http://www.w3.org/2000/svg"
-            :style="{ width: size, height: size }"
+            :style="{
+                width: size,
+                height: size,
+                '--color': color,
+                '--alpha-color': alphacolor,
+                '--background-color': bgcolor
+            }"
         >
             <circle class="path" fill="none" stroke-width="6" stroke-linecap="round" cx="33" cy="33" r="30"></circle>
         </svg>
@@ -16,6 +22,9 @@ import { PropType } from 'nuxt/dist/app/compat/capi';
 
 const props = defineProps({
     size: { type: String, default: '32px' },
+    color: { type: String, default: 'var(--main-color)' },
+    alphacolor: { type: String, default: 'var(--main-color-alt)' },
+    bgcolor: { type: String, default: 'var(--background-secondary)' },
     type: {
         type: String as PropType<'default' | 'circle'>,
         default: () => 'default'
@@ -76,11 +85,11 @@ $duration: 1.4s;
     }
     
     @keyframes Colors {
-        0% { stroke: var(--main-color); }
-        25% { stroke: var(--background-secondary); }
-        50% { stroke: var(--main-color-alt); }
-        75% { stroke: var(--background-secondary); }
-        100% { stroke: var(--main-color); }
+        0% { stroke: var(--color); }
+        25% { stroke: var(--background-color); }
+        50% { stroke: var(--alpha-color); }
+        75% { stroke: var(--background-color); }
+        100% { stroke: var(--color); }
     }
 
     @keyframes Dash {

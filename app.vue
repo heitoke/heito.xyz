@@ -5,11 +5,12 @@
         <Notifications/>
         <Windows/>
         <Header @changeSuperMode="superMode = $event"/>
+        
+        <Waiting @end="loading = false"/>
     </ClientOnly>
 
-    <Waiting :show="loading" :stage="stage"/>
 
-    <NuxtLayout :name="layoutName" :active="superMode" v-if="!loading">
+    <NuxtLayout :name="layoutName" :active="superMode" :style="{ opacity: loading ? 0 : 1 }">
         <ScrollBar v-slot="scrollProps" style="width: 100%">
             <NuxtPage
                 :class="['page', { 'to-left': $notifications.getActive }]"
@@ -44,28 +45,16 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-import { type IUser, EPermissions } from '~/types/api/user';
-import type { IConfigDefault } from '~/types/api/config';
-
-import type { IMessage } from '~/windows/Message.vue';
-
-const { $local, $api, $win, $router } = useNuxtApp();
-
-const route = useRoute();
+const { $local, $win } = useNuxtApp();
 
 
-const
-    $user = useUserStore(),
-    $notifications = useNotificationsStore(),
-    $windows = useWindowsStore(),
-    $config = useConfigStore();
+const $notifications = useNotificationsStore();
 
 const
     layoutName = ref<string>('super-vertical'),
     superMode = ref<boolean>(false),
     blocked = ref<boolean>(false),
-    loading = ref<boolean>(true),
-    stage = ref<number>(0);
+    loading = ref<boolean>(true);
 
 
 function initCustomization() {
@@ -98,133 +87,6 @@ function initCustomization() {
     style.setProperty('--transparent', colors.addAlpha('#010101', $local.params?.transparent as number));
 }
 
-function loadConfig(config: IConfigDefault) {
-    stage.value = 5; // Install config
-
-    const
-        hidePages = config.pages?.filter(p => !p.enabled),
-        page = hidePages.find(p => p.name === route.name || $router.currentRoute.value.matched.find(r => r.name === p.name)),
-        isAdmin = $user.getUser?.permissions?.includes(EPermissions.Site),
-        user = page?.users.find(u => u.user._id === $user.getUser?._id);
-
-    if (!isAdmin && !user?.allowed) {
-        blocked.value = Boolean(page);
-    } else blocked.value = false;
-
-    stage.value = 6; // Finish
-
-    setTimeout(() => loading.value = false, 1000);
-}
-
-async function initConfig() {
-    stage.value = 3; // Loading config
-
-    const [config, status] = await $api.configs.default();
-    
-    if (status !== 200) return $notifications.error({
-        message: 'Failed to load configuration',
-        status
-    });
-
-    $config.set(config);
-
-    stage.value = 4; // Scan config
-
-    loadConfig(config);
-}
-
-async function initUser() {
-    stage.value = 1; // Connecting user
-    
-    const [user, status, props] = await $api.users.me();
-
-    if (status !== 200) return $notifications.error({ message: 'Failed to load the user.' });
-
-    function setTokens(props: any) {
-        if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });
-        if (props?.token?.access) cookies.set('HX_AT', props?.token?.access, { days: 7 });
-        if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
-    }
-
-    stage.value = 2; // Connected user
-    
-    if (props?.confirmation?.userId) {
-        let password = '';
-
-        $windows.create({
-            component: 'Message',
-            close: false,
-            data: {
-                title: 'Account confirmation',
-                text: 'Enter the password of the account that was previously authorized. If you don\'t want to log in or don\'t know the password, you can just skip it.',
-                components: [
-                    {
-                        name: 'password',
-                        component: 'Textbox',
-                        props: {
-                            label: 'Password',
-                            type: 'password'
-                        },
-                        events: {
-                            input: (e: MouseEvent) => {
-                                password = (e.target as any)?.value as string;
-                            }
-                        }
-                    }
-                ],
-                buttons: [
-                    {
-                        label: 'Confirm',
-                        color: 'var(--green)',
-                        click: async (e: MouseEvent, data: any, windowId: number) => {
-                            const [user, status] = await $api.auth.login({ login: props?.confirmation?.userId, password });
-
-                            if (status !== 200) return $notifications.error({
-                                status,
-                                message: user?.message
-                            });
-                            
-                            $windows.close(windowId);
-                        }
-                    },
-                    {
-                        label: 'Leave it as it is',
-                        color: 'var(--red)',
-                        click: async (e: MouseEvent, data: any, windowId: number) => {
-                            const [user, status, props] = await $api.users.me('none');
-
-                            if (status !== 200) return $notifications.push({ message: 'Failed to load the user.' });
-
-                            setTokens(props);
-
-                            cookies.delete(['HX_RT', 'HX_AT']);
-
-                            $user.set(user);
-
-                            $windows.close(windowId);
-                        }
-                    }
-                ]
-            } as IMessage
-        });
-        return;
-    }
-
-    setTokens(props);
-
-    if (props?.merge) {
-        $windows.create({
-            component: 'UserMerge',
-            close: false,
-            data: props.merge
-        });
-    }
-
-    if (user?._id) $user.set(user);
-
-    initConfig();
-}
-
 function goTop(scrollProps: IScrollBar) {
     scrollProps.toScroll(0, scrollProps.scroll.top + 50);
 
@@ -248,8 +110,6 @@ useHead({
 
 onMounted(async () => {
     initCustomization();
-
-    initUser();
 
     $win.init();
 });

@@ -1,6 +1,6 @@
 <template>
     <Transition name="waiting">
-        <div class="waiting" v-if="show">
+        <div :class="['waiting', { error }]" v-if="show">
             <div class="content">
                 <h1>{{ title }}</h1>
                 
@@ -14,7 +14,12 @@
                             ></div>
                         </template>
                         <template #before>
-                            <Loading :size="'20px'" :type="'circle'" style="padding: 4px 4px 0 4px;"/>
+                            <Loading style="padding: 4px 4px 0 4px;"
+                                :size="'20px'"
+                                :type="'circle'"
+                                color="var(--red)"
+                                alphacolor="var(--red-alpha)"
+                            />
                         </template>
                     </Skeleton>
 
@@ -35,19 +40,24 @@
 
 <script lang="ts" setup>
 
-const { $socket } = useNuxtApp();
+import { type IUser, EPermissions } from '~/types/api/user';
+import type { IConfigDefault } from '~/types/api/config';
 
-console.log($socket);
+import type { IMessage } from '~/windows/Message.vue';
+
+
+const { $api, $socket } = useNuxtApp();
+
+const
+    $user = useUserStore(),
+    $notifications = useNotificationsStore(),
+    $windows = useWindowsStore(),
+    $config = useConfigStore();
 
 
 const
     user = useUserStore(),
     toolpics = useToolpicsStore();
-
-const props = defineProps({
-    show: { type: Boolean, default: true },
-    stage: { type: Number, default: 0 }
-});
 
 /* Stages
 
@@ -61,7 +71,14 @@ const props = defineProps({
 
 */
 
-const title = ref<string>('');
+const emit = defineEmits(['end']);
+
+
+const
+    show = ref<boolean>(true),
+    title = ref<string>(''),
+    stage = ref<number>(0),
+    error = ref<boolean>(false);
 
 const stages = [
     'Initialization of this nightspot',
@@ -87,8 +104,154 @@ const getUserAvatar = computed(() => {
 });
 
 
+
+function loadConfig(config: IConfigDefault) {
+    stage.value = 5; // Install config
+
+    // const
+    //     hidePages = config.pages?.filter(p => !p.enabled),
+    //     page = hidePages.find(p => p.name === route.name || $router.currentRoute.value.matched.find(r => r.name === p.name)),
+    //     isAdmin = $user.getUser?.permissions?.includes(EPermissions.Site),
+    //     user = page?.users.find(u => u.user._id === $user.getUser?._id);
+
+    // if (!isAdmin && !user?.allowed) {
+    //     blocked.value = Boolean(page);
+    // } else blocked.value = false;
+
+    stage.value = 6; // Finish
+
+    setTimeout(() => {
+        // show.value = false;
+
+        emit('end');
+    }, 1000);
+}
+
+async function initConfig() {
+    stage.value = 3; // Loading config
+
+    const [config, status] = await $api.configs.default();
+    
+    if (status !== 200) {
+        $notifications.error({
+            message: 'Failed to load configuration',
+            status
+        });
+
+        return error.value = true;
+    }
+
+    $config.set(config);
+
+    stage.value = 4; // Scan config
+
+    loadConfig(config);
+}
+
+async function initUser() {
+    stage.value = 1; // Connecting user
+    
+    const [user, status, props] = await $api.users.me();
+
+    if (status !== 200) {
+        $notifications.error({
+            message: 'Failed to load the user.'
+        });
+
+        return error.value = true;
+    }
+
+    function setTokens(props: any) {
+        if (props?.token?.refresh) cookies.set('HX_RT', props?.token?.refresh, { days: 365 });
+        if (props?.token?.access) cookies.set('HX_AT', props?.token?.access, { days: 7 });
+        if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
+    }
+
+    stage.value = 2; // Connected user
+    
+    if (props?.confirmation?.userId) {
+        let password = '';
+
+        $windows.create({
+            component: 'Message',
+            close: false,
+            data: {
+                title: 'Account confirmation',
+                text: 'Enter the password of the account that was previously authorized. If you don\'t want to log in or don\'t know the password, you can just skip it.',
+                components: [
+                    {
+                        name: 'password',
+                        component: 'Textbox',
+                        props: {
+                            label: 'Password',
+                            type: 'password'
+                        },
+                        events: {
+                            input: (e: MouseEvent) => {
+                                password = (e.target as any)?.value as string;
+                            }
+                        }
+                    }
+                ],
+                buttons: [
+                    {
+                        label: 'Confirm',
+                        color: 'var(--green)',
+                        click: async (e: MouseEvent, data: any, windowId: number) => {
+                            const [user, status] = await $api.auth.login({ login: props?.confirmation?.userId, password });
+
+                            if (status !== 200) return $notifications.error({
+                                status,
+                                message: user?.message
+                            });
+                            
+                            $windows.close(windowId);
+                        }
+                    },
+                    {
+                        label: 'Leave it as it is',
+                        color: 'var(--red)',
+                        click: async (e: MouseEvent, data: any, windowId: number) => {
+                            const [user, status, props] = await $api.users.me('none');
+
+                            if (status !== 200) return $notifications.push({ message: 'Failed to load the user.' });
+
+                            setTokens(props);
+
+                            cookies.delete(['HX_RT', 'HX_AT']);
+
+                            $user.set(user);
+
+                            $windows.close(windowId);
+                        }
+                    }
+                ]
+            } as IMessage
+        });
+        return;
+    }
+
+    setTokens(props);
+
+    if (props?.merge) {
+        $windows.create({
+            component: 'UserMerge',
+            close: false,
+            data: props.merge
+        });
+    }
+
+    if (user?._id) $user.set(user);
+
+    initConfig();
+}
+
+
+
 onMounted(() => {
     title.value = titles[Math.floor(Math.random() * titles.length)];
+
+    initUser();
 });
 
 
@@ -112,6 +275,22 @@ onMounted(() => {
     &-enter-active,
     &-leave-active {
         opacity: 0;
+    }
+
+    &.error {
+        .content {
+            .text {
+                color: var(--red);
+            }
+
+            .bar {
+                background-color: var(--red-alpha);
+
+                div {
+                    background-color: var(--red);
+                }
+            }
+        }
     }
 
     .content {

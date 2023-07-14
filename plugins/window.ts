@@ -9,15 +9,10 @@ interface IWin {
     set(width: number, height: number): void;
 }
 
-type TStorage = { [key: string]: any };
-
-let local = {},
-    session = {};
-
 export default defineNuxtPlugin({
-    name: 'storage',
+    name: 'window',
     parallel: true,
-    async setup(nuxtApp) {
+    async setup() {
         const size = reactive({ width: 0, height: 0 });
 
         function set(width: number, height: number) {

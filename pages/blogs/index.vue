@@ -30,9 +30,9 @@
             </div>
         </header>
 
-        <div class="title" style="margin: 64px 0 16px 0;">All blogs</div>
+        <div class="title" style="margin: 0 0 16px 0;">All blogs</div>
         <div class="list">
-            <div class="filters">
+            <div class="filters" v-if="config.getStatus === 'online'">
                 <Textbox label="Search blog" style="z-index: 1;"
                     @input="filters.text = $event.target.value"
                 />
@@ -89,7 +89,8 @@ const { $api, $win } = useNuxtApp();
 const
     user = useUserStore(),
     windows = useWindowsStore(),
-    notifications = useNotificationsStore();
+    notifications = useNotificationsStore(),
+    config = useConfigStore();
 
 const props = defineProps({});
 
@@ -213,6 +214,7 @@ onMounted(() => {
 
     header {
         display: flex;
+        margin: 0 0 64px 0;
     }
 
     .title {

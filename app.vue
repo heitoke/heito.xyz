@@ -5,7 +5,7 @@
         <Notifications/>
         <Windows/>
         <Header @changeSuperMode="superMode = $event"/>
-        
+
         <Waiting @end="loading = false"/>
     </ClientOnly>
 
@@ -45,10 +45,12 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-const { $local, $win } = useNuxtApp();
+const { $local, $win, $socket } = useNuxtApp();
 
 
-const $notifications = useNotificationsStore();
+const
+    $notifications = useNotificationsStore(),
+    config = useConfigStore();
 
 const
     layoutName = ref<string>('super-vertical'),
@@ -104,6 +106,20 @@ useHead({
         { name: 'og:site_name', content: 'heito.xyz' },
         { name: 'og:type', content: 'website' }
     ]
+});
+
+
+
+$socket?.on('connect', () => {
+    config.setStatus('online');
+
+    console.log('Connect');
+});
+
+$socket?.on('disconnect', () => {
+    config.setStatus('offline');
+
+    console.log('Disconnect');
 });
 
 

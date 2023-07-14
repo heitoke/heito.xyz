@@ -205,26 +205,6 @@ async function loadUserNotifications(userId: string) {
 }
 
 
-onMounted(() => {
-    notifications.push({
-        title: 'Hello',
-        color: 'var(--blue)',
-        icon: 'pacman',
-        message: 'Lorem text',
-        buttons: [
-            {
-                icon: 'pacman',
-                label: 'Hello world',
-                color: 'var(--main-color)'
-            },
-            {
-                icon: 'git',
-                label: 'Git'
-            }
-        ]
-    });
-});
-
 </script>
 
 <style lang="scss" scoped>

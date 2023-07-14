@@ -17,7 +17,7 @@
         />
 
         <div>
-            <div class="filters">
+            <div class="filters" v-if="config.getStatus === 'online' || type === 'repos'">
                 <Textbox :label="`Search ${type === 'repos' ? 'repositories' : 'projects'}`"
                     @input="filters.text = ($event.target as any)?.value"
                 />
@@ -39,7 +39,7 @@
             </div>
             
             
-            <NavBar class="topics"
+            <NavBar class="topics" v-if="config.getStatus === 'online' || type === 'repos'"
                 :menu="topics"
                 :multiselect="true"
                 :clear-id="0"
@@ -100,7 +100,8 @@ const route = useRoute();
 const   
     user = useUserStore(),
     notifications = useNotificationsStore(),
-    windows = useWindowsStore();
+    windows = useWindowsStore(),
+    config = useConfigStore();
 
 const props = defineProps({
     login: { type: String, default: 'heitoke' },

@@ -14,13 +14,13 @@
                         :style="{
                             color: user.getUser?.color && !user.getUser?.banner ? colors.altColor(user.getUser?.color) : '#fff'
                         }"
-                    >{{ user.getUser?.nickname || user.getUser?.username || user.getUser?._id || 'Guest' }}</div>
+                    >{{ getNickname }}</div>
                 </Transition>
 
-                <div :class="['avatar', { 'a-loading': !user.getUser?._id }]"
+                <div :class="['avatar', { 'a-loading': !user.getUser?._id && config.getStatus !== 'offline' }]"
                     @click.prevent.stop="active ? openProfile() : open($event, root, () => active = true, () => active = false)"
                 >
-                    <div :style="{ '--avatar': `url('${user.getUser?.avatar || getAvatar({ nameId: user.getUser?._id })}')` }" v-if="user.getUser?._id"></div>
+                    <div :style="{ '--avatar': `url('${getUserAvatar}')` }" v-if="user.getUser?._id || config.getStatus === 'offline'"></div>
                     
                     <Loading type="circle" v-else/>
                 </div>
@@ -61,11 +61,21 @@ const
     user = useUserStore(),
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
+    config = useConfigStore(),
     { locale, t, availableLocales } = useI18n();
 
 const root = ref<HTMLElement | null>(null);
 
 const active = ref<boolean>(false);
+
+
+const getNickname = computed(() => {
+    return user.getUser?.nickname || user.getUser?.username || user.getUser?._id || 'Guest';
+});
+
+const getUserAvatar = computed(() => {
+    return user.getUser?.avatar || getAvatar({ nameId: user.getUser?._id || 'guast' });
+});
 
 const getProfileMenu = computed(() => {
     const userButtons = [

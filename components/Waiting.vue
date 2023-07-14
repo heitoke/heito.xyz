@@ -31,6 +31,12 @@
                 <Height :showed="$socket?.connected || false">
                     <Text class="sockets" text="Sockets are connected" style="margin: 8px 0 0 0;"/>
                 </Height>
+
+                <Height :showed="error" @click="close()">
+                    <Button color="var(--red-alpha)" style="margin: 12px 0 0 0;">
+                        <span>Log in offline mode</span>
+                    </Button>
+                </Height>
             </div>
 
             <div class="footer">Preparations are underway, thanks for waiting</div>
@@ -44,6 +50,7 @@ import { type IUser, EPermissions } from '~/types/api/user';
 import type { IConfigDefault } from '~/types/api/config';
 
 import type { IMessage } from '~/windows/Message.vue';
+import { config } from 'process';
 
 
 const { $api, $socket } = useNuxtApp();
@@ -104,6 +111,13 @@ const getUserAvatar = computed(() => {
 });
 
 
+function close() {
+    show.value = false;
+
+    emit('end');
+
+    $config.setStatus(error.value ? 'offline' : 'online');
+}
 
 function loadConfig(config: IConfigDefault) {
     stage.value = 5; // Install config
@@ -120,11 +134,7 @@ function loadConfig(config: IConfigDefault) {
 
     stage.value = 6; // Finish
 
-    setTimeout(() => {
-        // show.value = false;
-
-        emit('end');
-    }, 1000);
+    setTimeout(() => close(), 1000);
 }
 
 async function initConfig() {

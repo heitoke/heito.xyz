@@ -17,7 +17,7 @@
                         @contextmenu="user.getPer(EPermissions.Site) ? contextMenu.create(getAdminContext) : null"
                     >heito.xyz</RouterLink>
 
-                    <div class="online"
+                    <div class="online" v-if="config.getStatus === 'online'"
                         @click="open($event, _online, () => getListOnlineUsers(online.isActive), () => online.isActive = false)"
                     >
                         <span>Online:</span> {{ online.count }}
@@ -39,7 +39,7 @@
         </div>
 
         <div>
-            <div :class="['search']"
+            <div :class="['search']" v-if="config.getStatus === 'online'"
                 @click="search.isActive ? null : open($event, _search, () => search.isActive = true, () => search.isActive = false)"
                 @mouseenter="search.isActive ? null : toolpics.set({ title: 'Search', position: 'bottom' })"
             >
@@ -125,7 +125,8 @@ const
     toolpics = useToolpicsStore(),
     contextMenu = useContextMenusStore(),
     notifications = useNotificationsStore(),
-    windows = useWindowsStore();
+    windows = useWindowsStore(),
+    config = useConfigStore();
 
 const
     root = ref<HTMLElement | null>(null),
@@ -172,8 +173,6 @@ const getAdminContext = computed(() => {
 
 
 $socket.on('users:online', data => {
-    console.log(data);
-    
     if (data?.list?.length! > 0) {
         online.value.list = data?.list || [];
     }

@@ -1,10 +1,10 @@
 <template>
     <div class="main">
         <div class="hello-world">
-            <div class="content">
+            <!-- <div class="content">
                 <Text class="title" :text="$t('page.main.title')"/>
                 <Text class="text" :text="$t('page.main.text')"/>
-            </div>
+            </div> -->
 
             <div class="space">
                 The planets are not working at the moment, but soon...

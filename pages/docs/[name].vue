@@ -76,9 +76,9 @@
                                 <Icon name="arrow-left"/>
                             </header>
 
-                            <AnimationHeight :showed="route.open">
+                            <Height :showed="route.open">
                                 <APIRouteData :route="route"/>
-                            </AnimationHeight>
+                            </Height>
                         </li>
                     </TransitionGroup>
                 </ul>
@@ -97,8 +97,6 @@
 import NavBar from '~/components/content/NavBar.vue';
 
 import APIRouteData from '~/components/models/api/APIRouteData.vue';
-
-import AnimationHeight from '~/components/animation/Height.vue';
 
 import { ICategory, IRoute } from '~/types/api';
 import { listPermissions } from '~/types/api/user';

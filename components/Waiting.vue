@@ -22,6 +22,10 @@
                         <div :style="{ width: `${100 * (stage + 1) / stages.length}%` }"></div>
                     </div>
                 </div>
+
+                <Height :showed="$socket?.connected || false">
+                    <Text class="sockets" text="Sockets are connected" style="margin: 8px 0 0 0;"/>
+                </Height>
             </div>
 
             <div class="footer">Preparations are underway, thanks for waiting</div>
@@ -30,6 +34,11 @@
 </template>
 
 <script lang="ts" setup>
+
+const { $socket } = useNuxtApp();
+
+console.log($socket);
+
 
 const
     user = useUserStore(),
@@ -144,6 +153,12 @@ onMounted(() => {
             background-size: cover;
             background-position: center;
             background-color: var(--background-secondary);
+        }
+
+        .sockets {
+            color: var(--main-color);
+            font-size: 12px;
+            font-weight: 700;
         }
     }
 

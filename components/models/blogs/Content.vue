@@ -50,7 +50,7 @@
                             })"
                         />
 
-                        <AnimationHeight :showed="edit">
+                        <Height :showed="edit">
                             <ul class="buttons">
                                 <li v-for="btn of getBlockButtons" :key="btn.icon"
                                     @mouseenter="toolpics.set({ text: btn.label })"
@@ -59,7 +59,7 @@
                                     <Icon :name="btn.icon"/>
                                 </li>
                             </ul>
-                        </AnimationHeight>
+                        </Height>
                     </div>
                     
                     <ContentButtons
@@ -131,7 +131,7 @@
             />
         </div>
 
-        <AnimationHeight :showed="edit">
+        <Height :showed="edit">
             <Button style="margin: 32px 0 0 0; padding: 24px 0;"
                 @click="update(content => {
                     content.push([{ size: 1, childrens: [[{ size: 1 }]] }])
@@ -139,7 +139,7 @@
             >
                 <span style="font-size: 20px; font-weight: 700;">New row</span>
             </Button>
-        </AnimationHeight>
+        </Height>
     </div>
 </template>
 
@@ -148,8 +148,6 @@
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
 import Markdown from '~/components/content/Markdown.vue';
-
-import AnimationHeight from '~/components/animation/Height.vue';
 
 import ContentButtons from './ContentButtons.vue';
 

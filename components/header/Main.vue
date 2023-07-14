@@ -28,9 +28,9 @@
                     <ul class="blur" ref="_online" v-if="online.isActive">
                         <Loading v-show="online.list?.length < 1"/>
 
-                        <!-- <User v-for="user of online.list" :key="user._id"
+                        <User v-for="user of online.list" :key="user._id"
                             :user="user"
-                        /> -->
+                        />
                     </ul>
                 </Transition>
             </div>
@@ -110,12 +110,14 @@ import UserMenu from './UserMenu.vue';
 
 import ScrollBar from '~/components/content/ScrollBar.vue';
 
+import User from '~/components/models/user/Card.vue';
+
 import { useHeaderStore } from '~/stores/header';
 
 import { IContextMenu } from '~/types/stores/contextMenu';
 import { type IUser, EPermissions } from '~/types/api/user';
 
-const { $api, $local } = useNuxtApp();
+const { $api, $local, $socket } = useNuxtApp();
 
 const
     header = useHeaderStore(),
@@ -140,7 +142,7 @@ const
     online = ref({
         isActive: false,
         count: 0,
-        list: [],
+        list: [] as Array<IUser>,
         lastedAt: 0
     }),
     search = ref({
@@ -167,14 +169,19 @@ const getAdminContext = computed(() => {
     } as IContextMenu
 });
 
-// 'users:online'(data) {
-//     if (data?.online) {
-//         this.online.count = data?.online;
-//     } else if (data?.list) {
-//         this.online.list = data?.list as IUser[];
-//         this.online.count = data?.list?.length || 0;
-//     }
-// }
+
+
+$socket.on('users:online', data => {
+    console.log(data);
+    
+    if (data?.list?.length! > 0) {
+        online.value.list = data?.list || [];
+    }
+
+    online.value.count = data?.online || data?.list?.length || 1;
+});
+
+
 
 function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => {}, callbackFalse: Function = () => {}) {
     callbackTrue();
@@ -197,7 +204,7 @@ function getListOnlineUsers(boolean: boolean) {
 
     online.value.lastedAt = Date.now();
 
-    // this.$socket.emit('users:online', 'list');
+    $socket.emit('users:online', 'list');
 }
 
 async function searchUsers() {
@@ -211,6 +218,7 @@ async function searchUsers() {
 
     search.value.users = (result as any).results;
 }
+
 
 onMounted(() => {
     darkTheme.value = $local.get('theme') === 'dark';

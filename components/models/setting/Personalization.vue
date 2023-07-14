@@ -49,7 +49,7 @@
                 <Icon name="arrow-left"/>
             </header>
 
-            <AnimationHeight :showed="!hide">
+            <Height :showed="!hide">
                 <div class="block">
                     <header>
                         <span>Change accent color in avatars</span>
@@ -63,7 +63,7 @@
                         />
                     </div>
                 </div>
-            </AnimationHeight>
+            </Height>
         </div>
 
         <div class="block">
@@ -105,8 +105,6 @@
 </template>
 
 <script lang="ts" setup>
-
-import AnimationHeight from '~/components/animation/Height.vue';
 
 const { $local } = useNuxtApp();
 

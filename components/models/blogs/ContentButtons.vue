@@ -1,17 +1,15 @@
 <template>
-    <AnimationHeight :showed="edit">
+    <Height :showed="edit">
         <div class="buttons" :style="`border-color: ${color};`">
             <Button v-for="btn of buttons" :key="btn.label"
                 :color="btn?.color"
                 @click="btn?.click ? btn?.click() : null"
             >{{ btn?.label }}</Button>
         </div>
-    </AnimationHeight>
+    </Height>
 </template>
 
 <script lang="ts" setup>
-
-import AnimationHeight from '~/components/animation/Height.vue';
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 

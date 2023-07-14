@@ -9,7 +9,7 @@
                     type: active ? 'default' : 'mini'
                 }"/>
 
-                <AnimationHeight :showed="active && list?.length > (track?.id ? 0 : 1)">
+                <Height :showed="active && list?.length > (track?.id ? 0 : 1)">
                     <ScrollBar max-height="60vh">
                         <Transition name="fadeHeight">
                             <div class="list">
@@ -21,7 +21,7 @@
                             </div>
                         </Transition>
                     </ScrollBar>
-                </AnimationHeight>
+                </Height>
             </div>
         </Transition>
     </div>
@@ -37,8 +37,6 @@
 import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import Activity, { type IContent } from './Activity.vue';
-
-import AnimationHeight from '~/components/animation/Height.vue';
 
 type TTrack = {
     id?: string;

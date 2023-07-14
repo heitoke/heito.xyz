@@ -13,7 +13,7 @@
                 :class="['page', { 'to-left': $notifications.getActive }]"
             />
 
-            <!-- <ClientOnly>
+            <ClientOnly>
                 <div class="go-top" v-show="scrollProps.scroll.top > ($win.size?.width / 2)"
                     @click="goTop(scrollProps)"
                 >
@@ -21,7 +21,7 @@
                 </div>
     
                 <Footer v-if="!($route.meta.hide as any)?.includes('footer')"/>
-            </ClientOnly> -->
+            </ClientOnly>
         </ScrollBar>
     </NuxtLayout>
 </template>

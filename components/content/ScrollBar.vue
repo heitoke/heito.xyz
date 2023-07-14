@@ -61,6 +61,11 @@ const
     max = ref({ width: 0, height: 0 }),
     client = ref({ width: 0, height: 0 });
 
+let lastPosition: { x: number; y: number; } = {
+    x: 0,
+    y: 0
+};
+
 function refs() {
     const
         container = root.value,
@@ -119,12 +124,16 @@ function observeHeight() {
     resizeObserver.observe(content);
 }
 
-function move(ev: PointerEvent) {
+function move(event: PointerEvent) {
     if (!droped.value) return;
 
-    const y = ev.clientY > save.value.y ? top.value + ((ev.clientY - save.value.y) * props.boost) : top.value - ((save.value.y - ev.clientY) * props.boost);
+    const directionY = event?.movementY || (event as any)?.mozMovementY || (event as any)?.webkitMovementY || 0;
+    
+    const y = directionY > 0 ? top.value + (directionY * props.boost) : top.value - (Math.abs(directionY) * props.boost);
 
-    save.value = { x: ev.clientX, y: ev.clientY };
+    // const y = ev.clientY > save.value.y ? top.value + ((ev.clientY - save.value.y) * props.boost) : top.value - ((save.value.y - ev.clientY) * props.boost);
+
+    // save.value = { x: ev.clientX, y: ev.clientY };
 
     toScroll(0, y);
 }

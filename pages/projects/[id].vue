@@ -28,14 +28,14 @@ if (status === 200) {
 
 
 onMounted(() => {
-    $router.push('/');
+    // $router.push('/projects');
     
-    if (status !== 200) return;
+    // if (status !== 200) return;
 
-    windows.create({
-        component: 'ProjectProfile',
-        data: project._id
-    });
+    // windows.create({
+    //     component: 'ProjectProfile',
+    //     data: project._id
+    // });
 });
 
 </script>

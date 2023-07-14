@@ -5,18 +5,15 @@
                 {
                     icon: 'images',
                     label: 'Projects',
-                    value: 'projects',
                     click: () => $router.push(`/projects`)
                 },
                 {
                     icon: 'repo',
-                    label: 'Repositories',
-                    value: 'repos',
+                    label: 'Repositories' + (getReposId ? ` (${getReposId})` : ''),
                     click: () => $router.push(`/repos`)
                 }
             ]"
             :default-id="['projects', 'repos'].findIndex(p => p === type)"
-            @select="$router.push(`/${$event.value}`)"
         />
 
         <div style="width: 100%;">
@@ -45,17 +42,21 @@
 
             <Alert v-else-if="(type === 'repos' && getListRepos?.length < 1) || (type === 'projects' && getListProjects?.length < 1)"/>
 
-            <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'projects'">
-                <Project v-for="(project, idx) in getListProjects" :key="idx" :project="project"
-                    :style="{ '--d': `${.05 * (idx & 5)}s` }"
-                />
-            </TransitionGroup>
-            
-            <TransitionGroup tag="div" class="grid" name="projects" v-if="type === 'repos'">
-                <Repository v-for="(repo, idx) in getListRepos" :key="idx" :repository="repo"
-                    :style="{ '--d': `${.05 * (idx % 30)}s` }"
-                />
-            </TransitionGroup>
+            <div class="grid" v-if="type === 'projects'">
+                <TransitionGroup name="projects">
+                    <Project v-for="(project, idx) in getListProjects" :key="idx" :project="project"
+                        :style="{ '--d': `${.05 * (idx & 5)}s` }"
+                    />
+                </TransitionGroup>
+            </div>
+
+            <div class="grid" v-if="type === 'repos'">
+                <TransitionGroup name="projects">
+                    <Repository v-for="(repo, idx) in getListRepos" :key="idx" :repository="repo"
+                        :style="{ '--d': `${.05 * (idx % 30)}s` }"
+                    />
+                </TransitionGroup>
+            </div>
         </div>
     </div>
 </template>
@@ -75,7 +76,11 @@ import { EPermissions } from '~/types/api/user';
 import type { IScrollBar } from '~/components/content/ScrollBar.vue';
 import type { IMessage } from '~/windows/Message.vue';
 
+type Type = 'projects' | 'repos';
+
 const { $api } = useNuxtApp();
+
+const route = useRoute();
 
 const   
     user = useUserStore(),
@@ -84,14 +89,15 @@ const
 
 const props = defineProps({
     login: { type: String, default: 'heitoke' },
-    type: {
-        type: String as PropType<'projects' | 'repos'>,
-        default: 'projects'
-    },
+    // type: {
+    //     type: String as PropType<'projects' | 'repos'>,
+    //     default: 'projects'
+    // },
     scrollProps: { type: Object as PropType<IScrollBar> }
 });
 
-const   
+const
+    type = ref<Type>(route.params?.name as Type),
     filters = ref({ text: '', type: 'name' }),
     projects = ref<Array<IProject>>([]),
     repos = ref<Array<IRepository>>([]),
@@ -163,6 +169,10 @@ const getListRepos = computed(() => {
     return sort.filter(({ name, description, owner, language }) => regex.test(name) || regex.test(description) || regex.test(owner?.login) || regex.test(language));
 });
 
+const getReposId = computed(() => {
+    return route.params.id;
+});
+
 
 watch(() => props.scrollProps?.scroll?.top!, (newValue: number) => {
     if ((newValue + 1) >= props.scrollProps?.scroll.max.height! && !loading.value && (repos.value?.length % 30) === 0) {
@@ -172,7 +182,7 @@ watch(() => props.scrollProps?.scroll?.top!, (newValue: number) => {
     }
 });
 
-watch(() => props.type, (newValue: string) => {
+watch(type, (newValue) => {
     if (newValue === 'repos' && repos.value?.length < 1) {
         loadRepos();
     }
@@ -201,7 +211,7 @@ async function loadProjects() {
 async function loadRepos(page: number = 1) {
     loading.value = true;
 
-    let res = await fetch(`https://api.github.com/users/${props.login}/repos?page=${page}`),
+    let res = await fetch(`https://api.github.com/users/${route.params.id || 'heitoke'}/repos?page=${page}`),
         _repos = await res.json();
 
     if (res.status !== 200) {
@@ -272,16 +282,45 @@ async function createProject() {
 
 
 onMounted(() => {
-    if (props.type === 'repos') {
-        loadRepos();
-    } else if (props.type === 'projects') {
-        loadProjects();
+    switch(type.value) {
+        case 'repos':
+            loadRepos();
+            break;
+        default:
+            loadProjects();
+            break;
     }
 });
 
 
 useSeoMeta({
-    title: props.type === 'repos' ? `Repositories (${props.login})` : 'Projects'
+    title: type.value === 'repos' ? 'Repositories' + (getReposId.value ? ` (${getReposId.value})` : '') : 'Projects'
+});
+
+
+/*
+
+{
+            name: 'projects',
+            path: '/:name(projects|repos)',
+            component: Projects,
+            props: ({ params, query }) => ({
+                login: query?.login || 'heitoke',
+                type: params?.name
+            })
+        },
+        {
+            name: 'user-repos',
+            path: '/repos/:login',
+            redirect: (to) => `/repos?login=${to.params.login || 'heitoke'}`
+        }
+*/
+
+definePageMeta({
+    path: '/:name(projects|repos)',
+    alias: [
+        '/:name(repos)/:id'
+    ]
 });
 
 </script>
@@ -298,7 +337,7 @@ useSeoMeta({
 
 .page.projects {
     display: flex;
-    margin: 12px 0 0 0;
+    margin: 32px 0 0 0;
     padding: 0 10%;
     width: 100vw;
     height: auto;

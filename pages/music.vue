@@ -13,7 +13,7 @@
                     <header style="display: flex;">
                         <Text class="title" text="Recently"/>
 
-                        <Skeleton style="width: 24px; height: 24px;" :show="!recently.loading && recently.list.length > 0">
+                        <Skeleton style="width: 24px; height: 24px;" :show="!recently.loading && recently.list.length > 0" v-if="config.getStatus === 'online'">
                             <Icon name="damage-void" class="reload"
                                 @pointerenter="toolpics.set({ text: 'Reload' })"
                                 @click="loadRecently()"
@@ -28,16 +28,16 @@
                         />
                     </CarouselTab>
 
-                    <Loading v-else-if="recently.loading"/>
+                    <Loading v-else-if="recently.loading && config.getStatus === 'online'"/>
 
-                    <Alert v-else-if="!recently.loading && recently.list.length < 1"/>
+                    <Alert type="mini" v-if="(!recently.loading && recently.list.length < 1) || config.getStatus === 'offline'"/>
                 </section>
 
                 <section class="top tracks" style="margin: 12px 0 0 0;">
                     <header>
                         <Text class="title" text="Top tracks"/>
 
-                        <Skeleton style="width: 169px; height: 32px;" :show="!top.tracks.loading && top.tracks.list.length > 0">
+                        <Skeleton style="width: 169px; height: 32px;" :show="!top.tracks.loading && top.tracks.list.length > 0" v-if="config.getStatus === 'online'">
                             <Select label="Period" :value="top.tracks.period" :menu="termMenu" @select="loadTopTracks('tracks', $event.value as any)"/>
                         </Skeleton>
                     </header>
@@ -49,9 +49,9 @@
                         />
                     </CarouselTab>
 
-                    <Loading v-else-if="top.tracks.loading"/>
+                    <Loading v-else-if="top.tracks.loading && config.getStatus === 'online'"/>
 
-                    <Alert v-else-if="!top.tracks.loading && top.tracks.list.length < 1"/>
+                    <Alert type="mini" v-if="(!top.tracks.loading && top.tracks.list.length < 1) || config.getStatus === 'offline'"/>
                 </section>
             </div>
 
@@ -59,7 +59,7 @@
                 <header>
                     <Text class="title" text="Top artists"/>
 
-                    <Skeleton style="width: 169px; height: 32px;" :show="!top.artists.loading && top.artists.list.length > 0">
+                    <Skeleton style="width: 169px; height: 32px;" :show="!top.artists.loading && top.artists.list.length > 0" v-if="config.getStatus === 'online'">
                         <Select label="Period" :value="top.artists.period" :menu="termMenu" @select="loadTopTracks('artists', $event.value as any)"/>
                     </Skeleton>
                 </header>
@@ -71,9 +71,9 @@
                     />
                 </CarouselTab>
 
-                <Loading v-else-if="top.artists.loading"/>
+                <Loading v-else-if="top.artists.loading && config.getStatus === 'online'"/>
 
-                <Alert v-else-if="!top.artists.loading && top.artists.list.length < 1"/>
+                <Alert type="mini" v-if="(!top.artists.loading && top.artists.list.length < 1) || config.getStatus === 'offline'"/>
             </section>
         </div>
 
@@ -100,9 +100,9 @@
                 />
             </ul>
 
-            <Loading v-else-if="playlists.loading"/>
+            <Loading v-else-if="playlists.loading && config.getStatus === 'online'"/>
 
-            <Alert v-else-if="!playlists.loading && playlists.list.length < 1"/>
+            <Alert style="margin: 12px 0 0 0;" v-if="(!playlists.loading && playlists.list.length < 1) || config.getStatus === 'offline'"/>
         </section>
     </div>
 </template>
@@ -126,7 +126,9 @@ const { $api } = useNuxtApp();
 
 const route = useRoute();
 
-const toolpics = useToolpicsStore();
+const
+    toolpics = useToolpicsStore(),
+    config = useConfigStore();
 
 const props = defineProps({
     scrollProps: { type: Object as PropType<IScrollBar> }

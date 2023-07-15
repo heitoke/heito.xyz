@@ -28,8 +28,9 @@
             </ul>
         </header>
 
-        <Loading v-else-if="loading"/>
-        <Alert v-else-if="!loading && !playlist?.id"/>
+        <Loading v-else-if="loading && config.getStatus === 'online'"/>
+        
+        <Alert v-if="(!loading && !playlist?.id) || config.getStatus === 'offline'"/>
 
         <div style="margin: 32px 0 0 0;" v-if="getTracks?.length > 0">
             <div class="filters">
@@ -138,7 +139,9 @@ const { $api } = useNuxtApp();
 
 const route = useRoute();
 
-const toolpics = useToolpicsStore();
+const
+    toolpics = useToolpicsStore(),
+    config = useConfigStore();
 
 
 const props = defineProps({

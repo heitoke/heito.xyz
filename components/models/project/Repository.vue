@@ -53,6 +53,8 @@ import { PropType } from 'nuxt/dist/app/compat/capi';
 
 import type { IRepository } from '~/types/api/project';
 
+import { replaceImageLanguage } from '~/types/api/stats';
+
 const toolpics = useToolpicsStore();
 
 const props = defineProps({
@@ -62,12 +64,7 @@ const props = defineProps({
 const getLangImage = computed(() => {
     const lang = props.repository?.language?.toLocaleLowerCase(); 
 
-    const replace: { [key: string]: string } = {
-        'c#': 'csharp',
-        'c++': 'cpp'
-    };
-
-    return replace[lang as any] || lang;
+    return replaceImageLanguage[lang!] || lang;
 });
 
 function refirect(url: string) {

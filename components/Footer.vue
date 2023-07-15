@@ -11,7 +11,7 @@
                     <span>heito.xyz</span>
                 </div>
 
-                <Select label="Language" position="top" :value="getLangName"
+                <Select :label="$t('global.lang[1]')" position="top" :value="getLangName"
                     :menu="getListLangs"
                 />
             </div>
@@ -36,11 +36,11 @@
 
 <script lang="ts" setup>
 
-// import type { TLangName } from '../plugins/langs';
+import { useI18n } from 'vue-i18n';
 
-const { $local } = useNuxtApp();
+const { $local, $langs, $api } = useNuxtApp();
 
-// const { locale, locales, availableLocales, setLocale } = useI18n();
+const { locale } = useI18n();
 
 const groups = [
     {
@@ -68,33 +68,35 @@ const groups = [
 ];
 
 const getLangName = computed(() => {
-    return 'en'; //locale.value;
+    return locale.value;
 });
 
 const getListLangs = computed(() => {
     let list: any[] = [];
 
-    // for (let lang of locales.value) {
-    //     list.push({
-    //         label: (lang as any).name,
-    //         text:  locale.value === (lang as any).code ? 'Used' : '',
-    //         icon: 'translate',
-    //         value: (lang as any).code,
-    //         click: () => {
-    //             setLang((lang as any).code);
-    //         }
-    //     });
-    // }
+    for (let lang of $langs.list) {
+        list.push({
+            // @ts-ignore
+            label: lang.names[locale.value],
+            // @ts-ignore
+            text: locale.value === lang.code ? 'Used' : lang.names[lang.code],
+            icon: 'translate',
+            value: lang.code,
+            click: () => {
+                setLang(lang.code);
+            }
+        });
 
+    }
     return list;
 });
 
 
-function setLang(name: string) {
-    // setLocale(name);
+function setLang(code: string) {
+    locale.value = code;
     
-    $local.set('lang', name);
-    document.querySelector('html')?.setAttribute('lang', name);
+    $local.set('lang', code);
+    document.querySelector('html')?.setAttribute('lang', code);
 }
 
 function redirect(url: string) {

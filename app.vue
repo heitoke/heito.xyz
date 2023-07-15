@@ -45,10 +45,11 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-const { $local, $win, $socket } = useNuxtApp();
+const { $local, $win, $socket, $api } = useNuxtApp();
 
 
 const
+    user = useUserStore(),
     $notifications = useNotificationsStore(),
     config = useConfigStore();
 
@@ -111,16 +112,26 @@ useHead({
 
 
 
-$socket?.on('connect', () => {
+$socket?.on('connect', async () => {
     config.setStatus('online');
 
     console.log('Connect');
+
+    if (user.getUser?._id) return;
+
+    const [result, status] = await $api.users.me();
+
+    if (status !== 200) return;
+
+    user.set(result);
 });
 
 $socket?.on('disconnect', () => {
     config.setStatus('offline');
 
     console.log('Disconnect');
+
+    user.set({} as any);
 });
 
 

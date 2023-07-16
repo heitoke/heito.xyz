@@ -23,7 +23,7 @@ export interface IMenuButton {
     img: string;
 }
 
-const contextMenu = useContextMenusStore();
+const contextMenu = useContextMenuStore();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -59,7 +59,7 @@ watch(() => props.menu?.length, () => {
 
 
 function open(text: string = '') {
-    contextMenu.close('ui-select');
+    contextMenu.close();
 
     const regex = new RegExp(text, 'g');
 
@@ -69,7 +69,7 @@ function open(text: string = '') {
 
     contextMenu.create({
         name: 'ui-select',
-        position: [props.position, 'center', 'fixed-target'],
+        position: [props.position, 'center', 'fixed'],
         event: root?.value!,
         components: sort?.length! < 1 ? [
             {
@@ -90,7 +90,7 @@ function open(text: string = '') {
 
                     emit('select', getItem.value);
 
-                    contextMenu.close('ui-select');
+                    contextMenu.close();
 
                     isOpen.value = false;
                 }

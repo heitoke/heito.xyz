@@ -52,7 +52,7 @@ const emit = defineEmits(['add', 'update']);
 const slots = defineSlots();
 
 const
-    contextMenu = useContextMenusStore(),
+    contextMenu = useContextMenuStore(),
     windows = useWindowsStore();
 
 const props = defineProps({
@@ -198,7 +198,7 @@ function linkContextMenu(idx: number) {
 
     contextMenu.create({
         name: `links:${link?.label}`,
-        position: ['fixed-target', 'center', 'bottom'],
+        position: ['fixed', 'center', 'bottom'],
         event: root.value?.querySelector(`ul li:nth-child(${idx + 1})`)!,
         buttons: [
             {

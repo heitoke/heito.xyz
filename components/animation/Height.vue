@@ -5,7 +5,9 @@
         @leave="leave($event as HTMLElement)"
         @after-leave="after($event as HTMLElement)"
     >
-        <div class="height-content" v-if="showed">
+        <div class="height-content" v-if="showed"
+            :style="style"
+        >
             <slot/>
         </div>
     </Transition>
@@ -14,7 +16,12 @@
 <script lang="ts" setup>
 
 const props = defineProps({
-    showed: { type: Boolean }
+    showed: { type: Boolean },
+    opacity: { type: Boolean, default: false }
+});
+
+const style = ref({
+    '--opacity': props.opacity ? 0 : 1
 });
 
 function enter(el: HTMLElement) {
@@ -51,6 +58,7 @@ function leave(el: HTMLElement) {
 .height-leave-active {
     transition: height .3s ease-in-out;
     overflow: hidden;
+    opacity: var(--opacity);
 }
 
 .height-enter,

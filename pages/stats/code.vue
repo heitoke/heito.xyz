@@ -187,7 +187,10 @@ useSeoMeta({
 
 definePageMeta({
     title: 'Stats',
-    icon: 'stats'
+    icon: 'stats',
+    alias: [
+        '/stats'
+    ]
 });
 
 

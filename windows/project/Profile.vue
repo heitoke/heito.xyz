@@ -102,7 +102,7 @@ const root = ref<HTMLElement | null>(null);
 
 const
     user = useUserStore(),
-    contextMenu = useContextMenusStore(),
+    contextMenu = useContextMenuStore(),
     notifications = useNotificationsStore(),
     windows = useWindowsStore();
 
@@ -409,7 +409,7 @@ function buttonProjectSettings() {
 function setButtons() {
     const contextMenuUserSettings = (e: Event) => contextMenu.create({
         name: 'window:user:settings',
-        position: ['left', 'fixed-target'],
+        position: ['left', 'center', 'fixed'],
         event: e,
         buttons: [
             ...(isModer.value ? [buttonProjectSettings(), { separator: true } as IContextMenuButton] : []),
@@ -523,7 +523,7 @@ function openInvateWindow() {
 function memberContextMenu(e: MouseEvent, idx: number) {
     contextMenu.create({
         name: `project:members:${idx}`,
-        position: ['bottom', 'center', 'fixed-target'],
+        position: ['bottom', 'center', 'fixed'],
         event: root.value?.querySelector(`section.members .user:nth-child(${idx + 1})`)!,
         buttons: [
             {
@@ -550,7 +550,7 @@ function memberContextMenu(e: MouseEvent, idx: number) {
 function tagSettings(tag: IButton) {
     contextMenu.create({
         name: `project:tags:${tag.label}`,
-        position: ['bottom', 'center', 'fixed-target'],
+        position: ['bottom', 'center', 'fixed'],
         buttons: [
             {
                 label: 'Remove tag',

@@ -60,7 +60,7 @@ const root = ref<HTMLElement | null>(null);
 const
     user = useUserStore(),
     notifications = useNotificationsStore(),
-    contextMenus = useContextMenusStore(),
+    contextMenus = useContextMenuStore(),
     windows = useWindowsStore();
 
 const getMaxCountNotification = computed<number>(() => {
@@ -170,7 +170,7 @@ function getNotification(notification: ILog): INotification {
 function notificationContextMenu(idx: number, notificationId: number) {
     contextMenus.create({
         name: `notifications:${idx}`,
-        position: ['left', 'fixed-target'],
+        position: ['left', 'fixed'],
         event: root.value?.querySelector(`.panel .list.menu .notification:nth-child(${idx + 1})`)!,
         buttons: [
             {

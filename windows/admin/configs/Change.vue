@@ -176,7 +176,7 @@ const
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
     toolpics = useToolpicsStore(),
-    contextMenu = useContextMenusStore();
+    contextMenu = useContextMenuStore();
 
 const props = defineProps({
     windowId: { type: Number },
@@ -316,7 +316,7 @@ function contextMenuPage(name: string) {
 
     contextMenu.create({
         name: `config:pages:${page.name}`,
-        position: ['bottom', 'center', 'fixed-target'],
+        position: ['bottom', 'center', 'fixed'],
         buttons: [
             {
                 label: 'Change status',

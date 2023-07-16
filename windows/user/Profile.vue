@@ -27,7 +27,7 @@
                     <li class="permissions" v-show="getUserPermissions?.length > 0" style="cursor: pointer;"
                         @click="contextMenu.create({
                             name: 'window:user:settings',
-                            position: ['center', 'bottom', 'fixed-target'],
+                            position: ['center', 'bottom', 'fixed'],
                             event: ($el as Element).querySelector('.permissions')!,
                             buttons: getUserPermissions
                         })"    
@@ -106,7 +106,7 @@ const
     authUser = useUserStore(),
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
-    contextMenu = useContextMenusStore(),
+    contextMenu = useContextMenuStore(),
     toolpics = useToolpicsStore();
 
 
@@ -405,7 +405,7 @@ function buttonUserSettings() {
 function setButtons() {
     const contextMenuUserSettings = (e: Event) => contextMenu.create({
         name: 'window:user:settings',
-        position: ['left', 'fixed-target'],
+        position: ['left', 'center', 'fixed'],
         event: e,
         buttons: [
             ...(authUser.getUser?._id === user.value?._id || isAdmin.value ? [buttonUserSettings(), { separator: true } as IContextMenuButton] : []),

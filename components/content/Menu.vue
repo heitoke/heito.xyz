@@ -1,34 +1,39 @@
 <template>
     <div class="menu">
-        <header v-show="getMenu?.index > 0" @click="name = childrens[getMenu?.index - 1].name">
-            <Icon name="arrow-left"/>
-            <Text class="title" :text="getMenu?.title"/>
-        </header>
+        <Height :showed="getMenu?.index > 0" :opacity="true">
+            <header @click="back">
+                <Icon name="arrow-left"/>
+
+                <div class="content">
+                    <Text class="title" :text="getMenu?.title"/>
+                    <Text class="text" :text="getMenu?.text"/>
+                </div>
+            </header>
+        </Height>
+
         <ul>
-            <TransitionGroup name="button">
-                <li v-for="btn in getMenu?.buttons?.filter((btn: IContextMenuButton) => btn?.label || btn?.separator)" :key="btn.label"
-                    :class="{ separator: btn?.separator }"
-                    :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
-                    @click="buttonClick(btn, $event)"
+            <li v-for="btn in getMenu?.buttons?.filter((btn: IContextMenuButton) => btn?.label || btn?.separator)" :key="btn.label"
+                :class="{ separator: btn?.separator }"
+                :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
+                @click="buttonClick(btn, $event)"
+            >
+                <img :src="btn?.img" alt="ContextMenu Image" v-if="btn?.img">
+                <Icon :name="btn?.icon" v-else-if="btn?.icon"/>
+
+                <div class="content"
+                    :style="{ 'max-width': `calc(100% - ${0 + (btn.children && (btn?.children?.buttons?.length! > 0) ? 24 : 0) + (btn?.icon ? 24 : 0) + (btn?.checkbox ? 32 : 0)}px)` }"
                 >
-                    <img :src="btn?.img" alt="ContextMenu Image" v-if="btn?.img">
-                    <Icon :name="btn?.icon" v-else-if="btn?.icon"/>
+                    <div>{{ btn.label }}</div>
+                    <div v-show="btn?.text">{{ btn.text }}</div>
+                </div>
 
-                    <div class="content"
-                        :style="{ 'max-width': `calc(100% - ${0 + (btn.children && (btn?.children?.buttons?.length! > 0) ? 24 : 0) + (btn?.icon ? 24 : 0) + (btn?.checkbox ? 32 : 0)}px)` }"
-                    >
-                        <div>{{ btn.label }}</div>
-                        <div v-show="btn?.text">{{ btn.text }}</div>
-                    </div>
+                <Checkbox v-if="btn?.checkbox"
+                    :value="Boolean(btn?.value)"
+                    @onEvent="btn?.checkbox($event)"
+                />
 
-                    <Checkbox v-if="btn?.checkbox"
-                        :value="Boolean(btn?.value)"
-                        @onEvent="btn?.checkbox($event)"
-                    />
-
-                    <Icon class="arrow" name="arrow-right" v-if="btn?.children"/>
-                </li>
-            </TransitionGroup>
+                <Icon class="arrow" name="arrow-right" v-if="btn?.children"/>
+            </li>
         </ul>
     </div>
 </template>
@@ -37,9 +42,11 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-import type { IContextMenu, IContextMenuButton, TPosition } from '~/types/stores/contextMenu';
+import type { IContextMenu, IContextMenuButton, IContextMenuChildren } from '~/types/stores/contextMenu';
 
-const contextMenu = useContextMenusStore();
+const emit = defineEmits(['children']);
+
+const contextMenu = useContextMenuStore();
 
 const props = defineProps({
     menu: { type: Object as PropType<IContextMenu> }
@@ -47,37 +54,61 @@ const props = defineProps({
 
 const
     mainName = ref<string>(''),
-    name = ref<string>(''),
-    childrens = ref<Array<IContextMenu>>([]);
+    children = ref<IContextMenuChildren>({} as IContextMenuChildren),
+    history = ref<Array<IContextMenu>>([]);
+
 
 const getMenu = computed(() => {
-    const menuIndex: number = childrens.value.findIndex(c => c.name === name.value);
+    const index: number = history.value.findIndex(c => c.name === children.value.name);
 
-    return { ...childrens.value[menuIndex], index: menuIndex };
+    return {
+        ...children.value,
+        index
+    };
 });
+
 
 watch(() => props.menu, (newValue: IContextMenu, oldValue: IContextMenu) => {
     if (JSON.stringify(newValue) === JSON.stringify(oldValue)) return;
 
-    name.value = newValue?.name as string;
-    childrens.value = [newValue];
+    children.value = newValue;
+    history.value = [newValue];
 });
+
 
 function buttonClick(btn: IContextMenuButton, e: Event) {
     if (btn.children) {
-        childrens.value = [...childrens.value || [], btn.children];
+        history.value = [...history.value || [], btn.children];
 
-        return name.value = btn.children.name;
+        children.value = {
+            title: btn?.label,
+            text: btn?.text,
+            color: btn?.color || 'var(--background-secondary)',
+            ...btn.children
+        };
+
+        return emit('children', children.value);
     }
     
     if (btn?.click) btn.click(e);
 
-    contextMenu.close(mainName.value);
+    contextMenu.close();
+}
+
+function back() {
+    const _children = history.value[getMenu.value?.index - 1];
+
+    children.value = _children;
+
+    emit('children', children);
 }
 
 onMounted(() => {
-    mainName.value = name.value = props.menu?.name as string;
-    childrens.value = [props.menu as IContextMenu];
+    mainName.value = props.menu?.name as string;
+
+    children.value = props.menu!;
+
+    history.value = [props.menu as IContextMenu];
 });
 
 </script>
@@ -87,8 +118,7 @@ onMounted(() => {
 .button {
     &-enter-active,
     &-leave-active {
-        height: 0px;
-        transform: rotateX(90deg);
+        position: absolute;
         transition: .2s;
         opacity: 0;
     }
@@ -99,26 +129,37 @@ onMounted(() => {
         cursor: pointer;
         display: flex;
         margin: 0 0 8px 0;
-        padding: 8px;
-        border-bottom: 1px solid var(--background-secondary);
+        padding: 4px 8px 8px 8px;
+        border-bottom: 1px solid v-bind('getMenu?.color');
+        align-items: center;
 
         &:hover {
             i.hx-icon {
-                --color: var(--text-primary);
+                opacity: 1;
             }
         }
 
         i.hx-icon {
-            --color: var(--text-secondary);
             margin: 0 8px 0 0;
             transition: .2s;
+            opacity: .5;
         }
 
-        .title {
-            max-width: calc(100% - 12px);
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            overflow: hidden;
+        .content {
+            max-width: calc(100% - 16px);
+
+            .title,
+            .text {
+                max-width: 100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+
+            .text {
+                color: var(--text-secondary);
+                font-size: 12px;
+            }
         }
     }
 
@@ -153,7 +194,7 @@ onMounted(() => {
                 }
 
                 .arrow {
-                    --color: var(--text-primary);
+                    opacity: 1;
                 }
             }
 
@@ -198,9 +239,9 @@ onMounted(() => {
             }
 
             .arrow {
-                color: var(--text-secondary);
                 margin: 0 0 0 12px;
                 transition: .2s;
+                opacity: .5;
             }
         }
     }

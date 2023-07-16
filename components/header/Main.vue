@@ -123,7 +123,7 @@ const
     header = useHeaderStore(),
     user = useUserStore(),
     toolpics = useToolpicsStore(),
-    contextMenu = useContextMenusStore(),
+    contextMenu = useContextMenuStore(),
     notifications = useNotificationsStore(),
     windows = useWindowsStore(),
     config = useConfigStore();
@@ -157,7 +157,7 @@ const getAdminContext = computed(() => {
     return {
         name: 'admin:menu',
         event: root.value?.querySelector('.logo .online') as any,
-        position: ['center', 'fixed-target', 'bottom'],
+        position: ['center', 'fixed', 'bottom'],
         buttons: [
             {
                 label: 'Configs',

@@ -26,7 +26,7 @@ const header = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['color']);
 
-const contextMenu = useContextMenusStore();
+const contextMenu = useContextMenuStore();
 
 const props = defineProps({
     value: { type: String, default: 'ffffff' },
@@ -54,7 +54,7 @@ function keypress(e: KeyboardEvent) {
 function open() {
     contextMenu.create({
         name: 'color-picker',
-        position: ['bottom', 'fixed-target', 'center'],
+        position: ['bottom', 'fixed', 'center'],
         event: header.value!,
         autoMaxWidth: true,
         components: [

@@ -104,7 +104,7 @@ const
     toolpics = useToolpicsStore(),
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
-    contextMenu = useContextMenusStore(),
+    contextMenu = useContextMenuStore(),
     header = useHeaderStore();
 
 const root = ref<HTMLElement | null>(null);
@@ -459,7 +459,7 @@ function blogSettings(): IContextMenuButton {
 function blogContextMenu() {
     contextMenu.create({
         name: `blog:options`,
-        position: ['top', isHeaderActive.value ? 'right' : 'left', 'fixed-target'],
+        position: ['top', isHeaderActive.value ? 'right' : 'left', 'fixed'],
         event: root.value?.querySelector('.blog-cm')!,
         buttons: [
             ...[isAdmin.value ? blogSettings() : {} as IContextMenuButton],

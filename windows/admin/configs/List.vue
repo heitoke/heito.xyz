@@ -75,7 +75,7 @@ const { $api } = useNuxtApp();
 
 const
     toolpics = useToolpicsStore(),
-    contextMenu = useContextMenusStore(),
+    contextMenu = useContextMenuStore(),
     windows = useWindowsStore(),
     notifications = useNotificationsStore();
 

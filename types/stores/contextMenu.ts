@@ -1,4 +1,4 @@
-export type TPosition = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'fixed-target';
+export type TPosition = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'corner' | 'fixed';
 
 export interface IContextMenuButton {
     label: string;
@@ -11,7 +11,7 @@ export interface IContextMenuButton {
     value?: object | number | string;
     click?(e?: Event): void;
     checkbox?(value?: boolean): void;
-    children?: IContextMenu;
+    children?: IContextMenuChildren;
 }
 
 export interface IComponent {
@@ -31,9 +31,16 @@ export interface IContextMenu {
     text?: string;
     event?: Event | MouseEvent | Element;
     position?: Array<TPosition>;
+    gap?: [number, number];
     x?: number;
     y?: number;
     autoMaxWidth?: boolean;
     buttons?: IContextMenuButton[];
     components?: IComponent[];
+}
+
+type RemoveKeys = 'x' | 'y' | 'event' | 'position' | 'autoMaxWidth' | 'gap';
+
+export interface IContextMenuChildren extends Omit<IContextMenu, RemoveKeys> {
+    color?: string;
 }

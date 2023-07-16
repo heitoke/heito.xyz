@@ -39,7 +39,7 @@ const { $api } = useNuxtApp();
 
 const
     windows = useWindowsStore(),
-    contextMenu = useContextMenusStore();
+    contextMenu = useContextMenuStore();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -132,7 +132,7 @@ function open(idx: number) {
 
     contextMenu.create({
         name: `invate:users:user:${user._id}`,
-        position: ['fixed-target', 'center', 'bottom'],
+        position: ['fixed', 'center', 'bottom'],
         event: root.value?.querySelector(`ul .user:nth-child(${idx + 1})`)!,
         buttons: [
             {

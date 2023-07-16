@@ -2,37 +2,38 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 
 import type { IContextMenu } from 'types/stores/contextMenu';
 
-export const useContextMenusStore = defineStore('context-menus', {
+export const useContextMenuStore = defineStore('context-menu', {
     state: () => ({
-        list: [] as Array<IContextMenu>
+        contextMenu: {} as IContextMenu
     }),
     actions: {
         create(contextMenu: IContextMenu) {
-            if (this.list.find(c => c.name === contextMenu.name) || process.server) return;
+            if (process.server) return;
 
-            window.addEventListener('contextmenu', e => {
-                e.preventDefault();
-            }, { once: true });
+            // window.addEventListener('contextmenu', e => {
+            //     e.preventDefault();
+            // }, { once: true });
 
             const event = contextMenu.event || window.event;
-            
-            this.list = [...this.list || [], {
-                position: ['bottom', 'right'],
+
+            this.contextMenu = {
+                position: ['bottom', 'center'],
+                gap: [8, 8],
                 ...contextMenu,
                 event
-            }];
+            };
         },
-        close(contextMenuName: string) {
-            this.list = this.list.filter((contextMenu: IContextMenu) => contextMenu.name !== contextMenuName);
+        close() {
+            this.contextMenu = {} as IContextMenu;
         }
     },
     getters: {
-        getList(state): IContextMenu[] {
-            return state.list;
+        getMenu(state): IContextMenu {
+            return state.contextMenu;
         }
     }
 });
 
 if (import.meta.hot) {
-    import.meta.hot.accept(acceptHMRUpdate(useContextMenusStore, import.meta.hot));
+    import.meta.hot.accept(acceptHMRUpdate(useContextMenuStore, import.meta.hot));
 }

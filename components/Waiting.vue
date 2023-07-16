@@ -336,8 +336,7 @@ onMounted(() => {
 
         .user-avatar {
             margin: 0 12px 0 0;
-            min-width: 20px;
-            height: 20px;
+            padding: 12px !important;
             border-radius: 50%;
             background-size: cover;
             background-position: center;

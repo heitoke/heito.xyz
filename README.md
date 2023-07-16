@@ -1,4 +1,8 @@
-# heito.xyz (Mango version) Nuxt
+# heito.xyz [Mango version]
+
+Previously, this branch was a test and only needed to understand how the site will work on Nuxt3, but now it is the main one.
+
+If you want to see the previous version, go to the `old` branch
 
 ## Setup
 

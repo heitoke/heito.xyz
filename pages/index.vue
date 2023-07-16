@@ -6,16 +6,30 @@
                 <Text class="text" :text="$t('page.main.text')"/>
             </div> -->
 
-            <div class="space">
-                The planets are not working at the moment, but soon...
-            </div>
+            <ClientOnly>
+                <SpacePlanets v-if="config.getStatus === 'online'"
+                    :buttonsOptions="{
+                        style: 'top: 76px;'
+                    }"
+                />
+
+                <div class="space" v-else>
+                    The planets are not working at the moment, but soon...
+                </div>
+            </ClientOnly>
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
 
-// import SpaceOfStars from '../components/content/SpaceOfStars.vue';
+import SpacePlanets from '../components/other/SpacePlanets.vue';
+
+
+const { $win } = useNuxtApp();
+
+const config = useConfigStore();
+
 
 useSeoMeta({
     title: 'Home'

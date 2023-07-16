@@ -39,7 +39,7 @@
                 </Height>
             </div>
 
-            <div class="footer">Preparations are underway, thanks for waiting</div>
+            <Text class="footer" :text="error ? ':O' : 'Preparations are underway, thanks for waiting'"/>
         </div>
     </Transition>
 </template>

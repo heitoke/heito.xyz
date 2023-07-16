@@ -6,6 +6,8 @@ declare module '#app' {
         description?: string;
         icon?: string;
         hide?: Array<HideName>;
+        index?: number;
+        mainPage?: string;
     }
 }
 

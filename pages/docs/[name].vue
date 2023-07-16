@@ -1,5 +1,5 @@
 <template>
-    <div class="api">
+    <div class="docs">
         <NavBar
             :default-id="getButtons.findIndex(b => b.value === getCategoty?.name)"
             :orientation="$win.size.width > 740 ? 'vertical' : 'horizontal'"
@@ -50,9 +50,9 @@
                 <ul v-if="getRoutes?.length > 0">
                     <TransitionGroup name="route">
                         <li v-for="(route, idx) of getRoutes" :key="route.label"
-                            :class="{ active: route.open }"
+                            :class="{ active: open.includes(`r-${idx}`) }"
                         >
-                            <header @click="route.open = !route.open">
+                            <header @click="clickOpenRoute(idx)">
                                 <Icon :name="route?.icon" v-show="route?.icon" style="margin: 0 16px 0 0;"/>
                                 <div class="title">
                                     <div>{{ route.label }}</div>
@@ -76,7 +76,7 @@
                                 <Icon name="arrow-left"/>
                             </header>
 
-                            <Height :showed="route.open">
+                            <Height :showed="open.includes(`r-${idx}`)">
                                 <APIRouteData :route="route"/>
                             </Height>
                         </li>
@@ -96,14 +96,10 @@
 
 import NavBar from '~/components/content/NavBar.vue';
 
-import APIRouteData from '~/components/models/api/APIRouteData.vue';
+import APIRouteData from '~/components/models/docs/APIRouteData.vue';
 
 import { ICategory, IRoute } from '~/types/api';
 import { listPermissions } from '~/types/api/user';
-
-interface Route extends IRoute {
-    open: boolean;
-}
 
 const { $api, $win } = useNuxtApp();
 
@@ -111,7 +107,9 @@ const route = useRoute();
 
 const toolpics = useToolpicsStore();
 
-const error = ref<boolean>(false);
+const
+    error = ref<boolean>(false),
+    open = ref<Array<string>>([]);
 
 const methodColors = {
     GET: 'var(--green)',
@@ -147,14 +145,27 @@ const getButtons = computed(() => {
 });
 
 const getRoutes = computed(() => {
-    return getCategoty.value.routes as Array<Route> || [];
+    return getCategoty.value.routes || [];
 });
+
+
+function clickOpenRoute(idx: number) {
+    const name = `r-${idx}`;
+
+    if (open.value.includes(name)) {
+        open.value = open.value.filter(r => r !== name);
+    } else {
+        open.value = [...open.value || [], name];
+    }
+}
 
 
 
 definePageMeta({
     title: 'Documentations',
-    path: '/docs/:name?'
+    path: '/docs/:name?',
+    index: 5,
+    mainPage: '/docs/users'
 });
 
 </script>
@@ -174,7 +185,7 @@ definePageMeta({
     opacity: 0;
 }
 
-.page.api {
+.page.docs {
     display: flex;
     margin: 32px 0 0 0;
     padding: 0 10%;
@@ -187,6 +198,7 @@ definePageMeta({
 
     main {
         margin: 0 0 0 16px;
+        max-width: calc(100% - 215px);
         width: 100%;
         height: 100%;
 
@@ -426,6 +438,7 @@ definePageMeta({
     
         main {
             margin: 16px 0 0 0;
+            max-width: 100%;
         }
     }
 }

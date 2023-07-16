@@ -190,7 +190,8 @@ definePageMeta({
     icon: 'stats',
     alias: [
         '/stats'
-    ]
+    ],
+    index: 4
 });
 
 

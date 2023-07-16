@@ -9,7 +9,7 @@
                 <ul class="pages">
                     <li v-for="route of getRoutes" :key="route.name"
                         :class="{ active: $route.name === route.name, hide: getHideRoutes.find(r => r.name === route.name) }"
-                        @click="$router.push(route.path)"
+                        @click="$router.push(route.meta?.mainPage || route.path)"
                     >
                         <span>{{ route?.meta?.title || route.name }}</span>
 
@@ -76,7 +76,9 @@ const getHideRoutes = computed<any[]>(() => {
 const getRoutes = computed(() => {
     const routes = $router.options.routes.filter(route => Boolean(route.meta?.title));
 
-    return routes.filter(route => (isAdmin ? true : !getHideRoutes.value.find(p => p.name === route.name)));
+    return routes
+        .sort((a, b) => (a.meta?.index || 0) > (b.meta?.index || 0) ? 1 : 0)
+        .filter(route => (isAdmin ? true : !getHideRoutes.value.find(p => p.name === route.name)));
     // return this.$router?.options.routes.filter(route => !(route.meta?.hide as any)?.includes('page') && (this.isAdmin ? true : !this.getHideRoutes.find(p => p.name === route.name)));
 });
 

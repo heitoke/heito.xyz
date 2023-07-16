@@ -239,7 +239,8 @@ useSeoMeta({
 
 definePageMeta({
     title: 'Music',
-    icon: 'music-note'
+    icon: 'music-note',
+    index: 3
 });
 
 

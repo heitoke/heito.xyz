@@ -1,6 +1,6 @@
 <template>
     <div class="api-route-data">
-        <div style="margin: 0 12px 0 0;">
+        <div class="column">
             <div v-if="route?.params" style="margin: 0 0 12px 0;">
                 <div class="subtitle" @click="hideBlock('params')">Path parameters</div>
 
@@ -20,7 +20,7 @@
             </div>
         </div>
 
-        <div style="margin: 0 0 0 12px;">
+        <div class="column">
             <div v-if="route?.statuses" style="margin: 0 0 12px 0;">
                 <div class="subtitle" @click="hideBlock('statuses')">Status codes</div>
 
@@ -78,6 +78,16 @@ function hideBlock(name: string) {
     display: grid;
     position: relative;
     grid-template-columns: 50% 50%;
+
+    .column {
+        &:nth-child(1) {
+            margin: 0 12px 0 0;
+        }
+
+        &:nth-child(2) {
+            margin: 0 0 0 12px;
+        }
+    }
 
     .subtitle {
         cursor: pointer;
@@ -181,6 +191,14 @@ function hideBlock(name: string) {
             span {
                 font-size: 12px;
             }
+        }
+    }
+
+    @media (max-width: 540px) {
+        display: block;
+
+        .column {
+            margin: 0 !important;
         }
     }
 }

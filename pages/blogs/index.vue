@@ -193,7 +193,8 @@ useSeoMeta({
 
 definePageMeta({
     title: 'Blogs',
-    icon: 'quill'
+    icon: 'quill',
+    index: 2
 });
 
 

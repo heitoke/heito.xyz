@@ -37,7 +37,6 @@ useSeoMeta({
     title: `Error page (${props.error?.statusCode}) | heito.xyz`
 });
 
-
 onMounted(() => {
     document.querySelector('html')?.setAttribute('theme', 'dark');
 });

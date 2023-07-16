@@ -361,7 +361,9 @@ definePageMeta({
     path: '/:name(projects|repos)',
     alias: [
         '/:name(repos)/:id'
-    ]
+    ],
+    index: 1,
+    mainPage: '/projects'
 });
 
 </script>

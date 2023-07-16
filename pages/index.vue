@@ -24,7 +24,8 @@ useSeoMeta({
 definePageMeta({
     title: 'Home',
     icon: 'earth',
-    hide: ['footer']
+    hide: ['footer'],
+    index: 0
 });
 
 </script>

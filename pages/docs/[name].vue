@@ -160,10 +160,19 @@ function clickOpenRoute(idx: number) {
 }
 
 
+useSeoMeta({
+    title: `${getCategoty.value?.label || getCategoty.value?.name} | Documentations`
+});
+
 
 definePageMeta({
     title: 'Documentations',
     path: '/docs/:name?',
+    alias: [
+        '/doc/:name?',
+        '/documentations/:name?',
+        '/documentation/:name?'
+    ],
     index: 5,
     mainPage: '/docs/users'
 });

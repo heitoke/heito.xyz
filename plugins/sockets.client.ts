@@ -1,6 +1,6 @@
 import { io, ManagerOptions, SocketOptions } from 'socket.io-client';
 
-import { TSocket } from '~/types/sockets';
+import { TSocket } from 'types/sockets';
 
 export default defineNuxtPlugin(nuxtApp => {
     const { apiURL } = nuxtApp.$config.public;

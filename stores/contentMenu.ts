@@ -17,7 +17,7 @@ export const useContextMenuStore = defineStore('context-menu', {
             const event = contextMenu.event || window.event;
 
             this.contextMenu = {
-                position: ['bottom', 'center'],
+                position: ['fixed', 'bottom', 'center'],
                 gap: [8, 8],
                 ...contextMenu,
                 event

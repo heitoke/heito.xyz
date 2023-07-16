@@ -14,7 +14,7 @@
 
                 <div style="margin: 0 0 0 12px;">
                     <RouterLink to="/"
-                        @contextmenu="user.getPer(EPermissions.Site) ? contextMenu.create(getAdminContext) : null"
+                        @contextmenu.prevent.stop="user.getPer(EPermissions.Site) ? contextMenu.create(getAdminContext) : null"
                     >heito.xyz</RouterLink>
 
                     <div class="online" v-if="config.getStatus === 'online'"

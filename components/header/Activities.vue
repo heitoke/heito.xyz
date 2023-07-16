@@ -38,6 +38,8 @@ import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import Activity, { type IContent } from './Activity.vue';
 
+import type { ISteamAccount, IGitHubAccount, ITetrAccount, ITwitchAccount, IOSUAccount } from '~/types/sockets/accounts';
+
 type TTrack = {
     id?: string;
     name?: string;
@@ -49,6 +51,9 @@ type TTrack = {
     start?: number;
     end?: number;
 }
+
+
+const { $socket } = useNuxtApp();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -74,165 +79,194 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
     setTimeout(() => close(), 10);
 }
 
-// 'activities:track:playing'(data: { device: any, userId: string, track: TTrack, is_playing: boolean }) {
-//             if (!data.is_playing) return;
 
-//             this.track = {
-//                 id: 'spotify:track',
-//                 type: 'mini',
-//                 name: data?.track?.name as string,
-//                 largeImage: {
-//                     url: data?.track?.image as string
-//                 },
-//                 smallImage: data.device ? {
-//                     label: data.device?.type,
-//                     icon: data.device?.type === 'Computer' ? 'desktop' : (data.device?.type === 'Smartphone' ? 'mobile' : 'damage-void'),
-//                     color: 'var(--main-color)'
-//                 } : {},
-//                 progressBar: {
-//                     value: data?.track?.start,
-//                     end: data?.track?.end,
-//                     isTime: true
-//                 },
-//                 buttons: [
-//                     { label: 'Profile', icon: 'user-circle', url: `https://open.spotify.com/user/${data?.userId}` },
-//                     { label: 'Open track', icon: 'music-note', url: data?.track?.url }
-//                 ]
-//             }
+$socket?.on('activities:track:playing', (data: { device: any, userId: string, track: TTrack, is_playing: boolean }) => {
+    if (!data.is_playing) return;
 
-//             clearTimeout(this.timer);
+    track.value = {
+        id: 'spotify:track',
+        type: 'mini',
+        name: data?.track?.name as string,
+        largeImage: {
+            url: data?.track?.image as string
+        },
+        smallImage: data.device ? {
+            label: data.device?.type,
+            icon: data.device?.type === 'Computer' ? 'desktop' : (data.device?.type === 'Smartphone' ? 'mobile' : 'damage-void'),
+            color: 'var(--main-color)'
+        } : {},
+        progressBar: {
+            value: data?.track?.start,
+            end: data?.track?.end,
+            isTime: true
+        },
+        buttons: [
+            { label: 'Profile', icon: 'user-circle', url: `https://open.spotify.com/user/${data?.userId}` },
+            { label: 'Open track', icon: 'music-note', url: data?.track?.url }
+        ]
+    }
+    
 
-//             this.timer = setTimeout(() => {
-//                 this.track = {} as IContent;
-//             }, 6000);
-//         },
-//         'activities:list'(activitiesList: Array<{ type: 'steam' | 'github' | 'tetr' | 'twitch' | 'osu', [key: string]: any }>) {
-//             this.list = [];
+    clearTimeout(timer);
 
-//             for (let active of activitiesList) {
-//                 let activity: IContent = { name: 'Activity', type: 'default' };
+    timer = setTimeout(() => {
+        track.value = {} as IContent;
+    }, 6000);
+});
 
-//                 switch(active?.type) {
-//                     case 'steam':
-//                         let isGame = active?.game?.id,
-//                             steamStatus = [
-//                                 { label: 'Offline', icon: 'circle-alt', color: 'var(--text-secondary)' }, 
-//                                 { label: 'Online', icon: 'circle', color: 'var(--green)' }, 
-//                                 { label: 'Busy', icon: 'quill', color: 'var(--background-secondsry-alt)' }, 
-//                                 { label: 'Away', icon: 'pacman', color: 'var(--blue)' }, 
-//                                 { label: 'Snooze', icon: 'clock', color: 'var(--yellow)' }, 
-//                                 { label: 'Looking to trade', icon: '', color: '' }, 
-//                                 { label: 'Looking to play', icon: 'play', color: 'var(--green)' }
-//                             ],
-//                             status = steamStatus[active?.status];
+$socket?.on('activities:list', (activitiesList: Array<{ type: 'steam' | 'github' | 'tetr' | 'twitch' | 'osu', [key: string]: any }>) => {
+    list.value = [];
 
-//                         activity = {
-//                             id: `steam:${active?.id}`,
-//                             name: active?.name,
-//                             details: isGame ? `Playing` : (active?.realname ? `Realname: ${active?.realname}` : undefined),
-//                             state: isGame ? status.label : undefined,
-//                             type: isGame ? 'default' : 'mini',
-//                             largeImage: {
-//                                 url: isGame ? active?.game?.capsule : active?.avatar,
-//                                 label: isGame ? active?.game?.name : 'Steam'
-//                             },
-//                             smallImage: isGame ? {
-//                                 url: active?.avatar,
-//                                 label: 'Steam'
-//                             } : status,
-//                             buttons: [
-//                                 { label: 'Profile', icon: 'user-circle', url: active?.url }
-//                             ]
-//                         };
+    for (let active of activitiesList) {
+        let activity: IContent = { name: 'Activity', type: 'default' };
 
-//                         if (isGame) activity['buttons']?.push({ label: 'Game', icon: 'brush', url: active?.game?.store });
-//                         break;
-//                     case 'github':
-//                         activity = {
-//                             id: `github:${active?.id}`,
-//                             name: `${active?.name} (${active?.login})`,
-//                             details: `Followers: ${active?.followers}`,
-//                             state: `Public repos: ${active?.public_repos}`,
-//                             largeImage: {
-//                                 url: active?.avatar_url,
-//                                 label: 'GitHub'
-//                             },
-//                             type: 'default',
-//                             buttons: [
-//                                 { label: 'Profile', icon: 'user-circle', url: active?.html_url }
-//                             ]
-//                         };
+        switch(active?.type) {
+            case 'steam':
+                activity = getSteamActivity(active as any);
+                break;
+            case 'github':
+                activity = getGitHubActivity(active as any);
+                break;
+            case 'tetr':
+                activity = getTetrActivity(active as any);
+                break;
+            case 'twitch':
+                activity = getTwitchActivity(active as any);
+                break;
+            case 'osu':
+                activity = getOSUActivity(active as any);
+                break;
+        }
 
-//                         if (active?.blog) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.blog });
-//                         break;
-//                     case 'tetr':
-//                         activity = {
-//                             id: `tetr:${active?._id}`,
-//                             name: `${active?.username}`,
-//                             details: `${active?.xp} XP`,
-//                             state: `Tetra league: ${Number(active?.league?.rating).toFixed(2)} TR`,
-//                             largeImage: {
-//                                 url: active?.avatar_url,
-//                                 label: 'Tetr.io'
-//                             },
-//                             // smallImage: {
-//                             //     url: active?.country_flag,
-//                             //     label: active?.country
-//                             // },
-//                             type: 'default',
-//                             buttons: [
-//                                 { label: 'Profile', icon: 'user-circle', url: `https://ch.tetr.io/u/${active?.username}` }
-//                             ]
-//                         };
-//                         break;
-//                     case 'twitch':
-//                         activity = {
-//                             id: `twitch:${active?.id}`,
-//                             name: `${active?.display_name} (${active?.login})`,
-//                             details: active?.description,
-//                             largeImage: {
-//                                 url: active?.profile_image_url,
-//                                 label: 'Twitch'
-//                             },
-//                             type: 'default',
-//                             buttons: [
-//                                 { label: 'Profile', icon: 'user-circle', url: `https://www.twitch.tv/${active?.login}` }
-//                             ]
-//                         };
-//                         break;
-//                     case 'osu':
-//                         activity = {
-//                             id: `osu:${active?.id}`,
-//                             name: `${active?.username}`,
-//                             details: `PP: ${active?.pp}`,
-//                             state: `Global #${active?.global_rank}, Country #${active?.country_rank}`,
-//                             largeImage: {
-//                                 url: active?.avatar_url,
-//                                 label: 'osu!'
-//                             },
-//                             smallImage: active?.is_online ? {
-//                                 icon: 'circle',
-//                                 color: 'var(--green)',
-//                                 label: `Online`
-//                             } : {
-//                                 icon: 'circle-alt',
-//                                 color: 'var(--text-secondary)',
-//                                 label: `Offline (${time.format(active?.last_visit)})`
-//                             },
-//                             type: 'default',
-//                             buttons: [
-//                                 { label: 'Profile', icon: 'user-circle', url: `https://osu.ppy.sh/users/${active?.id}` }
-//                             ]
-//                         };
+        list.value = [...list.value || [], activity];
+    }
+});
 
-//                         if (active?.website) activity['buttons']?.push({ label: 'WebSite', icon: 'link', url: active?.website });
-//                         break;
-//                 }
 
-//                 this.list = [...this.list || [], activity];
-//             }
+function getSteamActivity(account: ISteamAccount): IContent {
+    let isGame = account?.game?.id,
+        steamStatus = [
+            { label: 'Offline', icon: 'circle-alt', color: 'var(--text-secondary)' }, 
+            { label: 'Online', icon: 'circle', color: 'var(--green)' }, 
+            { label: 'Busy', icon: 'quill', color: 'var(--background-secondsry-alt)' }, 
+            { label: 'Away', icon: 'pacman', color: 'var(--blue)' }, 
+            { label: 'Snooze', icon: 'clock', color: 'var(--yellow)' }, 
+            { label: 'Looking to trade', icon: '', color: '' }, 
+            { label: 'Looking to play', icon: 'play', color: 'var(--green)' }
+        ],
+        status = steamStatus[account?.status];
 
-//         }
+    let buttons = [
+        { label: 'Profile', icon: 'user-circle', url: account?.url }
+    ];
+
+    if (isGame) buttons = [...buttons, { label: 'Game', icon: 'brush', url: account?.game?.store! }];
+
+    return {
+        id: `steam:${account?.id}`,
+        name: account?.name,
+        details: isGame ? `Playing` : (account?.realname ? `Realname: ${account?.realname}` : undefined),
+        state: isGame ? status.label : undefined,
+        type: isGame ? 'default' : 'mini',
+        largeImage: {
+            url: isGame ? account?.game?.capsule! : account?.avatar!,
+            label: isGame ? account?.game?.name : 'Steam'
+        },
+        smallImage: isGame ? {
+            url: account?.avatar,
+            label: 'Steam'
+        } : status,
+        buttons
+    };
+}
+
+function getGitHubActivity(account: IGitHubAccount): IContent {
+    let buttons = [
+        { label: 'Profile', icon: 'user-circle', url: account?.html_url }
+    ];
+
+    if (account?.blog) buttons = [...buttons, { label: 'WebSite', icon: 'link', url: account?.blog }];
+
+    return {
+        id: `github:${account?.id}`,
+        name: `${account?.name} (${account?.login})`,
+        details: `Followers: ${account?.followers}`,
+        state: `Public repos: ${account?.public_repos}`,
+        largeImage: {
+            url: account?.avatar_url,
+            label: 'GitHub'
+        },
+        type: 'default',
+        buttons
+    }
+}
+
+function getTetrActivity(account: ITetrAccount): IContent {
+    return {
+        id: `tetr:${account?._id}`,
+        name: `${account?.username}`,
+        details: `${account?.xp} XP`,
+        state: `Tetra league: ${Number(account?.league?.rating).toFixed(2)} TR`,
+        largeImage: {
+            url: account?.avatar_url,
+            label: 'Tetr.io'
+        },
+        // smallImage: {
+        //     url: active?.country_flag,
+        //     label: active?.country
+        // },
+        type: 'default',
+        buttons: [
+            { label: 'Profile', icon: 'user-circle', url: `https://ch.tetr.io/u/${account?.username}` }
+        ]
+    };
+}
+
+function getTwitchActivity(account: ITwitchAccount): IContent {
+    return {
+        id: `twitch:${account?.id}`,
+        name: `${account?.display_name} (${account?.login})`,
+        details: account?.description,
+        largeImage: {
+            url: account?.profile_image_url,
+            label: 'Twitch'
+        },
+        type: 'default',
+        buttons: [
+            { label: 'Profile', icon: 'user-circle', url: `https://www.twitch.tv/${account?.login}` }
+        ]
+    }
+}
+
+function getOSUActivity(account: IOSUAccount): IContent {
+    let buttons = [
+        { label: 'Profile', icon: 'user-circle', url: `https://osu.ppy.sh/users/${account?.id}` }
+    ];
+
+    if (account?.website) buttons = [...buttons, { label: 'WebSite', icon: 'link', url: account?.website }];
+
+    return {
+        id: `osu:${account?.id}`,
+        name: `${account?.username}`,
+        details: `PP: ${account?.pp}`,
+        state: `Global #${account?.global_rank}, Country #${account?.country_rank}`,
+        largeImage: {
+            url: account?.avatar_url,
+            label: 'osu!'
+        },
+        smallImage: account?.is_online ? {
+            icon: 'circle',
+            color: 'var(--green)',
+            label: `Online`
+        } : {
+            icon: 'circle-alt',
+            color: 'var(--text-secondary)',
+            label: `Offline (${time.format(account?.last_visit)})`
+        },
+        type: 'default',
+        buttons
+    }
+}
 
 </script>
 

@@ -115,7 +115,7 @@ function click(idx: number, e: MouseEvent) {
         set(1);
     }
 
-    if (props.selected) emit('select', btn);
+    emit('select', btn);
 
     if (btn?.click) btn?.click(e, btn);
 }

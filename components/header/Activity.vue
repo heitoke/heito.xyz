@@ -32,12 +32,12 @@
             </div>
         </header>
         
-        <!-- <NavBar style="margin: 8px 0 0 0;" v-if="content?.buttons?.length as number > 0 && showButtons"
+        <NavBar style="margin: 8px 0 0 0;" v-if="content?.buttons?.length as number > 0 && showButtons"
             :selected="false"
             :default-id="-1"
             :menu="content.buttons"
             @select="$event?.url ? openUrl($event?.url) : null;"
-        /> -->
+        />
     </div>
 </template>
 
@@ -45,7 +45,7 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-// import NavBar from './NavBar.vue';
+import NavBar from '~/components/content/NavBar.vue';
 
 
 type TTypeActivity = 'default' | 'mini';
@@ -116,6 +116,9 @@ function msInMin(ms: number) {
 
 function openUrl(url: string) {
     window.open(url);
+
+    console.log(url);
+    
 }
 
 </script>

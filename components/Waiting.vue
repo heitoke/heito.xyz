@@ -111,6 +111,22 @@ const getUserAvatar = computed(() => {
 });
 
 
+
+$socket?.on('configs:update', (_config) => {
+    $config.set(_config);
+
+    $notifications.push({
+        title: 'Update',
+        icon: 'settings',
+        message: 'A configuration update has occurred',
+        color: 'var(--blue)'
+    });
+
+    loadConfig(_config);
+});
+
+
+
 function close() {
     show.value = false;
 

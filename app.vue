@@ -112,6 +112,11 @@ useHead({
 
 
 
+$socket?.on('server:cookie', ({ name, value, days }) => {
+    cookies.set(name, value, { days });
+});
+
+
 $socket?.on('connect', async () => {
     config.setStatus('online');
 

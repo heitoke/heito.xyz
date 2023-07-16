@@ -23,7 +23,7 @@
                     @input="filters.text = ($event.target as any)?.value"
                 />
                 
-                <Select label="Type account"
+                <Select label="Type account" :readonly="true"
                     :menu="listServicesAccounts"
                     @select="addAccount($event.value)"
                 />

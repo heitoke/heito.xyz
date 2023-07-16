@@ -53,7 +53,7 @@ import Notification from './Notification.vue';
 import { type ILog, codes } from '~/types/api/log';
 import type { INotification, INotificationButton } from '~/types/stores/notifications';
 
-const { $api } = useNuxtApp();
+const { $api, $socket } = useNuxtApp();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -79,9 +79,13 @@ watch(() => user.getUser._id, (newValue: string) => {
     loadUserNotifications(newValue);
 });
 
-// 'notifications:push'(notification: ILog) {
-//     this.$notifications.push(this.getNotification(notification));
-// }
+
+
+$socket.on('notifications:push', (notification) => {
+    notifications.push(getNotification(notification));
+});
+
+
 
 function enterNotification(el: Element) {
     setTimeout(() => {

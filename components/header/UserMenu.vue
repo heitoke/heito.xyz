@@ -195,7 +195,7 @@ const getProfileMenu = computed(() => {
                 text: `${$langs.list.find(l => l.code === locale.value).names[locale.value]} (Beta)`,
                 children: {
                     name: 'header:lang',
-                    title: t('global.lang[1]'),
+                    text: '',
                     buttons: $langs.list.map(lang => {
                         return {
                             // @ts-ignore
@@ -223,8 +223,10 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
     callbackTrue();
 
     let close = () => {
-        window.addEventListener('click', (e) => {
-            if (ref?.contains(e.target as any)) return close();
+        window.addEventListener('click', event => {
+            const path = (event as any)?.path || (event.composedPath ? event.composedPath() : undefined);
+
+            if (path && path.includes(ref)) return close();
             
             callbackFalse();
         }, { once: true });

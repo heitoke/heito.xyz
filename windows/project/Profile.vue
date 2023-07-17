@@ -72,7 +72,7 @@
             <div class="grid" v-if="project?.members?.length! > 0">
                 <User v-for="(member, idx) of project?.members" :key="idx" :id="member.member._id"
                     :user="member.member" :text="member.permission"
-                    @contextmenu="memberContextMenu($event, idx)"
+                    @contextmenu.prevent.stop="memberContextMenu($event, idx)"
                 />
             </div>
         </section>

@@ -9,7 +9,7 @@
         <ScrollBar max-height="256px" v-if="list?.length > 0" style="margin: 12px 0 0 0;">
             <User v-for="({user, permission}, idx) of list" :key="idx"
                 :user="user" :text="permission"
-                @contextmenu="open(idx)"
+                @contextmenu.prevent.stop="open(idx)"
             />
         </ScrollBar>
 

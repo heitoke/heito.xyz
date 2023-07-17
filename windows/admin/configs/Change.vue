@@ -96,7 +96,7 @@
             <ScrollBar>
                 <ul v-if="config.pages?.length > 0">
                     <li v-for="page of config.pages" :key="page.name">
-                        <header @contextmenu="contextMenuPage(page.name)">
+                        <header @contextmenu.prevent.stop="contextMenuPage(page.name)">
                             <Icon :name="(pageRoute(page.name)?.meta?.icon || 'pacman') as string"/>
                             
                             <div>

@@ -454,7 +454,7 @@ function blogSettings(): IContextMenuButton {
 function blogContextMenu() {
     contextMenu.create({
         name: `blog:options`,
-        position: ['top', isHeaderActive.value ? 'right' : 'left', 'fixed'],
+        position: ['bottom', isHeaderActive.value ? 'right' : 'left', 'fixed', 'corner'],
         event: root.value?.querySelector('.blog-cm')!,
         buttons: [
             ...[isAdmin.value ? blogSettings() : {} as IContextMenuButton],

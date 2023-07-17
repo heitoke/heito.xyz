@@ -16,7 +16,7 @@
         <ul>
             <li v-for="(link, idx) of getListLinks" :key="idx"
                 @click="redirect(link?.url)"
-                @contextmenu="linkContextMenu(idx)"
+                @contextmenu.prevent.stop="linkContextMenu(idx)"
             >
                 <Icon :name="link?.icon" :style="{ margin: '0 12px 0 0', color: link?.color }" v-if="link?.icon"/>
 

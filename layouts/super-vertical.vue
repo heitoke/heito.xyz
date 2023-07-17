@@ -220,7 +220,7 @@ const getRoutes = computed(() => {
     &.active {
         padding: 72px 8px 8px 8px;
         
-        .scrollbar {
+        :deep(.scrollbar) {
             max-height: calc(100% - 16px);
             border-radius: 15px;
             box-shadow: 0 0 0 3px var(--background-secondary);

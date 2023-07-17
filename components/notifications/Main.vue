@@ -17,7 +17,7 @@
                             :id="notification.id"
                             :notification="notification"
                             :showButtons="true"
-                            @contextmenu="notificationContextMenu(idx, notification.id!)"
+                            @contextmenu.prevent.stop="notificationContextMenu(idx, notification.id!)"
                         />
                     </ul>
 
@@ -53,7 +53,7 @@ import Notification from './Notification.vue';
 import { type ILog, codes } from '~/types/api/log';
 import type { INotification, INotificationButton } from '~/types/stores/notifications';
 
-const { $api, $socket } = useNuxtApp();
+const { $api, $socket, $win } = useNuxtApp();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -174,7 +174,7 @@ function getNotification(notification: ILog): INotification {
 function notificationContextMenu(idx: number, notificationId: number) {
     contextMenus.create({
         name: `notifications:${idx}`,
-        position: ['left', 'fixed'],
+        position: [$win.size.width > 540 ? 'left' : 'bottom', 'center', 'fixed'],
         event: root.value?.querySelector(`.panel .list.menu .notification:nth-child(${idx + 1})`)!,
         buttons: [
             {

@@ -58,19 +58,26 @@ export default defineNuxtConfig({
     },
 
     sitemap: {
-        sitemaps: {
-            pages: {
-                include: [
-                    '/blogs/**',
-                    '/docs/**',
-                    '/users/**',
-                    '/projects/**',
-                    '/music/playlists/**'
-                ]
-            },
-            index: [
-                { sitemap: 'https://www.google.com/sitemap-pages.xml' }
-            ]
-        }
+        include: [
+            '/blogs/**',
+            '/docs/**',
+            '/users/**',
+            '/projects/**',
+            '/music/playlists/**'
+        ]
+        // sitemaps: {
+        //     pages: {
+        //         include: [
+        //             '/blogs/**',
+        //             '/docs/**',
+        //             '/users/**',
+        //             '/projects/**',
+        //             '/music/playlists/**'
+        //         ]
+        //     },
+        //     index: [
+        //         { sitemap: 'https://www.google.com/sitemap-pages.xml' }
+        //     ]
+        // }
     }
 });

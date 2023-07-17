@@ -58,6 +58,14 @@ export default defineNuxtConfig({
     },
 
     site: {
-        url: 'https://heito.xyz'
+        url: 'https://heito.xyz',
+        routes: [
+            '/music',
+            '/docs/**',
+            '/users/**',
+            '/projects/**',
+            '/blogs/**',
+            '/music/playlists/**'
+        ]
     }
 });

@@ -350,8 +350,13 @@ onMounted(() => {
 });
 
 
+const text = type.value === 'repos' ? 'Find out which repositories I\'m working on.' : 'See what projects I\'m working on now.';
+
 useSeoMeta({
-    title: type.value === 'repos' ? 'Repositories' + (getReposId.value ? ` (${getReposId.value})` : '') : 'Projects'
+    title: type.value === 'repos' ? 'Repositories' + (getReposId.value ? ` (${getReposId.value})` : '') : 'Projects',
+    description: text,
+    ogDescription: text,
+    twitterDescription: text
 });
 
 

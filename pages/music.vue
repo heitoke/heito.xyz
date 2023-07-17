@@ -233,8 +233,13 @@ async function loadPlaylists() {
 }
 
 
+const text = 'Here you can see what I listened to the latest, tops by tracks and artists, as well as all playlists.';
+
 useSeoMeta({
-    title: 'Music'
+    title: 'Music',
+    description: text,
+    ogDescription: text,
+    twitterDescription: text
 });
 
 definePageMeta({

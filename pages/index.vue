@@ -30,9 +30,13 @@ const { $win } = useNuxtApp();
 
 const config = useConfigStore();
 
+const text = 'A site that exists in the stream and would like you to devote some time to it.';
 
 useSeoMeta({
-    title: 'Home'
+    title: 'Home',
+    description: text,
+    ogDescription: text,
+    twitterDescription: text
 });
 
 definePageMeta({

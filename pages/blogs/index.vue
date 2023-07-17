@@ -186,8 +186,13 @@ function createNewBlog() {
 }
 
 
+const text = 'You can read some blogs for a better understanding of this site.';
+
 useSeoMeta({
-    title: 'Blogs'
+    title: 'Blogs',
+    description: text,
+    ogDescription: text,
+    twitterDescription: text
 });
 
 

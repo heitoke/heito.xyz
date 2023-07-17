@@ -57,15 +57,20 @@ export default defineNuxtConfig({
         }
     },
 
-    site: {
-        url: 'https://heito.xyz',
-        routes: [
-            '/music',
-            '/docs/**',
-            '/users/**',
-            '/projects/**',
-            '/blogs/**',
-            '/music/playlists/**'
-        ]
+    sitemap: {
+        sitemaps: {
+            pages: {
+                include: [
+                    '/blogs/**',
+                    '/docs/**',
+                    '/users/**',
+                    '/projects/**',
+                    '/music/playlists/**'
+                ]
+            },
+            index: [
+                { sitemap: 'https://www.google.com/sitemap-pages.xml' }
+            ]
+        }
     }
 });

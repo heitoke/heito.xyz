@@ -160,9 +160,9 @@ function clickOpenRoute(idx: number) {
 }
 
 
-useSeoMeta({
+useSeoMeta(seo.createTemplate({
     title: `${getCategoty.value?.label || getCategoty.value?.name} | Documentations`
-});
+}));
 
 
 definePageMeta({

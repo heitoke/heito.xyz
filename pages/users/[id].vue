@@ -13,17 +13,12 @@ const windows = useWindowsStore();
 const [user, status] = await $api.users.get(route.params.id as string);
 
 if (status === 200) {
-    const image = user?.banner || user?.avatar || getAvatar({ nameId: user?._id });
-
-    useSeoMeta({
+    useSeoMeta(seo.createTemplate({
         title: `${user?.nickname || user?.username || user?._id} | User`,
         description: user?.description || '',
-        ogImage: image,
-        twitterImage: image,
-        colorScheme: user?.color,
-        themeColor: user?.color,
-        twitterCard: 'summary_large_image'
-    });
+        image: user?.banner || user?.avatar || getAvatar({ nameId: user?._id }),
+        color: user?.color
+    }))
 }
 
 

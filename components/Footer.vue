@@ -99,10 +99,6 @@ function setLang(code: string) {
     document.querySelector('html')?.setAttribute('lang', code);
 }
 
-function redirect(url: string) {
-    window.open(url);
-}
-
 </script>
 
 <style lang="scss" scoped>

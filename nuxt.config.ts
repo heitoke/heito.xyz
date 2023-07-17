@@ -43,7 +43,8 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            apiURL: process.env.API_URL
+            apiURL: process.env.API_URL,
+            publicURL: process.env.NUXT_PUBLIC_SITE_URL || 'https://heito.xyz'
         }
     },
 
@@ -71,6 +72,7 @@ export default defineNuxtConfig({
             '/docs/**',
             '/users/**',
             '/projects/**',
+            '/music',
             '/music/playlists/**'
         ]
     }

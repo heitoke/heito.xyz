@@ -350,14 +350,14 @@ onMounted(() => {
 });
 
 
-const text = type.value === 'repos' ? 'Find out which repositories I\'m working on.' : 'See what projects I\'m working on now.';
 
-useSeoMeta({
-    title: type.value === 'repos' ? 'Repositories' + (getReposId.value ? ` (${getReposId.value})` : '') : 'Projects',
-    description: text,
-    ogDescription: text,
-    twitterDescription: text
-});
+useSeoMeta(seo.createTemplate(type.value === 'repos' ? {
+    title: 'Repositories' + (getReposId.value ? ` (${getReposId.value})` : ''),
+    description: 'Find out which repositories I\'m working on.'
+} : {
+    title: 'Projects',
+    description: 'See what projects I\'m working on now.'
+}));
 
 
 definePageMeta({

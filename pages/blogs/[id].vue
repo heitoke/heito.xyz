@@ -127,17 +127,12 @@ const [_blog, status] = await $api.blogs.get(route.params.id as string);
 if (status === 200) {
     selfBlog.value = _blog;
 
-    const image = _blog?.image || getAvatar({ nameId: _blog?._id, type: 'marble' });
-
-    useSeoMeta({
+    useSeoMeta(seo.createTemplate({
         title: `${_blog?.title || _blog?.name || _blog?._id} | Blog`,
         description: _blog?.description || '',
-        ogImage: image,
-        twitterImage: image,
-        colorScheme: '#FFBF34',
-        themeColor: '#FFBF34',
-        twitterCard: 'summary_large_image'
-    });
+        image: _blog?.image || getAvatar({ nameId: _blog?._id, type: 'marble' }),
+        color: '#FFBF34'
+    }));
 }
 
 

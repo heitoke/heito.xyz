@@ -95,10 +95,6 @@ watch(() => props.links, (newValue) => {
 });
 
 
-function redirect(url: string) {
-    window.open(url, '');
-}
-
 function addNewLink(link?: ILink, id: number = -1) {
     let newLink: ILink = {
         label: '',

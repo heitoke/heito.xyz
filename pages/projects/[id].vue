@@ -13,29 +13,24 @@ const windows = useWindowsStore();
 const [project, status] = await $api.projects.get(route.params.id as string);
 
 if (status === 200) {
-    const image = project?.banner || project?.image || '';
-
-    useSeoMeta({
+    useSeoMeta(seo.createTemplate({
         title: `${project?.displayName || project?.name || project?._id} | Project`,
         description: project?.description || '',
-        ogImage: image,
-        twitterImage: image,
-        colorScheme: project?.color,
-        themeColor: project?.color,
-        twitterCard: 'summary_large_image'
-    });
+        image: project?.banner || project?.image || '',
+        color: project?.color
+    }));
 }
 
 
 onMounted(() => {
-    // $router.push('/projects');
+    $router.push('/projects');
     
-    // if (status !== 200) return;
+    if (status !== 200) return;
 
-    // windows.create({
-    //     component: 'ProjectProfile',
-    //     data: project._id
-    // });
+    windows.create({
+        component: 'ProjectProfile',
+        data: project?._id
+    });
 });
 
 </script>

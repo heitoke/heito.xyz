@@ -233,14 +233,10 @@ async function loadPlaylists() {
 }
 
 
-const text = 'Here you can see what I listened to the latest, tops by tracks and artists, as well as all playlists.';
-
-useSeoMeta({
+useSeoMeta(seo.createTemplate({
     title: 'Music',
-    description: text,
-    ogDescription: text,
-    twitterDescription: text
-});
+    description: 'Here you can see what I listened to the latest, tops by tracks and artists, as well as all playlists.'
+}));
 
 definePageMeta({
     title: 'Music',

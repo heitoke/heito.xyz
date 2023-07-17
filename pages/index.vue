@@ -25,19 +25,12 @@
 
 import SpacePlanets from '../components/other/SpacePlanets.vue';
 
-
-const { $win } = useNuxtApp();
-
 const config = useConfigStore();
 
-const text = 'A site that exists in the stream and would like you to devote some time to it.';
-
-useSeoMeta({
+useSeoMeta(seo.createTemplate({
     title: 'Home',
-    description: text,
-    ogDescription: text,
-    twitterDescription: text
-});
+    description: 'A site that exists in the stream and would like you to devote some time to it.'
+}));
 
 definePageMeta({
     title: 'Home',

@@ -181,14 +181,10 @@ function secToHms(sec: number) {
 }
 
 
-const text = 'View statistics of programming languages used and in which projects they are used.';
-
-useSeoMeta({
+useSeoMeta(seo.createTemplate({
     title: 'Code | Stats',
-    description: text,
-    ogDescription: text,
-    twitterDescription: text
-});
+    description: 'View statistics of programming languages used and in which projects they are used.'
+}));
 
 definePageMeta({
     title: 'Stats',

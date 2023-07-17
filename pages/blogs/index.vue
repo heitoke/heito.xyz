@@ -186,14 +186,10 @@ function createNewBlog() {
 }
 
 
-const text = 'You can read some blogs for a better understanding of this site.';
-
-useSeoMeta({
+useSeoMeta(seo.createTemplate({
     title: 'Blogs',
-    description: text,
-    ogDescription: text,
-    twitterDescription: text
-});
+    description: 'You can read some blogs for a better understanding of this site.'
+}));
 
 
 definePageMeta({

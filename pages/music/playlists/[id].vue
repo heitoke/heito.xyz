@@ -227,14 +227,11 @@ if (status === 200) {
 
     playlist.value = result;
 
-    const image = result?.image || getAvatar({ nameId: result.id, type: 'marble' });
-
-    useSeoMeta({
+    useSeoMeta(seo.createTemplate({
         title: `Playlist - ${result.name}` + ' | Music',
         description: result?.description || '',
-        ogImage: image,
-        twitterImage: image
-    });
+        image: result?.image || getAvatar({ nameId: result.id, type: 'marble' })
+    }));
 }
 
 

@@ -9,7 +9,6 @@
         <Waiting @end="loading = false"/>
     </ClientOnly>
 
-
     <NuxtLayout :name="layoutName" :active="superMode" :style="{ opacity: loading ? 0 : 1 }">
         <ScrollBar v-slot="scrollProps" style="width: 100%">
             <NuxtPage
@@ -45,8 +44,13 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-const { $local, $win, $socket, $api } = useNuxtApp();
+const { $local, $win, $socket, $api, $config } = useNuxtApp();
 
+const
+    request = useRequestURL(),
+    route = useRoute();
+
+// seo.setPublicURL($config.public.publicURL);
 
 const
     user = useUserStore(),
@@ -58,8 +62,6 @@ const
     superMode = ref<boolean>(false),
     blocked = ref<boolean>(false),
     loading = ref<boolean>(true);
-
-
 
 function initCustomization() {
     const
@@ -106,9 +108,13 @@ useHead({
     meta: [
         { name: 'twitter:site', content: '@heito.xyz' },
         { name: 'og:site_name', content: 'heito.xyz' },
-        { name: 'og:type', content: 'website' }
+        { name: 'og:type', content: 'website' },
+        { name: 'og:url', content: request.origin + route.fullPath },
+        { name: 'refresh', content: '5' }
     ]
 });
+
+
 
 
 

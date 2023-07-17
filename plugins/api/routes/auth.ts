@@ -83,7 +83,7 @@ export default class Route {
     @docs.route({
         label: 'User session',
         icon: 'user-circle',
-        path: '/sessions',
+        path: '/sessions/:sessionId',
         description: 'View the data of a specific session',
         params: [
             { name: 'sessionId', text: 'SessionId or Token' }

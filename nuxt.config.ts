@@ -28,7 +28,8 @@ export default defineNuxtConfig({
 
     modules: [
         '@pinia/nuxt',
-        '@vite-pwa/nuxt'
+        '@vite-pwa/nuxt',
+        'nuxt-simple-sitemap'
     ],
     plugins: [
         '~/plugins/api/index.ts',
@@ -54,5 +55,9 @@ export default defineNuxtConfig({
         workbox: {
             navigateFallback: '/'
         }
+    },
+
+    site: {
+        url: 'https://heito.xyz'
     }
 });

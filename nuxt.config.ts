@@ -30,8 +30,7 @@ export default defineNuxtConfig({
         '@pinia/nuxt',
         '@vite-pwa/nuxt',
         'nuxt-simple-sitemap',
-        '@nuxtjs/robots',
-        '@nuxtjs/sitemap'
+        '@nuxtjs/robots'
     ],
     plugins: [
         '~/plugins/api/index.ts',

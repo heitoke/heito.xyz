@@ -29,7 +29,9 @@ export default defineNuxtConfig({
     modules: [
         '@pinia/nuxt',
         '@vite-pwa/nuxt',
-        'nuxt-simple-sitemap'
+        'nuxt-simple-sitemap',
+        '@nuxtjs/robots',
+        '@nuxtjs/sitemap'
     ],
     plugins: [
         '~/plugins/api/index.ts',
@@ -57,6 +59,13 @@ export default defineNuxtConfig({
         }
     },
 
+    robots: {
+        rules: {
+            UserAgent: '*',
+            Disallow: ''
+        }
+    },
+
     sitemap: {
         include: [
             '/blogs/**',
@@ -65,19 +74,5 @@ export default defineNuxtConfig({
             '/projects/**',
             '/music/playlists/**'
         ]
-        // sitemaps: {
-        //     pages: {
-        //         include: [
-        //             '/blogs/**',
-        //             '/docs/**',
-        //             '/users/**',
-        //             '/projects/**',
-        //             '/music/playlists/**'
-        //         ]
-        //     },
-        //     index: [
-        //         { sitemap: 'https://www.google.com/sitemap-pages.xml' }
-        //     ]
-        // }
     }
 });

@@ -13,6 +13,16 @@ const docs = new DocumentationAPI('blogs', {
 });
 
 
+export interface IBlogFilters {
+    skip?: number;
+    limit?: number;
+    fields?: Array<string>;
+    by?: Array<string>;
+    text?: string;
+    sort?: 'date' | 'name';
+    order?: boolean;
+}
+
 export default class Route {
     private $api: IAPI;
 
@@ -29,8 +39,8 @@ export default class Route {
             { code: 501, text: 'Server error' }
         ]
     })
-    list(): [Array<IBlog>, number, any] {
-        return this.$api.get(`/blogs`) as any;
+    list({ skip = 0, limit = 16, fields = [], by = ['name', 'title'], text = '', sort = 'date', order = true }: IBlogFilters = {}): [{ count: number, results: Array<IBlog> }, number, any] {
+        return this.$api.get(`/blogs?skip=${skip || 0}&limit=${limit || 0}&fields=${fields.join(',')}&by=${by.join(',')}&text=${text || ''}&sort=${sort || 'date'}&order=${order}`) as any;
     }
 
     @docs.route({

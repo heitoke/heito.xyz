@@ -119,15 +119,15 @@ const getListBlogs = computed(() => {
 async function loadBlogs() {
     loading.value = true;
 
-    const [listBlogs, status] = await $api.blogs.list();
+    const [result, status] = await $api.blogs.list();
 
     loading.value = false;
 
     if (status !== 200) return
 
-    blogs.value = listBlogs;
+    blogs.value = result.results;
 
-    for (let blog of listBlogs) {
+    for (let blog of result.results) {
         if (!categories.value.includes(blog.category)) {
             categories.value = [...categories.value, blog.category];
         }

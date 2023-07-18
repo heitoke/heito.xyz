@@ -13,6 +13,18 @@ const docs = new DocumentationAPI('projects', {
     version: 'beta'
 });
 
+
+export interface IProjectFilters {
+    skip?: number;
+    limit?: number;
+    fields?: Array<string>;
+    by?: Array<string>;
+    text?: string;
+    sort?: 'date' | 'name';
+    order?: boolean;
+    tags?: Array<string>;
+}
+
 export default class Route {
     private $api: IAPI;
 
@@ -29,8 +41,8 @@ export default class Route {
             { code: 501, text: 'Server error' }
         ]
     })
-    list(): [{ results: Array<IProject>, count: number }, number, any] {
-        return this.$api.get(`/projects`) as any;
+    list({ skip = 0, limit = 16, fields = [], by = ['name', 'title'], text = '', sort = 'date', order = true, tags = [] }: IProjectFilters = {}): [{ count: number, results: Array<IProject> }, number, any] {
+        return this.$api.get(`/projects?skip=${skip || 0}&limit=${limit || 0}&fields=${fields.join(',')}&by=${by.join(',')}&text=${text || ''}&sort=${sort || 'date'}&order=${order}`) as any;
     }
 
     @docs.route({

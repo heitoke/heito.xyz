@@ -38,6 +38,7 @@ ul, ol, li {
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
     /* .html:not(.no-blur) */
     .blur {
+        background-color: #01010125;
         backdrop-filter: blur(var(--blur));
         -webkit-backdrop-filter: blur(var(--blur));
     }

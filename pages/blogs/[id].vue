@@ -137,7 +137,7 @@ if (status === 200) {
 
 
 const isHeaderActive = computed(() => {
-    return props.scrollProps?.scroll.top! > ($win.size.width / 3);
+    return props.scrollProps?.scroll.top! > ($win.size.width / 4);
 });
 
 const blog = computed<IBlog>(() => {
@@ -494,10 +494,18 @@ onUnmounted(() => {
     }
 }
 
-.super.active {
+.super.vertical.active {
     .page.blog {
         header {
             height: calc(100vh - 72px);
+        }
+    }
+}
+
+.super.horizontal.active {
+    .page.blog {
+        header {
+            height: calc(100vh - 72px - 96px);
         }
     }
 }

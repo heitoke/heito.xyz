@@ -4,12 +4,14 @@
         <ContextMenu/>
         <Notifications/>
         <Windows/>
-        <Header @changeSuperMode="superMode = $event"/>
+        <Header @changeSuperMode="superMode.enabled = $event"/>
 
         <Waiting @end="loading = false"/>
     </ClientOnly>
 
-    <NuxtLayout :name="layoutName" :active="superMode" :style="{ opacity: loading ? 0 : 1 }">
+    <NuxtLayout :name="'super-' + superMode.name" :style="{ opacity: loading ? 0 : 1 }"
+        :active="superMode.enabled"
+    >
         <ScrollBar v-slot="scrollProps" style="width: 100%">
             <NuxtPage
                 :class="['page', { 'to-left': $notifications.getActive }]"
@@ -36,7 +38,7 @@ import Waiting from '~/components/Waiting.vue';
 
 import Header from '~/components/header/Main.vue';
 import Notifications from '~/components/notifications/Main.vue';
-import Windows from '~/components/Windows.vue';
+import Windows from '~/components/windows/Main.vue';
 import Toolpics from '~/components/Toolpics.vue';
 import ContextMenu from '~/components/ContextMenu.vue';
 
@@ -44,13 +46,12 @@ import Footer from '~/components/Footer.vue';
 
 import ScrollBar, { type IScrollBar } from '~/components/content/ScrollBar.vue';
 
-const { $local, $win, $socket, $api, $config } = useNuxtApp();
+const { $local, $win, $socket, $api } = useNuxtApp();
 
 const
     request = useRequestURL(),
     route = useRoute();
-
-// seo.setPublicURL($config.public.publicURL);
+    
 
 const
     user = useUserStore(),
@@ -58,10 +59,18 @@ const
     config = useConfigStore();
 
 const
-    layoutName = ref<string>('super-vertical'),
-    superMode = ref<boolean>(false),
+    superMode = ref<{ name: string; enabled: boolean }>({
+        name: 'vertical',
+        enabled: false
+    }),
     blocked = ref<boolean>(false),
     loading = ref<boolean>(true);
+
+
+watch(() => $local?.params?.super, (newValue) => {
+    superMode.value.name = newValue as string;
+});
+
 
 function initCustomization() {
     const
@@ -75,6 +84,12 @@ function initCustomization() {
     if (!theme) $local.set('theme', 'dark');
     
     html.setAttribute('theme', $local.get('theme') as string || 'dark');
+
+
+    // * Super
+    if (!$local.get('super')) $local.set('super', 'vertical');
+
+    superMode.value.name = $local.get('super') as string || 'vertical';
     
     
     // * Color

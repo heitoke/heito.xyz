@@ -1,5 +1,5 @@
 <template>
-    <div class="ui-select" ref="root">
+    <div :class="['ui-select', { readonly }]" ref="root">
         <header @click="open(text)">
             <Textbox :label="label" :icon="getItem?.icon" :value="getItem?.label" :watchValue="true" :readonly="readonly"
                 @input="text = ($event.target as any)?.value; open(text); $emit('input', $event)"
@@ -48,7 +48,7 @@ const
     isOpen = ref<boolean>(false);
 
 const getItem = computed(() => {
-    const buttonIndex = props.menu?.findIndex(btn => btn.value === (selected.value || props.value)) as number;
+    const buttonIndex = props.menu?.findIndex(btn => btn.value === (selected.value || props.value))!;
 
     return props.menu![buttonIndex] || {};
 });
@@ -107,49 +107,15 @@ function open(text: string = '') {
     min-width: 196px;
     position: relative;
 
-    // header {
-    //     cursor: pointer;
-    //     display: flex;
-    //     padding: 8px 12px;
-    //     max-width: 100%;
-    //     width: 100%;
-    //     position: relative;
-    //     border-radius: 5px;
-    //     border: 1px solid var(--background-secondary);
-    //     box-sizing: border-box;
-    //     transition: .2s;
-
-    //     .label {
-    //         position: absolute;
-    //         top: 8px;
-    //         color: var(--text-secondary);
-    //         transition: .2s;
-    //         user-select: none;
-    //         z-index: 1;
-
-    //         &.active {
-    //             top: -10px;
-    //             font-size: 12px;
-    //             color: var(--text-primary);
-    //         }
-    //     }
-
-    //     .label + div {
-    //         display: flex;
-    //         align-items: center;
-
-    //         .hx-icon {
-    //             margin: 0 8px 0 0;
-    //         }
-
-    //         .text {
-    //             max-width: 100%;
-    //             text-overflow: ellipsis;
-    //             white-space: nowrap;
-    //             overflow: hidden;
-    //         }
-    //     }
-    // }
+    &.readonly {
+        :deep(.ui-textbox) {
+            cursor: pointer;
+    
+            input {
+                cursor: pointer;
+            }
+        }
+    }
 }
 
 </style>

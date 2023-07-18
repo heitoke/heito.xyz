@@ -101,12 +101,38 @@
                 </div>
             </div>
         </div>
+
+        <div class="block">
+            <header>
+                <span>Super mode</span>
+            </header>
+
+            <div>
+                <div class="text">Change the appearance of Super mode</div>
+                
+                <div>
+                    <Select label="Type" style="width: 128px;"
+                        :value="$local.params?.super"
+                        :menu="[
+                            { label: 'Vertical', value: 'vertical' },
+                            { label: 'Horizontal', value: 'horizontal' }
+                        ]"
+                        @select="$local.set('super', $event.value)"
+                    />
+                </div>
+            </div>
+        </div>
     </section>
 </template>
 
 <script lang="ts" setup>
 
 const { $local } = useNuxtApp();
+
+function log(...args: any) {
+    console.log(...args);
+    
+}
 
 const
     user = useUserStore(),

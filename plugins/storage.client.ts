@@ -54,17 +54,17 @@ export default defineNuxtPlugin({
         }
 
         function getListStorageParams(storage: object): IParams {
-            const params: any = {}
+            const params: IParams = reactive({} as IParams);
 
             for (let key in storage) {
                 params[key] = getKey(key);
             }
 
-            return reactive(params);
+            return params;
         }
 
         function setStorage(storage: TStorage): IStorage {
-            const params: any = getListStorageParams(storage);
+            const params = getListStorageParams(storage);
 
             return {
                 get(key: string) {
@@ -75,6 +75,7 @@ export default defineNuxtPlugin({
                 set(key: string, value: TType) {
                     try {
                         localStorage.setItem(key, JSON.stringify(value));
+                        
                         params[key] = value;
                     } catch (err) {
                         

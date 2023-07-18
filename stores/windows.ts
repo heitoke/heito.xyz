@@ -12,18 +12,21 @@ export const useWindowsStore = defineStore('windows', {
         },
 
         create(window: IWindow) {
-            const id = this.list.length + 1;
-    
-            this.list.push(reactive({
+            const data: IWindow = {
                 position: 'center',
+                close: {
+                    enable: true,
+                    button: true
+                },
                 buttons: [],
-                close: true,
                 ...window,
-                id,
+                id: this.list.length + 1,
                 createdAt: Date.now()
-            }));
+            };
+
+            this.list.push(reactive(data));
     
-            return { windowId: id }
+            return { windowId: data.id! }
         },
         close(windowId: number) {
             const windowIndex = this.getWindowIndex(windowId);

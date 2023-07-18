@@ -40,24 +40,10 @@
 
         <div>
             <div :class="['search']" v-if="config.getStatus === 'online'"
-                @click="search.isActive ? null : open($event, _search, () => search.isActive = true, () => search.isActive = false)"
-                @mouseenter="search.isActive ? null : toolpics.set({ title: 'Search', position: 'bottom' })"
+                @click="windows.create({ component: 'Search', position: 'top', close: { enable: true, button: false } })"
+                @mouseenter="toolpics.set({ title: 'Search', position: 'bottom' })"
             >
-                <Icon name="search-alt" v-if="!search.isActive"/>
-
-                <Transition name="account-username">
-                    <div v-if="search.isActive" ref="_search">
-                        <Textbox :label="'Search'" :autofocus="true"
-                            @input="search.text = $event.target?.value; searchUsers()"
-                        />
-
-                        <!-- <div class="result blur">
-                            <ScrollBar :max-height="'50vh'">
-                                <User v-for="user of search.users" :key="user._id" :user="user"/>
-                            </ScrollBar>
-                        </div> -->
-                    </div>
-                </Transition>
+                <Icon name="search-alt"/>
             </div>
 
             <!-- <div :class="['tabs']" :data-count="getBroadcastWindows.length" v-if="getBroadcastWindows.length > 1"
@@ -107,6 +93,7 @@
 
 import Activities from './Activities.vue';
 import UserMenu from './UserMenu.vue';
+import Search from './Search.vue';
 
 import ScrollBar from '~/components/content/ScrollBar.vue';
 
@@ -131,7 +118,6 @@ const
 const
     root = ref<HTMLElement | null>(null),
     _online = ref<HTMLElement | null>(null),
-    _search = ref<HTMLElement | null>(null),
     _tabs = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['changeSuperMode']);
@@ -145,11 +131,6 @@ const
         count: 0,
         list: [] as Array<IUser>,
         lastedAt: 0
-    }),
-    search = ref({
-        isActive: false,
-        text: '',
-        users: []
     }),
     superMenu = ref<boolean>(false);
 
@@ -186,8 +167,10 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
     callbackTrue();
 
     let close = () => {
-        window.addEventListener('click', (e) => {
-            if (ref?.contains(e.target as any)) return close();
+        window.addEventListener('click', event => {
+            const path = (event as any)?.path || (event.composedPath ? event.composedPath() : undefined);
+
+            if (path && path.includes(ref)) return close();
             
             callbackFalse();
         }, { once: true });
@@ -204,18 +187,6 @@ function getListOnlineUsers(boolean: boolean) {
     online.value.lastedAt = Date.now();
 
     $socket.emit('users:online', 'list');
-}
-
-async function searchUsers() {
-    const [result, status] = await $api.users.list();
-
-    if (status !== 200) return notifications.error({
-        title: 'search users',
-        message: (result as any)?.message,
-        status
-    });
-
-    search.value.users = (result as any).results;
 }
 
 
@@ -418,16 +389,6 @@ header {
 
             .hx-icon {
                 cursor: pointer;
-            }
-
-            .result {
-                min-width: 100%;
-                padding: 12px;
-                position: absolute;
-                top: calc(100% + 8px);
-                right: 0;
-                border-radius: 5px;
-                border: 1px solid var(--background-secondary);
             }
         }
 

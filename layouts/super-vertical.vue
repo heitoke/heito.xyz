@@ -1,5 +1,5 @@
 <template>
-    <div :class="['super', { active }]">
+    <div :class="['super vertical', { active }]">
         <slot/>
 
         <Transition name="menu">
@@ -11,7 +11,7 @@
                         :class="{ active: $route.name === route.name, hide: getHideRoutes.find(r => r.name === route.name) }"
                         @click="$router.push(route.meta?.mainPage || route.path)"
                     >
-                        <span>{{ route?.meta?.title || route.name }}</span>
+                        <span>{{ route?.meta?.title }}</span>
 
                         <Icon :name="route.meta?.icon as string"/>
                     </li>
@@ -58,7 +58,8 @@ const
     user = useUserStore(),
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
-    toolpics = useToolpicsStore();
+    toolpics = useToolpicsStore(),
+    config = useConfigStore();
 
 const props = defineProps({
     active: { type: Boolean, default: false }
@@ -69,8 +70,7 @@ const isAdmin = computed(() => {
 });
 
 const getHideRoutes = computed<any[]>(() => {
-    return [];
-    // return this.$config.pages.filter(p => !p.enabled);
+    return config.getConfig.pages.filter(p => !p.enabled);
 });
 
 const getRoutes = computed(() => {
@@ -79,7 +79,6 @@ const getRoutes = computed(() => {
     return routes
         .sort((a, b) => (a.meta?.index || 0) > (b.meta?.index || 0) ? 1 : 0)
         .filter(route => (isAdmin ? true : !getHideRoutes.value.find(p => p.name === route.name)));
-    // return this.$router?.options.routes.filter(route => !(route.meta?.hide as any)?.includes('page') && (this.isAdmin ? true : !this.getHideRoutes.find(p => p.name === route.name)));
 });
 
 </script>

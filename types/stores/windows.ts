@@ -1,6 +1,3 @@
-import { DefineComponent } from "nuxt/dist/app/compat/capi";
-import { Component } from "nuxt/schema";
-
 export type TPosition = 'top' | 'top left' | 'top right' | 'center' | 'center left' | 'center right' | 'bottom' | 'bottom left' | 'bottom right';
 
 export interface IButton {
@@ -24,6 +21,9 @@ export interface IWindow {
     props?: object;
     buttons?: IButton[];
     error?: boolean;
-    close?: boolean;
+    close?: {
+        enable?: boolean;
+        button?: boolean;
+    };
     createdAt?: number;
 }

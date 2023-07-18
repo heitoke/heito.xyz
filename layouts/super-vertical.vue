@@ -70,6 +70,8 @@ const isAdmin = computed(() => {
 });
 
 const getHideRoutes = computed<any[]>(() => {
+    if (config.getStatus !== 'online') return [];
+    
     return config.getConfig.pages.filter(p => !p.enabled);
 });
 

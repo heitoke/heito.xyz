@@ -12,14 +12,18 @@
     <NuxtLayout :name="'super-' + superMode.name" :style="{ opacity: loading ? 0 : 1 }"
         :active="superMode.enabled"
     >
-        <ScrollBar v-slot="scrollProps" style="width: 100%">
-            <NuxtPage
-                :class="['page', { 'to-left': $notifications.getActive }]"
+        <ScrollBar v-slot="scrollProps"
+            :class="{ 'to-left': $notifications.getActive }"
+            style="width: 100%"
+        >
+            <NuxtPage class="page"
                 :scrollProps="scrollProps"
                 :transition="{ name: 'slide-top', mode: 'out-in' }"
             />
 
             <ClientOnly>
+                <Comments/>
+
                 <div class="go-top" v-show="scrollProps.scroll.top > ($win.size?.width / 2)"
                     @click="goTop(scrollProps)"
                 >
@@ -41,6 +45,7 @@ import Notifications from '~/components/notifications/Main.vue';
 import Windows from '~/components/windows/Main.vue';
 import Toolpics from '~/components/Toolpics.vue';
 import ContextMenu from '~/components/ContextMenu.vue';
+import Comments from '~/components/comments/Main.vue';
 
 import Footer from '~/components/Footer.vue';
 
@@ -51,7 +56,7 @@ const { $local, $win, $socket, $api } = useNuxtApp();
 const
     request = useRequestURL(),
     route = useRoute();
-    
+
 
 const
     user = useUserStore(),
@@ -200,6 +205,10 @@ onMounted(async () => {
     min-height: 100%;
     position: relative;
     box-sizing: border-box;
+    transition: .5s;
+}
+
+.scrollbar {
     transition: .5s;
 
     &.to-left {

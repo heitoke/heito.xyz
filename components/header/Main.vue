@@ -39,40 +39,15 @@
         </div>
 
         <div>
-            <div :class="['search']" v-if="config.getStatus === 'online'"
-                @click="windows.create({ component: 'Search', position: 'top', close: { enable: true, button: false } })"
-                @mouseenter="toolpics.set({ title: 'Search', position: 'bottom' })"
-            >
-                <Icon name="search-alt"/>
-            </div>
-
-            <!-- <div :class="['tabs']" :data-count="getBroadcastWindows.length" v-if="getBroadcastWindows.length > 1"
-                @click="open($event, 'tabs', () => tabs = true, () => tabs = false)"
-            >
-                <Icon name="layers"/>
-
-                <Transition name="tabs">
-                    <ul class="blur" ref="_tabs" v-if="tabs">
-                        <li v-for="window of getBroadcastWindows" :key="window"
-                            :style="{ '--color': colors.createHex() }"
-                            @click="sendBroadcastMessage({ cmd: 'focus', to: window.id })"
-                        >
-                            <div class="image"></div>
-                            <div>
-                                <div>{{ window.id }}</div>
-                                <div>{{ time.timeago(window.createdAt) }}</div>
-                            </div>
-                        </li>
-                    </ul>
-                </Transition>
-            </div> -->
-
-            <div :class="['notifications', { 'new-message': notifications.getList?.filter((n: any) => !n?.hide)?.length > 0 }]"
-                @click="notifications.setActive(!notifications.getActive)"
-                @mouseenter="toolpics.set({ name: 'notification', title: 'Notifications', position: 'bottom' })"
-            >
-                <Icon name="notification"/>
-            </div>
+            <nav class="buttons" v-show="config.getStatus === 'online'">
+                <li v-for="btn of buttons" :key="btn.icon"
+                    :class="{ alert: btn?.alert }"
+                    @click="btn?.click ? btn?.click($event) : null"
+                    @mouseenter="toolpics.set({ text: btn.label, position: 'bottom' })"
+                >
+                    <Icon :name="btn.icon"/>
+                </li>
+            </nav>
 
             <UserMenu/>
 
@@ -93,9 +68,6 @@
 
 import Activities from './Activities.vue';
 import UserMenu from './UserMenu.vue';
-import Search from './Search.vue';
-
-import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import User from '~/components/models/user/Card.vue';
 
@@ -104,7 +76,16 @@ import { useHeaderStore } from '~/stores/header';
 import { IContextMenu } from '~/types/stores/contextMenu';
 import { type IUser, EPermissions } from '~/types/api/user';
 
+interface Button {
+    label: string;
+    icon: string;
+    alert?: boolean;
+    click(event: MouseEvent): void;
+}
+
 const { $api, $local, $socket } = useNuxtApp();
+
+const route = useRoute();
 
 const
     header = useHeaderStore(),
@@ -113,7 +94,8 @@ const
     contextMenu = useContextMenuStore(),
     notifications = useNotificationsStore(),
     windows = useWindowsStore(),
-    config = useConfigStore();
+    config = useConfigStore(),
+    comments = usePageCommentsStore();
 
 const
     root = ref<HTMLElement | null>(null),
@@ -133,6 +115,38 @@ const
         lastedAt: 0
     }),
     superMenu = ref<boolean>(false);
+
+const buttons = ref<Array<Button>>([
+    {
+        label: 'Search',
+        icon: 'search-alt',
+        click: () => {
+            windows.create({
+                component: 'Search',
+                position: 'top',
+                close: {
+                    enable: true,
+                    button: false
+                }
+            });
+        }
+    },
+    {
+        label: 'Comments (Beta)',
+        icon: 'comments-alt',
+        click: (event) => {
+            commentsContextMenu(event);
+        }
+    },
+    {
+        label: 'Notifications',
+        icon: 'notification',
+        alert: notifications.getList?.filter((n: any) => !n?.hide)?.length > 0,
+        click: () => {
+            notifications.setActive(!notifications.getActive);
+        }
+    }
+]);
 
 const getAdminContext = computed(() => {
     return {
@@ -187,6 +201,59 @@ function getListOnlineUsers(boolean: boolean) {
     online.value.lastedAt = Date.now();
 
     $socket.emit('users:online', 'list');
+}
+
+function commentsContextMenu(event: MouseEvent) {
+    const isVisible = comments.isVisible && comments.getUrl.includes(route.path);
+
+    contextMenu.create({
+        name: 'comments',
+        event,
+        buttons: [
+            {
+                label: (isVisible ? 'Hide' : 'Show') + ' comments',
+                icon: 'comments-alt',
+                text: 'On this page',
+                click: async () => {
+                    if (isVisible) {
+                        return comments.setVisible(false);
+                    }
+                    
+                    const [result, status] = await $api.comments.page(comments.getUrl, { skip: 0, limit: 32 });
+
+                    if (status !== 200) return;
+
+                    comments.setVisible(true);
+
+                    comments.setComments(result.results);
+                }
+            },
+            {
+                label: 'Type of loading comments',
+                children: {
+                    name: 'comments:loading:type',
+                    buttons: [
+                        {
+                            label: 'By the button',
+                            text: 'Recommended'
+                        },
+                        {
+                            label: 'When going to the page',
+                        }
+                    ]
+                }
+            },
+            { separator: true, label: '' },
+            {
+                label: 'Create a comment',
+                icon: 'comment',
+                text: 'On this page',
+                click: () => {
+                    comments.setStatus('create');
+                }
+            }
+        ] 
+    });
 }
 
 
@@ -373,119 +440,28 @@ header {
         align-items: center;
         justify-content: center;
 
-        .search,
-        .tabs,
-        .notifications {
-            cursor: pointer;
-            margin: 0 12px 0 0;
-            transition: .2s;
-        }
+        nav.buttons {
+            display: flex;
+            align-items: center;
 
-        .search {
-            cursor: default;
-            min-width: 16px;
-            min-height: 16px;
-            position: relative;
-
-            .hx-icon {
+            li {
                 cursor: pointer;
-            }
-        }
-
-        .tabs {
-            cursor: pointer;
-            position: relative;
-            transform: translateY(1px);
-            z-index: 2;
-
-            .hx-icon {
-                cursor: pointer;
-            }
-
-            &::after {
-                content: attr(data-count);
-                width: 12px;
-                height: 12px;
-                position: absolute;
-                top: -6px;
-                right: -6px;
-                font-size: 10px;
-                text-align: center;
-                line-height: 12px;
-                border-radius: 5px;
-                background: var(--background-secondary);
-            }
-
-            ul {
-                padding: 8px;
-                min-width: 169px;
-                position: absolute;
-                top: calc(100% + 16px);
-                left: 50%;
-                border-radius: 5px;
-                border: 1px solid var(--background-secondary);
-                transform: translateX(-50%);
+                margin: 0 12px 0 0;
+                min-width: 16px;
+                min-height: 16px;
                 transition: .2s;
 
-                li {
-                    cursor: pointer;
-                    display: flex;
-                    margin: 0 0 8px 0;
-                    align-items: center;
-
-                    &:last-child {
-                        margin: 0;
-                    }
-
-                    .image {
-                        margin: 0 8px 0 0;
-                        width: 32px;
-                        height: 32px;
-                        border-radius: 5px;
-                        background-color: var(--color);
-                    }
-
-                    .image + div {
-                        max-width: 100%;
-
-                        div {
-                            max-width: 100%;
-                            white-space: nowrap;
-                            text-overflow: ellipsis;
-                            overflow: hidden;
-                        }
-
-                        div:nth-child(2) {
-                            color: var(--text-secondary);
-                            font-size: 12px;
-                        }
-                    }
-                }
-            }
-        }
-
-        .notifications {
-            height: 16px;
-            position: relative;
-
-            &::after {
-                content: " ";
-                width: 8px;
-                height: 8px;
-                position: absolute;
-                top: -4px;
-                right: -2px;
-                border-radius: 2px;
-                background-color: var(--main-color);
-                transform: scale(0);
-                transition: .2s;
-                opacity: 0;
-            }
-
-            &.new-message {
-                &::after {
-                    transform: rotate(-45deg) scale(1);
-                    opacity: 1;
+                &.alert::after {
+                    content: " ";
+                    width: 8px;
+                    height: 8px;
+                    position: absolute;
+                    top: -4px;
+                    right: -2px;
+                    border-radius: 2px;
+                    background-color: var(--main-color);
+                    transform: rotate(-45deg);
+                    transition: .2s;
                 }
             }
         }

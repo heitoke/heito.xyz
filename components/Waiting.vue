@@ -200,7 +200,9 @@ async function initUser() {
 
         $windows.create({
             component: 'Message',
-            close: false,
+            close: {
+                enable: false
+            },
             data: {
                 title: 'Account confirmation',
                 text: 'Enter the password of the account that was previously authorized. If you don\'t want to log in or don\'t know the password, you can just skip it.',
@@ -262,7 +264,9 @@ async function initUser() {
     if (props?.merge) {
         $windows.create({
             component: 'UserMerge',
-            close: false,
+            close: {
+                enable: false
+            },
             data: props.merge
         });
     }

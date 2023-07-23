@@ -1,11 +1,17 @@
 <template>
-    <div>{{ value }}</div>
+    <component :is="type">{{ value }}</component>
 </template>
 
 <script lang="ts" setup>
 
+import { PropType } from 'nuxt/dist/app/compat/capi';
+
 const props = defineProps({
-    text: { type: String }
+    text: { type: String },
+    type: {
+        type: String as PropType<'div' | 'span'>,
+        default: 'div'
+    }
 });
 
 const

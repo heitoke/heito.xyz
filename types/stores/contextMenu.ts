@@ -22,7 +22,9 @@ export interface IComponent {
     },
     events?: {
         [key: string]: (...args: any) => any;
-    }
+    },
+    slot?: string;
+    style?: string;
 }
 
 export interface IContextMenu {

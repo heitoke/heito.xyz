@@ -10,10 +10,6 @@ export const useContextMenuStore = defineStore('context-menu', {
         create(contextMenu: IContextMenu) {
             if (process.server) return;
 
-            // window.addEventListener('contextmenu', e => {
-            //     e.preventDefault();
-            // }, { once: true });
-
             const event = contextMenu.event || window.event;
 
             this.contextMenu = {

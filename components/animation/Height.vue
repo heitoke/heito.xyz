@@ -17,11 +17,13 @@
 
 const props = defineProps({
     showed: { type: Boolean },
-    opacity: { type: Boolean, default: false }
+    opacity: { type: Boolean, default: false },
+    duration: { type: Number, default: 0.3 }
 });
 
 const style = ref({
-    '--opacity': props.opacity ? 0 : 1
+    '--opacity': props.opacity ? 0 : 1,
+    '--duration': (props.duration || 0.3) + 's'
 });
 
 function enter(el: HTMLElement) {
@@ -56,7 +58,7 @@ function leave(el: HTMLElement) {
 
 .height-enter-active,
 .height-leave-active {
-    transition: height .3s ease-in-out;
+    transition: height var(--duration) ease-in-out;
     overflow: hidden;
     opacity: var(--opacity);
 }
@@ -67,7 +69,7 @@ function leave(el: HTMLElement) {
 }
 
 .height-content {
-    transition: all .3s ease-in-out;
+    transition: all var(--duration) ease-in-out;
 }
 
 </style>

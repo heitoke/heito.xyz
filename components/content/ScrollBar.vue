@@ -1,7 +1,7 @@
 <template>
     <div class="scrollbar" ref="root">
-        <div scrollbar-body :style="{ maxHeight }" @scroll="setScrollHeight">
-            <div scrollbar-content>
+        <div scrollbar-body ref="body" :style="{ maxHeight }" @scroll="setScrollHeight">
+            <div scrollbar-content ref="content">
                 <slot
                     :toScroll="toScroll"
                     :scroll="{ x, y, top, left, max, client }"
@@ -9,7 +9,7 @@
             </div>
         </div>
 
-        <div scrollbar-strip class="y" v-show="orientation !== 'x' && client.height !== max.height"
+        <div scrollbar-strip ref="strip" class="y" v-show="orientation !== 'x' && client.height !== max.height"
             :class="{ active: droped }"
             :style="{ right: `${inset ? -4 : 0}px` }"
         >
@@ -41,7 +41,11 @@ export interface IScrollBar {
 
 const { $win } = useNuxtApp();
 
-const root = ref<HTMLElement | null>(null);
+const
+    root = ref<HTMLElement | null>(null),
+    body = ref<HTMLElement | null>(null),
+    content = ref<HTMLElement | null>(null),
+    strip = ref<HTMLElement | null>(null);
 
 const props = defineProps({
     orientation: {
@@ -69,15 +73,11 @@ let lastPosition: { x: number; y: number; } = {
 };
 
 function refs() {
-    const
-        container = root.value,
-        body = container?.querySelector('[scrollbar-body]')! as HTMLElement;
-
     return {
-        container,
-        body,
-        content: body?.querySelector('[scrollbar-content]')! as HTMLElement,
-        scroll: container?.querySelector('[scrollbar-strip]')! as HTMLElement
+        container: root.value!,
+        body: body.value!,
+        content: content.value!,
+        scroll: strip.value!
     }
 }
 
@@ -191,7 +191,8 @@ onMounted(() => {
 
     [scrollbar-content] {
         width: 100%;
-        height: 100%;
+        // height: 100%;
+        position: relative;
     }
 
     [scrollbar-strip] {

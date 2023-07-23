@@ -14,11 +14,14 @@
                     @children="setPositionContextMenu($refs['root'] as Element, 300)"
                 />
 
-                <div v-if="contextMenu.getMenu?.components?.length! > 0">
+                <div class="components" v-if="contextMenu.getMenu?.components?.length! > 0">
                     <component v-for="component of contextMenu.getMenu?.components" :is="component.component"
+                        :style="component?.style || ''"
                         v-bind="component.props"
                         v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
-                    />
+                    >
+                        <div v-html="component?.slot || ''"></div>
+                    </component>
                 </div>
             </ScrollBar>
         </div>
@@ -81,8 +84,8 @@ function getPosition(targetElement: DOMRect, menuElement: DOMRect, event: MouseE
         y = save.y;
 
     const
-        targetWidth2 = (targetElement.width / 2) + xGap,
-        targetHeight2 = (targetElement.height / 2) + yGap;
+        targetWidth2 = (fixed ? (targetElement.width / 2) : 0) + xGap,
+        targetHeight2 = (fixed ? (targetElement.height / 2) : 0) + yGap;
 
 
     if (left) {
@@ -178,7 +181,6 @@ async function showContextMenu(menuElement: Element) {
 <style lang="scss" scoped>
 
 .context-menu {
-    padding: 8px;
     // max-width: 196px;
     min-width: 196px;
     position: absolute;
@@ -187,6 +189,11 @@ async function showContextMenu(menuElement: Element) {
     transition: all .2s;
     overflow: hidden;
     z-index: 110;
+
+    .menu,
+    .components {
+        padding: 8px;
+    }
 
     &-enter-active,
     &-leave-active {

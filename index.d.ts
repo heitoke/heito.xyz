@@ -1,5 +1,9 @@
 type HideName = 'page' | 'footer' | 'go-top';
 
+interface CommentsOptions {
+    aliasUrls?: Array<string>;
+}
+
 declare module '#app' {
     interface PageMeta {
         title?: string;
@@ -8,6 +12,7 @@ declare module '#app' {
         hide?: Array<HideName>;
         index?: number;
         mainPage?: string;
+        // comments?: CommentsOptions;
     }
 }
 

@@ -105,7 +105,8 @@ const
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
     contextMenu = useContextMenuStore(),
-    header = useHeaderStore();
+    header = useHeaderStore(),
+    comments = usePageCommentsStore();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -470,8 +471,19 @@ function blogContextMenu() {
 }
 
 
+
+
 onMounted(() => {
     header.setOptions({ blur: { enable: false, value: '5px' } });
+
+    const { _id, name } = selfBlog?.value;
+
+    if (_id) {
+        comments.setUrl([
+            `/blogs/${_id}`,
+            `/blogs/${name}`
+        ]);
+    }
 });
 
 onUnmounted(() => {

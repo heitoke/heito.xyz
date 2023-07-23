@@ -3,6 +3,7 @@ import type { Socket } from 'socket.io-client';
 import type { ILog } from '~/types/api/log';
 import type { IConfig } from '~/types/api/config';
 import type { IUser } from '~/types/api/user';
+import type { IComment } from '~/types/api/comments';
 
 export interface ServerToClientEvents {
     // ? Server
@@ -20,6 +21,11 @@ export interface ServerToClientEvents {
 
     // ? Configs
     'configs:update'(config: IConfig): void;
+
+    // ? Comments
+    'comments:upload'(comment: IComment): void;
+
+    [key: string]: (...args: any) => void;
 }
   
 export interface ClientToServerEvents {

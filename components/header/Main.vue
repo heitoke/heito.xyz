@@ -18,21 +18,11 @@
                     >heito.xyz</RouterLink>
 
                     <div class="online" v-if="config.getStatus === 'online'"
-                        @click="open($event, _online, () => getListOnlineUsers(online.isActive), () => online.isActive = false)"
+                        @click="onlineContextMenu"
                     >
-                        <span>Online:</span> {{ online.count }}
+                        <span>Online:</span> {{ online }}
                     </div>
                 </div>
-
-                <Transition name="activities">
-                    <ul class="blur" ref="_online" v-if="online.isActive">
-                        <Loading v-show="online.list?.length < 1"/>
-
-                        <User v-for="user of online.list" :key="user._id"
-                            :user="user"
-                        />
-                    </ul>
-                </Transition>
             </div>
 
             <Activities/>
@@ -68,6 +58,7 @@
 
 import Activities from './Activities.vue';
 import UserMenu from './UserMenu.vue';
+import UsersOnline from './Online.vue';
 
 import User from '~/components/models/user/Card.vue';
 
@@ -99,7 +90,6 @@ const
 
 const
     root = ref<HTMLElement | null>(null),
-    _online = ref<HTMLElement | null>(null),
     _tabs = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['changeSuperMode']);
@@ -108,12 +98,7 @@ const emit = defineEmits(['changeSuperMode']);
 const
     darkTheme = ref<boolean>(true),
     tabs = ref<boolean>(false),
-    online = ref({
-        isActive: false,
-        count: 0,
-        list: [] as Array<IUser>,
-        lastedAt: 0
-    }),
+    online = ref<number>(0),
     superMenu = ref<boolean>(false);
 
 const buttons = ref<Array<Button>>([
@@ -169,11 +154,7 @@ const getAdminContext = computed(() => {
 
 
 $socket.on('users:online', data => {
-    if (data?.list?.length! > 0) {
-        online.value.list = data?.list || [];
-    }
-
-    online.value.count = data?.online || data?.list?.length || 1;
+    online.value = data?.online || data?.list?.length || 1;
 });
 
 
@@ -192,16 +173,6 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
     }
 
     setTimeout(() => close(), 10);
-}
-
-function getListOnlineUsers(boolean: boolean) {
-    online.value.isActive = !boolean;
-
-    if (boolean || online.value.list?.length > 1 || Date.now() < (online.value.lastedAt + 10000)) return;
-
-    online.value.lastedAt = Date.now();
-
-    $socket.emit('users:online', 'list');
 }
 
 function commentsContextMenu(event: MouseEvent) {
@@ -262,6 +233,25 @@ function commentsContextMenu(event: MouseEvent) {
     });
 }
 
+function onlineContextMenu(event: Event) {
+    contextMenu.create({
+        name: 'header:users:online',
+        event,
+        autoMaxWidth: true,
+        items: [
+            {
+                type: 'component',
+                name: 'online',
+                component: UsersOnline,
+                events: {
+                    update({ count }: { count: number, list: Array<IUser> }) {
+                        online.value = count;
+                    }
+                }
+            }
+        ]
+    });
+}
 
 onMounted(() => {
     darkTheme.value = $local.get('theme') === 'dark';

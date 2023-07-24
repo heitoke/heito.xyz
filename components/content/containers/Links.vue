@@ -196,16 +196,18 @@ function linkContextMenu(idx: number) {
         name: `links:${link?.label}`,
         position: ['fixed', 'center', 'bottom'],
         event: root.value?.querySelector(`ul li:nth-child(${idx + 1})`)!,
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Change link',
                 icon: 'pencil',
                 click: () => {
                     addNewLink(link, idx);
                 }
             },
-            { separator: true } as any,
+            { type: 'separator' },
             {
+                type: 'button',
                 label: 'Delete link',
                 icon: 'link',
                 click: () => {

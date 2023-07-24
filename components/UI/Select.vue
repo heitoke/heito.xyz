@@ -12,7 +12,7 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-import type { IContextMenuButton } from '~/types/stores/contextMenu';
+import type { ItemButton, Item } from '~/types/stores/contextMenu';
 
 export interface IMenuButton {
     label: string;
@@ -32,7 +32,7 @@ const emit = defineEmits(['select']);
 const props = defineProps({
     label: { type: String },
     value: { type: String },
-    menu: { type: Object as PropType<Array<IContextMenuButton>> },
+    menu: { type: Object as PropType<Array<Omit<ItemButton, 'type'>>> },
     position: {
         type: String as PropType<'bottom' | 'top'>,
         default: 'bottom'
@@ -67,35 +67,41 @@ function open(text: string = '') {
 
     isOpen.value = false;
 
+    let items: Array<Item> = [];
+
+    console.log(sort);
+    
+
+    if (sort?.length! < 1) {
+        items = [...items, {
+            type: 'component',
+            name: 'alert',
+            component: 'Alert',
+            props: { type: 'mini' }
+        }];
+    } else {
+        items = sort?.map(btn => ({
+            ...btn,
+            type: 'button',
+            click: (e: MouseEvent) => {
+                if (btn?.click) btn?.click(e);
+
+                selected.value = btn.value as string;
+
+                emit('select', getItem.value);
+
+                contextMenu.close();
+
+                isOpen.value = false;
+            }
+        })) as Array<ItemButton>;
+    }
+
     contextMenu.create({
         name: 'ui-select',
         position: [props.position, 'center', 'fixed'],
         event: root?.value!,
-        components: sort?.length! < 1 ? [
-            {
-                name: 'alert',
-                component: 'Alert',
-                props: {
-                    type: 'mini'
-                }
-            }
-        ] : [],
-        buttons: sort?.length! < 1 ? [] : sort?.map(btn => {
-            return {
-                ...btn,
-                click: (e: MouseEvent) => {
-                    if (btn?.click) btn?.click(e);
-
-                    selected.value = btn.value as string;
-
-                    emit('select', getItem.value);
-
-                    contextMenu.close();
-
-                    isOpen.value = false;
-                }
-            }
-        })
+        items
     });
 }
 

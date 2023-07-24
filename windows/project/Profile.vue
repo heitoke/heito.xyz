@@ -92,7 +92,7 @@ import User from '~/components/models/user/Card.vue';
 import { type IProject, type IProjectMember, EProjectPermission } from '~/types/api/project';
 import { EPermissions, type IUser } from '~/types/api/user';
 
-import type { IContextMenuButton } from '~/types/stores/contextMenu';
+import type { ItemButton, Item } from '~/types/stores/contextMenu';
 
 type Block = 'links' | 'members';
 
@@ -158,15 +158,17 @@ watch(() => selfProject.value.links?.length, () => {
 
 function buttonAdmin() {
     return [
-        { separator: true },
+        { type: 'separator' },
         {
+            type: 'button',
             label: 'Admin menu',
             icon: 'fire',
             children: {
                 name: 'project:admin:menu',
                 title: 'Admin menu',
-                buttons: [
+                items: [
                     {
+                        type: 'button',
                         label: 'Verify',
                         icon: 'verify',
                         text: project.value.verified ? 'Enabled' : 'Disabled',
@@ -177,12 +179,13 @@ function buttonAdmin() {
                 ]
             }
         }
-    ]
+    ] as Array<Item>;
 }
 
 function buttonProjectSettings() {
     const buttonText = (name: 'name' | 'displayName' | 'description' = 'name', icon: string = 'text-a', label: string = 'Name') => {
         return {
+            type: 'button',
             label,
             icon,
             click: () => {
@@ -255,18 +258,21 @@ function buttonProjectSettings() {
         });
     };
     const buttonImage = (boolean: boolean, name: 'image' | 'banner' = 'image', label: string = 'Image') => ({
+        type: 'button',
         label,
         icon: 'image',
         children: boolean ? {
             name: `project:settings:${name}`,
             title: `Project ${name}`,
-            buttons: [
+            items: [
                 {
+                    type: 'button',
                     label: 'Change',
                     icon: 'pencil',
                     click: () => changeImage(name)
                 },
                 {
+                    type: 'button',
                     label: 'Remove',
                     icon: 'close',
                     click: () => {
@@ -282,6 +288,7 @@ function buttonProjectSettings() {
 
     let color = '';
     const buttonColor = {
+        type: 'button',
         label: 'Color',
         icon: 'colors',
         color: project.value.color,
@@ -322,13 +329,15 @@ function buttonProjectSettings() {
 
     let tag = '';
     const buttonTags = {
+        type: 'button',
         label: 'Tags',
         icon: 'tag',
         children: {
             name: `project:settings:tags`,
             title: `Tags`,
-            buttons: [
+            items: [
                 {
+                    type: 'button',
                     label: 'Add new tag',
                     icon: 'tag',
                     click: () => {
@@ -363,6 +372,7 @@ function buttonProjectSettings() {
                     }
                 },
                 {
+                    type: 'button',
                     label: 'Remove all',
                     icon: 'close',
                     click: () => {
@@ -374,13 +384,15 @@ function buttonProjectSettings() {
     }
 
     return {
+        type: 'button',
         label: 'Project settings',
         icon: 'settings',
         children: {
             name: 'project:settings',
             title: 'Project settings',
-            buttons: [
+            items: [
                 {
+                    type: 'button',
                     label: 'Private mode',
                     icon: 'eye',
                     text: project.value.private ? 'Enable' : 'Disable',
@@ -388,40 +400,45 @@ function buttonProjectSettings() {
                         changes.value['private'] = !project.value.private;
                     }
                 },
-                { separator: true },
+                { type: 'separator' },
                 // buttonImage(Boolean(this.project?.image)),
                 buttonImage(Boolean(project.value?.banner), 'banner', 'Banner'),
 
-                { separator: true },
+                { type: 'separator' },
                 buttonText('displayName', 'heart-alt', 'Display name'),
                 buttonText(),
                 buttonText('description', 'text-align-left', 'Description'),
 
-                { separator: true },
+                { type: 'separator' },
                 buttonColor,
                 buttonTags,
                 ...(user.getUser?.permissions?.includes(EPermissions.Projects) ? buttonAdmin() : [])
             ]
         }
-    } as IContextMenuButton;
+    } as Item;
 }
 
 function setButtons() {
-    const contextMenuUserSettings = (e: Event) => contextMenu.create({
-        name: 'window:user:settings',
-        position: ['left', 'center', 'fixed'],
-        event: e,
-        buttons: [
-            ...(isModer.value ? [buttonProjectSettings(), { separator: true } as IContextMenuButton] : []),
-            {
-                label: 'Copy Project ID',
-                icon: 'user-circle',
-                click: () => {
-                    copy(project.value?._id);
+    const contextMenuUserSettings = (event: Event) => {
+        const items: Array<Item> = isModer.value ? [buttonProjectSettings(), { type: 'separator' }] : [];
+
+        contextMenu.create({
+            name: 'window:user:settings',
+            position: ['left', 'center', 'fixed'],
+            event,
+            items: [
+                ...items,
+                {
+                    type: 'button',
+                    label: 'Copy Project ID',
+                    icon: 'user-circle',
+                    click: () => {
+                        copy(project.value?._id);
+                    }
                 }
-            }
-        ]
-    });
+            ]
+        });
+    }
 
     windows.addButtons(props.windowId!, [
         {
@@ -525,8 +542,9 @@ function memberContextMenu(e: MouseEvent, idx: number) {
         name: `project:members:${idx}`,
         position: ['bottom', 'center', 'fixed'],
         event: root.value?.querySelector(`section.members .user:nth-child(${idx + 1})`)!,
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Kick member',
                 icon: 'close',
                 click: async () => {
@@ -551,8 +569,9 @@ function tagSettings(tag: IButton) {
     contextMenu.create({
         name: `project:tags:${tag.label}`,
         position: ['bottom', 'center', 'fixed'],
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Remove tag',
                 icon: 'close',
                 click: () => {

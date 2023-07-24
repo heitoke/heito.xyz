@@ -164,16 +164,18 @@ function commentContextMenu(event: MouseEvent) {
         name: `comment:options:${props.comment._id}`,
         position: ['fixed', 'right', 'center'],
         event,
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Edit',
                 icon: 'pencil',
                 click: () => {
                     edit.value = true;
                 }
             },
-            { separator: true, label: '' },
+            { type: 'separator' },
             {
+                type: 'button',
                 label: 'Delete',
                 icon: 'trash',
                 color: 'var(--red)',

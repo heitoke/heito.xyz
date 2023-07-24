@@ -52,7 +52,7 @@ import Menu from '~/components/content/Menu.vue';
 // import Users from '../../libs/api/routes/users';
 // import Auth from '../../libs/api/routes/auth';
 
-import type { IContextMenu } from '~/types/stores/contextMenu';
+import type { IContextMenu, Item } from '~/types/stores/contextMenu';
 
 // import type { TLangName } from '../../plugins/langs';
 
@@ -78,9 +78,10 @@ const getUserAvatar = computed(() => {
 });
 
 const getProfileMenu = computed(() => {
-    const userButtons = [
-        { separator: true },
+    const userButtons: Array<Item> = [
+        { type: 'separator' },
         {
+            type: 'button',
             label: 'Sessions',
             icon: 'users',
             click: () => {
@@ -93,9 +94,10 @@ const getProfileMenu = computed(() => {
                 });
             }
         },
-        { separator: true },
+        { type: 'separator' },
         ...(!user.getUser?.isRegistered ? [
             {
+                type: 'button',
                 label: t('global.sign.in'),
                 icon: 'hand',
                 click: () => {
@@ -103,6 +105,7 @@ const getProfileMenu = computed(() => {
                 }
             },
             {
+                type: 'button',
                 label: t('user.create.title[0]'),
                 icon: 'user-circle',
                 click: () => {
@@ -111,6 +114,7 @@ const getProfileMenu = computed(() => {
             }
         ] : [
             {
+                type: 'button',
                 label: t('global.exit[1]'),
                 icon: 'exit',
                 class: 'exit',
@@ -162,13 +166,14 @@ const getProfileMenu = computed(() => {
                     });
                 }
             }
-        ])
+        ]) as Array<Item>
     ];
     
     return {
         name: 'header:profile:menu',
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: t('global.settings'),
                 icon: 'settings',
                 click: () => {
@@ -178,6 +183,7 @@ const getProfileMenu = computed(() => {
                 }
             },
             {
+                type: 'button',
                 label: t('global.theme.dark'),
                 icon: 'sun-moon',
                 value: $local.params?.theme === 'dark',
@@ -189,6 +195,7 @@ const getProfileMenu = computed(() => {
                 }
             },
             {
+                type: 'button',
                 label: t('global.lang[1]'),
                 icon: 'translate',
                 // @ts-ignore
@@ -196,8 +203,9 @@ const getProfileMenu = computed(() => {
                 children: {
                     name: 'header:lang',
                     text: '',
-                    buttons: $langs.list.map(lang => {
+                    items: $langs.list.map(lang => {
                         return {
+                            type: 'button',
                             // @ts-ignore
                             label: lang.names[locale.value],
                             // @ts-ignore

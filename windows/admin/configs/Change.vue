@@ -317,12 +317,14 @@ function contextMenuPage(name: string) {
     contextMenu.create({
         name: `config:pages:${page.name}`,
         position: ['bottom', 'center', 'fixed'],
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Change status',
                 children: {
                     name: `config:pages:${page.name}:status`,
-                    buttons: values.map(x => ({
+                    items: values.map(x => ({
+                        type: 'button',
                         label: Object.keys(EPageStatus)[values.indexOf(x as unknown as EPageStatus)],
                         click: () => {
                             page.status = x;
@@ -330,12 +332,14 @@ function contextMenuPage(name: string) {
                     }))
                 }
             },
-            { separator: true },
+            { type: 'separator' },
             {
+                type: 'button',
                 label: 'Add allow user',
                 click: () => addUser(true)
             },
             {
+                type: 'button',
                 label: 'Add deny user',
                 click: () => addUser(false)
             }

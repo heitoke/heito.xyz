@@ -12,6 +12,7 @@
                     :value="$route.path"
                     :position="'top'"
                     :menu="getRoutes"
+                    :sort="false"
                     @select="$router.push($event.value)"
                 />
 
@@ -46,6 +47,8 @@
 
 import { EPermissions } from '~/types/api/user';
 
+import type { ItemButton } from '~/types/stores/contextMenu';
+
 const { $router } = useNuxtApp();
 
 const
@@ -73,15 +76,17 @@ const getHideRoutes = computed<any[]>(() => {
 const getRoutes = computed(() => {
     const routes = $router.options.routes.filter(route => Boolean(route.meta?.title));
 
-    let list: any[] = [];
+    let list: Array<Omit<ItemButton, 'type'>> = [];
 
     for (let route of routes.sort((a, b) => (a.meta?.index || 0) > (b.meta?.index || 0) ? 1 : 0)) {
         if (getHideRoutes.value.find(p => p.name === route.name)) continue;
 
+        const { title, icon, mainPage } = route?.meta!;
+
         list = [...list || [], {
-            label: route?.meta?.title,
-            icon: route?.meta?.icon || 'pacman',
-            value: route?.meta?.mainPage || route?.path
+            label: title as string || '',
+            icon: icon as string || 'pacman',
+            value: mainPage || route?.path || ''
         }];
     }
 

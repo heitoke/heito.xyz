@@ -4,7 +4,8 @@ import type { IContextMenu } from 'types/stores/contextMenu';
 
 export const useContextMenuStore = defineStore('context-menu', {
     state: () => ({
-        contextMenu: {} as IContextMenu
+        contextMenu: {} as IContextMenu,
+        count: 0
     }),
     actions: {
         create(contextMenu: IContextMenu) {
@@ -12,6 +13,9 @@ export const useContextMenuStore = defineStore('context-menu', {
 
             const event = contextMenu.event || window.event;
 
+            if (contextMenu.name === this.contextMenu.name) this.count++;
+            else this.count = 0;
+            
             this.contextMenu = {
                 position: ['fixed', 'bottom', 'center'],
                 gap: [8, 8],
@@ -21,11 +25,16 @@ export const useContextMenuStore = defineStore('context-menu', {
         },
         close() {
             this.contextMenu = {} as IContextMenu;
+
+            this.count = 0;
         }
     },
     getters: {
         getMenu(state): IContextMenu {
             return state.contextMenu;
+        },
+        getCount(state): number {
+            return state.count;
         }
     }
 });

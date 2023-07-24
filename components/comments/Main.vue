@@ -143,8 +143,9 @@ function clickNewComment(event: MouseEvent) {
     contextMenu.create({
         name: 'comments:page:create',
         position: ['bottom', 'right'],
-        components: [
+        items: [
             {
+                type: 'component',
                 name: 'content',
                 component: 'Textbox',
                 props: {
@@ -158,10 +159,11 @@ function clickNewComment(event: MouseEvent) {
                 }
             },
             {
+                type: 'component',
                 name: 'button',
                 component: 'Button',
                 style: 'margin: 8px 0 0 0',
-                slot: 'Create page comment',
+                // slot: 'Create page comment',
                 events: {
                     click: async () => {
                         const scrollbarContent = document.querySelector('.page')!.closest('div[scrollbar-content]')!;

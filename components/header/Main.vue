@@ -153,8 +153,9 @@ const getAdminContext = computed(() => {
         name: 'admin:menu',
         event: root.value?.querySelector('.logo .online') as any,
         position: ['center', 'fixed', 'bottom'],
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Configs',
                 icon: 'configs',
                 click: () => {
@@ -209,8 +210,9 @@ function commentsContextMenu(event: MouseEvent) {
     contextMenu.create({
         name: 'comments',
         event,
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: (isVisible ? 'Hide' : 'Show') + ' comments',
                 icon: 'comments-alt',
                 text: 'On this page',
@@ -229,22 +231,26 @@ function commentsContextMenu(event: MouseEvent) {
                 }
             },
             {
+                type: 'button',
                 label: 'Type of loading comments',
                 children: {
                     name: 'comments:loading:type',
-                    buttons: [
+                    items: [
                         {
+                            type: 'button',
                             label: 'By the button',
                             text: 'Recommended'
                         },
                         {
+                            type: 'button',
                             label: 'When going to the page',
                         }
                     ]
                 }
             },
-            { separator: true, label: '' },
+            { type: 'separator' },
             {
+                type: 'button',
                 label: 'Create a comment',
                 icon: 'comment',
                 text: 'On this page',

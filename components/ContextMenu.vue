@@ -9,20 +9,10 @@
             }"
         >
             <ScrollBar max-height="80vh">
-                <Menu v-if="contextMenu.getMenu?.buttons?.length! > 0"
+                <Menu v-if="contextMenu.getMenu?.items?.length! > 0"
                     :menu="contextMenu.getMenu"
-                    @children="setPositionContextMenu($refs['root'] as Element, 300)"
+                    @children="setPositionContextMenu($refs['root'] as Element, 300);"
                 />
-
-                <div class="components" v-if="contextMenu.getMenu?.components?.length! > 0">
-                    <component v-for="component of contextMenu.getMenu?.components" :is="component.component"
-                        :style="component?.style || ''"
-                        v-bind="component.props"
-                        v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
-                    >
-                        <div v-html="component?.slot || ''"></div>
-                    </component>
-                </div>
             </ScrollBar>
         </div>
     </Transition>
@@ -43,18 +33,27 @@ const contextMenu = useContextMenuStore();
 
 
 const
-    show = ref<boolean>(false),
     x = ref<number>(-1),
-    y = ref<number>(-1);
+    y = ref<number>(-1),
+    closed = ref<boolean>(false);
 
 
 watch(() => contextMenu.getMenu?.name, (newValue, oldValue) => {
-    if (oldValue && newValue && root.value) {
-        return showContextMenu(root.value);
+    if (newValue && oldValue && root.value) {
+        closed.value = true;
+
+        setPositionContextMenu(root.value, 10);
     }
-    
-    if (root.value !== null && newValue) setPositionContextMenu(root.value, 10);
 });
+
+watch(() => contextMenu.getCount, (newValue, oldValue) => {
+    if (newValue > 0 && root.value) {
+        closed.value = true;
+
+        setPositionContextMenu(root.value);
+    }
+});
+
 
 function getIsPositions() {
     const has = (val: TPosition): boolean => contextMenu.getMenu?.position!?.includes(val);
@@ -76,8 +75,8 @@ function getPosition(targetElement: DOMRect, menuElement: DOMRect, event: MouseE
     const [xGap, yGap] = contextMenu.getMenu?.gap || [8, 8];
 
     const save = {
-        x: fixed ? (targetElement.x + (targetElement.width / 2)) : event.x,
-        y: fixed ? (targetElement.y + (targetElement.height / 2)) : event.y
+        x: fixed ? (targetElement.x + (targetElement.width / 2)) : event?.x,
+        y: fixed ? (targetElement.y + (targetElement.height / 2)) : event?.y
     }
 
     let x = save.x,
@@ -131,33 +130,31 @@ function getTargetContextMenu(): DOMRect {
     return ((contextMenu?.getMenu.event as MouseEvent)?.target as Element)?.getBoundingClientRect() || (contextMenu?.getMenu.event as Element)?.getBoundingClientRect();
 }
 
-async function setPositionContextMenu(menuElement: Element, timeout: number = 10) {
-    show.value = false;
-
+async function setPositionContextMenu(menuElement: Element, timeout: number = 10, isClosing: boolean = true) {
     await new Promise(r => setTimeout(() => r(true), timeout));
 
     const elMenu: DOMRect = menuElement?.getBoundingClientRect();
-
+    
     const [_x, _y]: number[] = await getPosition(getTargetContextMenu(), elMenu, contextMenu.getMenu?.event as MouseEvent);
 
     x.value = _x;
     y.value = _y;
 
-    setTimeout(() => {
-        show.value = true;
-
-        close(menuElement);
-    }, 10);
+    close(menuElement);
 }
 
 async function close(menuElement: Element) {
+    await new Promise(res => setTimeout(() => res(true), 10));
+
+    closed.value = false;
+
     window.addEventListener('click', (event: Event) => {
         const path = (event as any)?.path || (event.composedPath ? event.composedPath() : undefined);
-
+        
         if (path && (path.includes(menuElement) || path.includes(contextMenu.getMenu?.event))) return close(menuElement);
 
-        show.value = false;
-        
+        if (closed.value) return close(menuElement);
+
         contextMenu.close();
     }, { once: true });
 }

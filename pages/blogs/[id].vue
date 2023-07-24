@@ -85,7 +85,7 @@ import { useHeaderStore } from '~/stores/header';
 import { IBlog, TBlogUserLike, categories } from '~/types/api/blog';
 import { EPermissions } from '~/types/api/user';
 
-import type { IContextMenu, IContextMenuButton } from '~/types/stores/contextMenu';
+import type { IContextMenu, ItemButton } from '~/types/stores/contextMenu';
 import type { IMessage } from '~/windows/Message.vue';
 
 type Block = 'comments' | 'likes' | 'dislikes';
@@ -273,7 +273,7 @@ async function loadLikes(type: 'likes' | 'dislikes') {
     selfBlog.value[type] = list.length;
 }
 
-function blogSettings(): IContextMenuButton {
+function blogSettings(): ItemButton {
     const text = (title: string, icon: string, label: string, callback: (text: string) => void, value: string = '', type: 'area' | 'text' = 'text') => {
         let t = '';
 
@@ -313,21 +313,24 @@ function blogSettings(): IContextMenuButton {
     }
 
     return {
+        type: 'button',
         label: 'Settings',
         icon: 'settings',
         children: {
             name: 'blog:settings',
             title: 'Settings',
-            buttons: [
+            items: [
                 {
+                    type: 'button',
                     label: 'Name',
                     icon: 'text-a',
                     click: () => {
                         text('Change name', 'text-a', 'Name', name => changes.value.name = name, blog.value.name);
                     }
                 },
-                { separator: true },
+                { type: 'separator' },
                 {
+                    type: 'button',
                     label: 'Title',
                     icon: 'text-size',
                     click: () => {
@@ -335,26 +338,30 @@ function blogSettings(): IContextMenuButton {
                     }
                 },
                 {
+                    type: 'button',
                     label: 'Description',
                     icon: 'text-align-left',
                     click: () => {
                         text('Change description', 'text-align-left', 'Description', description => changes.value.description = description, blog.value.description, 'area');
                     }
                 },
-                { separator: true },
+                { type: 'separator' },
                 {
+                    type: 'button',
                     label: 'Image',
                     icon: 'image',
                     children: blog.value.image ? {
                         name: `blog:settings:image`,
                         title: `Image`,
-                        buttons: [
+                        items: [
                             {
+                                type: 'button',
                                 label: 'Change',
                                 icon: 'pencil',
                                 click: () => changeImage()
                             },
                             {
+                                type: 'button',
                                 label: 'Remove',
                                 icon: 'close',
                                 click: () => {
@@ -365,15 +372,17 @@ function blogSettings(): IContextMenuButton {
                     } : undefined,
                     click: blog.value.image ? null : () => changeImage()
                 },
-                { separator: true },
+                { type: 'separator' },
                 {
+                    type: 'button',
                     label: 'Admin',
                     icon: 'fire',
                     children: {
                         name: 'blog:settings:admin',
                         title: 'Admin',
-                        buttons: [
+                        items: [
                             {
+                                type: 'button',
                                 label: 'Category',
                                 icon: 'id-card',
                                 click: () => {
@@ -414,8 +423,9 @@ function blogSettings(): IContextMenuButton {
                                     })
                                 }
                             },
-                            { separator: true },
+                            { type: 'separator' },
                             {
+                                type: 'button',
                                 label: 'Delete blog',
                                 icon: 'trash',
                                 click: () => {
@@ -448,8 +458,8 @@ function blogSettings(): IContextMenuButton {
                     }
                 }
             ]
-        } as IContextMenu
-    }
+        }
+    } as ItemButton;
 }
 
 function blogContextMenu() {
@@ -457,10 +467,11 @@ function blogContextMenu() {
         name: `blog:options`,
         position: ['bottom', isHeaderActive.value ? 'right' : 'left', 'fixed', 'corner'],
         event: root.value?.querySelector('.blog-cm')!,
-        buttons: [
-            ...[isAdmin.value ? blogSettings() : {} as IContextMenuButton],
-            { separator: true } as IContextMenuButton,
+        items: [
+            ...[isAdmin.value ? blogSettings() : {} as ItemButton],
+            { type: 'separator' },
             {
+                type: 'button',
                 label: 'Copy Blog ID',
                 click: () => {
                     copy(blog.value?._id);

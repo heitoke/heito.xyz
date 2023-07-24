@@ -57,10 +57,11 @@ function open() {
         position: ['bottom', 'fixed', 'center'],
         event: header.value!,
         autoMaxWidth: true,
-        components: [
+        items: [
             {
-                component: PanelForColorPicker,
+                type: 'component',
                 name: 'panel-for-color-picker',
+                component: PanelForColorPicker,
                 props: {
                     color: props.value
                 },

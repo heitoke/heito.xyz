@@ -12,7 +12,54 @@
         </Height>
 
         <ul>
-            <li v-for="btn in getMenu?.buttons?.filter((btn: IContextMenuButton) => btn?.label || btn?.separator)" :key="btn.label"
+            <template v-for="(item, idx) of getMenu?.items || []" :key="idx"
+                :class="[item.type]"
+            >
+                <li v-if="item.type === 'separator'"
+                    :class="item.type"
+                    :style="{
+                        margin: item?.margin || '8px 0',
+                        'border-color': item?.color || 'var(--background-secondary)'
+                    }"
+                ></li>
+
+                <li v-else-if="item.type === 'button'"
+                    :class="item.type"
+                    :style="{ '--button-color': item?.color || 'var(--text-primary)' }"
+                    @click="clickButton(item, $event)"
+                >
+                    <img :src="item?.img" alt="ContextMenu ItemButton Image" v-if="item?.img">
+                    <Icon :name="item?.icon" v-else-if="item?.icon"/>
+
+                    <div class="content"
+                    :style="{
+                        'max-width': `calc(100% - ${0 + (item?.children && (item?.children?.items?.length! > 0) ? 24 : 0) + (item?.icon ? 24 : 0) + (item?.checkbox ? 32 : 0)}px)`
+                    }"
+                    >
+                        <div>{{ item.label }}</div>
+                        <div>{{ item?.text || '' }}</div>
+                    </div>
+
+                    <Checkbox v-if="item?.checkbox"
+                        :value="Boolean(item?.value)"
+                        @onEvent="item?.checkbox($event)"
+                    />
+
+                    <Icon class="arrow" name="arrow-right" v-if="item?.children?.name"/>
+                </li>
+
+                <li v-else-if="item.type === 'component'" :class="item.type">
+                    <component :is="item.component"
+                        :style="item?.style || ''"
+                        v-bind="item.props"
+                        v-on="Object.keys(item?.events || {}).length > 0 ? item?.events : {}"
+                    >
+                        <!-- <template v-for="slot of Object.keys(item?.slots || {}) || []" v-slot:slot="{slot}"></template> -->
+                    </component>
+                </li>
+            </template>
+
+            <!-- <li v-for="btn in getMenu?.buttons?.filter((btn: IContextMenuButton) => btn?.label || btn?.separator)" :key="btn.label"
                 :class="{ separator: btn?.separator }"
                 :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
                 @click="buttonClick(btn, $event)"
@@ -33,7 +80,17 @@
                 />
 
                 <Icon class="arrow" name="arrow-right" v-if="btn?.children"/>
-            </li>
+            </li> -->
+
+            <!-- <div class="components" v-if="contextMenu.getMenu?.components?.length! > 0">
+                    <component v-for="component of contextMenu.getMenu?.components" :is="component.component"
+                        :style="component?.style || ''"
+                        v-bind="component.props"
+                        v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
+                    >
+                        <div v-html="component?.slot || ''"></div>
+                    </component>
+                </div> -->
         </ul>
     </div>
 </template>
@@ -42,19 +99,22 @@
 
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
-import type { IContextMenu, IContextMenuButton, IContextMenuChildren } from '~/types/stores/contextMenu';
+import type { IContextMenu, Item, ItemButton, ItemChildren } from '~/types/stores/contextMenu';
 
 const emit = defineEmits(['children']);
 
 const contextMenu = useContextMenuStore();
 
 const props = defineProps({
-    menu: { type: Object as PropType<IContextMenu> }
+    menu: {
+        type: Object as PropType<IContextMenu>,
+        required: true
+    }
 });
 
 const
     mainName = ref<string>(''),
-    children = ref<IContextMenuChildren>({} as IContextMenuChildren),
+    children = ref<ItemChildren>({} as ItemChildren),
     history = ref<Array<IContextMenu>>([]);
 
 
@@ -76,7 +136,7 @@ watch(() => props.menu, (newValue: IContextMenu, oldValue: IContextMenu) => {
 });
 
 
-function buttonClick(btn: IContextMenuButton, e: Event) {
+function clickButton(btn: ItemButton, event: Event) {
     if (btn.children) {
         history.value = [...history.value || [], btn.children];
 
@@ -90,7 +150,7 @@ function buttonClick(btn: IContextMenuButton, e: Event) {
         return emit('children', children.value);
     }
     
-    if (btn?.click) btn.click(e);
+    if (btn?.click) btn.click(event);
 
     contextMenu.close();
 }
@@ -164,7 +224,13 @@ onMounted(() => {
     }
 
     ul {
-        li {
+        li.separator {
+            padding: 0;
+            width: 100%;
+            border-top: 1px solid var(--background-secondary);
+        }
+
+        li.button {
             cursor: pointer;
             display: flex;
             padding: 8px 12px;
@@ -203,18 +269,6 @@ onMounted(() => {
                 min-width: 24px;
                 height: 24px;
                 border-radius: 50%;
-            }
-
-            &.separator {
-                margin: 8px 0;
-                padding: 0;
-                width: 100%;
-                border-top: 1px solid var(--background-secondary);
-
-                *, &::after {
-                    content: " ";
-                    display: none;
-                }
             }
 
             i.hx-icon:not(.arrow) {

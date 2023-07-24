@@ -134,13 +134,15 @@ function open(idx: number) {
         name: `invate:users:user:${user._id}`,
         position: ['fixed', 'center', 'bottom'],
         event: root.value?.querySelector(`ul .user:nth-child(${idx + 1})`)!,
-        buttons: [
+        items: [
             {
+                type: 'button',
                 label: 'Change permission',
                 icon: 'clubs',
                 click: changePermission
             },
             {
+                type: 'button',
                 label: 'Remove',
                 icon: 'close',
                 click: () => {

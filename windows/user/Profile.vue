@@ -29,7 +29,7 @@
                             name: 'window:user:settings',
                             position: ['center', 'bottom', 'fixed'],
                             event: ($el as Element).querySelector('.permissions')!,
-                            buttons: getUserPermissions
+                            items: getUserPermissions
                         })"    
                     >
                         <Icon name="clubs"/>
@@ -95,7 +95,7 @@ import Project from '~/components/models/project/Card.vue';
 
 import { type IUser, EPermissions, listPermissions, type IButtonPermission } from '~/types/api/user';
 import type { IProject } from '~/types/api/project';
-import type { IContextMenuButton } from '~/types/stores/contextMenu';
+import type { Item } from '~/types/stores/contextMenu';
 
 type Block = 'links' | 'projects';
 
@@ -156,7 +156,10 @@ const getLengthChanges = computed(() => {
 const getUserPermissions = computed(() => {
     const list = user.value?.permissions?.filter(per => per !== EPermissions.Self) || [];
 
-    return listPermissions.filter(per => list.includes(per.value));
+    return listPermissions.filter(per => list.includes(per.value)).map(btn => ({
+        type: 'button',
+        ...btn
+    })) as Array<Item>;
 });
 
 
@@ -201,21 +204,24 @@ function buttonAdmin() {
     }
 
     return [
-        { separator: true },
+        { type: 'separator' },
         {
+            type: 'button',
             label: 'Admin menu',
             icon: 'fire',
             children: {
                 name: 'user:admin:menu',
                 title: 'Admin menu',
-                buttons: [
+                items: [
                     {
+                        type: 'button',
                         label: 'Permissions',
                         icon: 'clubs',
                         click: onChangePermissions
                     },
-                    { separator: true },
+                    { type: 'separator' },
                     {
+                        type: 'button',
                         label: 'Verify',
                         icon: 'verify',
                         text: user.value?.verified ? 'Enabled' : 'Disabled',
@@ -226,12 +232,13 @@ function buttonAdmin() {
                 ]
             }
         }
-    ];
+    ] as Array<Item>;
 }
 
 function buttonUserSettings() {
     const buttonText = (name: 'nickname' | 'username' | 'description' = 'nickname', icon: string = 'id-card', label: string = 'Nickname') => {
         return {
+            type: 'button',
             label,
             icon,
             click: () => {
@@ -272,6 +279,7 @@ function buttonUserSettings() {
 
     let color = '';
     const buttonColor = {
+        type: 'button',
         label: 'Color',
         icon: 'colors',
         color: user.value.color,
@@ -344,18 +352,21 @@ function buttonUserSettings() {
         });
     };
     const buttonAvatar = (boolean: boolean, name: 'avatar' | 'banner' = 'avatar', label: string = 'Avatar') => ({
+        type: 'button',
         label,
         icon: 'image',
         children: boolean ? {
             name: `user:settings:${name}`,
             title: `User ${name}`,
-            buttons: [
+            items: [
                 {
+                    type: 'button',
                     label: 'Change',
                     icon: 'pencil',
                     click: () => onChangeAvatarOrBanner(name)
                 },
                 {
+                    type: 'button',
                     label: 'Remove',
                     icon: 'close',
                     click: () => {
@@ -370,13 +381,15 @@ function buttonUserSettings() {
     });
 
     return {
+        type: 'button',
         label: 'User settings',
         icon: 'settings',
         children: {
             name: 'user:settings',
             title: 'User settings',
-            buttons: [
+            items: [
                 {
+                    type: 'button',
                     label: 'Private mode',
                     icon: 'eye',
                     text: user.value.private ? 'Enable' : 'Disable',
@@ -385,39 +398,44 @@ function buttonUserSettings() {
                     }
                 },
 
-                { separator: true },
+                { type: 'separator' },
                 buttonAvatar(Boolean(user.value?.avatar)),
                 buttonAvatar(Boolean(user.value?.banner), 'banner', 'Banner'),
 
-                { separator: true },
+                { type: 'separator' },
                 buttonText(),
                 buttonText('username', 'username', 'Username'),
                 buttonText('description', 'text-align-left', 'Description'),
 
-                { separator: true },
+                { type: 'separator' },
                 buttonColor,
                 ...(isAdmin.value ? buttonAdmin() : [])
             ]
         }
-    } as IContextMenuButton;
+    } as Item;
 }
 
 function setButtons() {
-    const contextMenuUserSettings = (e: Event) => contextMenu.create({
-        name: 'window:user:settings',
-        position: ['left', 'center', 'fixed'],
-        event: e,
-        buttons: [
-            ...(authUser.getUser?._id === user.value?._id || isAdmin.value ? [buttonUserSettings(), { separator: true } as IContextMenuButton] : []),
-            {
-                label: 'Copy User ID',
-                icon: 'user-circle',
-                click: () => {
-                    copy(user.value?._id);
+    const contextMenuUserSettings = (event: Event) => {
+        const items: Array<Item> = authUser.getUser?._id === user.value?._id || isAdmin.value ? [buttonUserSettings(), { type: 'separator' }] : [];
+
+        contextMenu.create({
+            name: 'window:user:settings',
+            position: ['left', 'center', 'fixed'],
+            event,
+            items: [
+                ...items,
+                {
+                    type: 'button',
+                    label: 'Copy User ID',
+                    icon: 'user-circle',
+                    click: () => {
+                        copy(user.value?._id);
+                    }
                 }
-            }
-        ]
-    });
+            ]
+        });
+    }
 
     windows.addButtons(props.windowId!, [
         {

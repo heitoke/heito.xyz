@@ -53,7 +53,15 @@
                 @select="type = $event.value as Block"
             />
 
-            <Alert v-if="type === 'comments'"/>
+            <Alert v-if="type === 'comments'">
+                <div style="font-size: 24px;">Our comments work in a completely different way.</div>
+
+                <Button style="margin: 12px 0 0 0; max-width: max-content;"
+                    @click="comments.setVisible(!comments.isVisible)"
+                >
+                    {{ comments.isVisible ? 'Hide' : 'Show' }} comments
+                </Button>
+            </Alert>
 
             <div v-if="type === 'likes' || type === 'dislikes'">
                 <ul class="list" v-if="(type === 'likes' ? likes : dislikes).list.length > 0">
@@ -61,10 +69,10 @@
                         :text="`Rated at ` + time.timeago(ratedAt)"
                     />
                 </ul>
+                
                 <Alert v-else/>
             </div>
         </div>
-
     </div>
 </template>
 

@@ -33,7 +33,7 @@
                     ]"
                 />
 
-                <Button color="var(--green)" v-if="isAdmin"
+                <Button color="var(--green)" v-if="isAdmin && type === 'projects'"
                     @click="createProject"
                 >Create</Button>
             </div>
@@ -388,7 +388,7 @@ definePageMeta({
     margin: 32px 0 0 0;
     padding: 0 10%;
     width: 100%;
-    height: auto;
+    height: 100vh;
     min-height: 100%;
     align-items: flex-start;
 

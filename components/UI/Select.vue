@@ -69,9 +69,6 @@ function open(text: string = '') {
 
     let items: Array<Item> = [];
 
-    console.log(sort);
-    
-
     if (sort?.length! < 1) {
         items = [...items, {
             type: 'component',

@@ -218,7 +218,7 @@ onMounted(() => {
 }
 
 .page.blogs {
-    padding: 5vw 10vw 64px 10vw;
+    padding: 5% 10% 64px 10%;
 
     header {
         display: flex;

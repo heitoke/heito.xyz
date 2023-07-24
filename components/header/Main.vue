@@ -188,17 +188,7 @@ function commentsContextMenu(event: MouseEvent) {
                 icon: 'comments-alt',
                 text: 'On this page',
                 click: async () => {
-                    if (isVisible) {
-                        return comments.setVisible(false);
-                    }
-                    
-                    const [result, status] = await $api.comments.page(comments.getUrl, { skip: 0, limit: 32 });
-
-                    if (status !== 200) return;
-
-                    comments.setVisible(true);
-
-                    comments.setComments(result.results);
+                    comments.setVisible(!isVisible);
                 }
             },
             {
@@ -210,11 +200,18 @@ function commentsContextMenu(event: MouseEvent) {
                         {
                             type: 'button',
                             label: 'By the button',
-                            text: 'Recommended'
+                            text: 'Recommended' + ($local?.params?.commentsLoading === 'auto' ? '' : ' | Used'),
+                            click: () => {
+                                $local.set('commentsLoading', 'button');
+                            }
                         },
                         {
                             type: 'button',
                             label: 'When going to the page',
+                            text: $local?.params?.commentsLoading === 'auto' ? 'Used' : '',
+                            click: () => {
+                                $local.set('commentsLoading', 'auto');
+                            }
                         }
                     ]
                 }

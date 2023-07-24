@@ -40,7 +40,7 @@ interface Point {
 }
 
 
-const { $api, $win, $socket } = useNuxtApp();
+const { $api, $win, $socket, $local } = useNuxtApp();
 
 const route = useRoute();
 
@@ -93,11 +93,20 @@ const isVisible = computed(() => {
 });
 
 
+let timer: NodeJS.Timeout;
 
 watch(() => route.path, (newValue) => {
-    if (comments.getUrl.includes(newValue)) return;
+    if (!comments.getUrl.includes(newValue)) {
+        comments.setUrl(newValue);
+    }
 
-    comments.setUrl(newValue);
+    comments.setVisible(false);
+
+    clearTimeout(timer);
+
+    if ($local?.params?.commentsLoading === 'auto') {
+        timer = setTimeout(() => comments.setVisible(true), 2000);
+    }
 });
 
 watch(() => comments.getUrl, (newValue, oldValue) => {
@@ -115,6 +124,16 @@ watch(() => comments.getUrl, (newValue, oldValue) => {
         });
     }
 });
+
+watch(() => comments.isVisible, async (newValue) => {
+    if (!newValue) return comments.setComments([]);
+
+    const [result, status] = await $api.comments.page(comments.getUrl, { skip: 0, limit: 32 });
+
+    if (status !== 200) return;
+
+    comments.setComments(result.results);
+})
 
 
 

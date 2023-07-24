@@ -38,7 +38,15 @@ import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import Activity, { type IContent } from './Activity.vue';
 
-import type { ISteamAccount, IGitHubAccount, ITetrAccount, ITwitchAccount, IOSUAccount } from '~/types/sockets/accounts';
+import type {
+    ISteamAccount,
+    IGitHubAccount,
+    ITetrAccount,
+    ITwitchAccount,
+    IOSUAccount,
+    ITelegramAccount,
+    TypeAccount
+} from '~/types/sockets/accounts';
 
 type TTrack = {
     id?: string;
@@ -52,8 +60,23 @@ type TTrack = {
     end?: number;
 }
 
+interface TypeActivity<T = TypeAccount> {
+    typeAccount: T;
+}
 
-const { $socket } = useNuxtApp();
+interface SteamAccount extends TypeActivity<'steam'>, ISteamAccount {}
+interface GitHubAccount extends TypeActivity<'github'>, IGitHubAccount {}
+interface TetrAccount extends TypeActivity<'tetr'>, ITetrAccount {}
+interface TwitchAccount extends TypeActivity<'twitch'>, ITwitchAccount {}
+interface OSUAccount extends TypeActivity<'osu'>, IOSUAccount {}
+interface TelegramAccount extends TypeActivity<'telegram'>, ITelegramAccount {}
+
+export type Activity = SteamAccount | GitHubAccount | TetrAccount | TwitchAccount | OSUAccount | TelegramAccount;
+
+
+
+
+const { $socket, $api } = useNuxtApp();
 
 const root = ref<HTMLElement | null>(null);
 
@@ -81,20 +104,15 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
 
 
 $socket?.on('activities:track:playing', (data: { device: any, userId: string, track: TTrack, is_playing: boolean }) => {
-    if (!data.is_playing) return;
+    if (!data?.is_playing) return;
 
     track.value = {
         id: 'spotify:track',
         type: 'mini',
-        name: data?.track?.name as string,
+        name: data?.track?.name || '',
         largeImage: {
-            url: data?.track?.image as string
+            url: data?.track?.image || ''
         },
-        smallImage: data.device ? {
-            label: data.device?.type,
-            icon: data.device?.type === 'Computer' ? 'desktop' : (data.device?.type === 'Smartphone' ? 'mobile' : 'damage-void'),
-            color: 'var(--main-color)'
-        } : {},
         progressBar: {
             value: data?.track?.start,
             end: data?.track?.end,
@@ -105,8 +123,15 @@ $socket?.on('activities:track:playing', (data: { device: any, userId: string, tr
             { label: 'Open track', icon: 'music-note', url: data?.track?.url }
         ]
     }
-    
 
+    if (data?.device) {
+        track.value.smallImage = {
+            label: data.device?.type,
+            icon: data.device?.type === 'Computer' ? 'desktop' : (data.device?.type === 'Smartphone' ? 'mobile' : 'damage-void'),
+            color: 'var(--main-color)'
+        }
+    }
+    
     clearTimeout(timer);
 
     timer = setTimeout(() => {
@@ -114,27 +139,31 @@ $socket?.on('activities:track:playing', (data: { device: any, userId: string, tr
     }, 6000);
 });
 
-$socket?.on('activities:list', (activitiesList: Array<{ type: 'steam' | 'github' | 'tetr' | 'twitch' | 'osu', [key: string]: any }>) => {
+
+$socket?.on('activities:list', (activities: Array<Activity>) => {
     list.value = [];
 
-    for (let active of activitiesList) {
+    for (let active of activities) {
         let activity: IContent = { name: 'Activity', type: 'default' };
 
-        switch(active?.type) {
+        switch(active?.typeAccount) {
             case 'steam':
-                activity = getSteamActivity(active as any);
+                activity = getSteamActivity(active);
                 break;
             case 'github':
-                activity = getGitHubActivity(active as any);
+                activity = getGitHubActivity(active);
                 break;
             case 'tetr':
-                activity = getTetrActivity(active as any);
+                activity = getTetrActivity(active);
                 break;
             case 'twitch':
-                activity = getTwitchActivity(active as any);
+                activity = getTwitchActivity(active);
                 break;
             case 'osu':
-                activity = getOSUActivity(active as any);
+                activity = getOSUActivity(active);
+                break;
+            case 'telegram':
+                activity = getTelegramActivity(active);
                 break;
         }
 
@@ -143,7 +172,7 @@ $socket?.on('activities:list', (activitiesList: Array<{ type: 'steam' | 'github'
 });
 
 
-function getSteamActivity(account: ISteamAccount): IContent {
+function getSteamActivity(account: SteamAccount): IContent {
     let isGame = account?.game?.id,
         steamStatus = [
             { label: 'Offline', icon: 'circle-alt', color: 'var(--text-secondary)' }, 
@@ -180,7 +209,7 @@ function getSteamActivity(account: ISteamAccount): IContent {
     };
 }
 
-function getGitHubActivity(account: IGitHubAccount): IContent {
+function getGitHubActivity(account: GitHubAccount): IContent {
     let buttons = [
         { label: 'Profile', icon: 'user-circle', url: account?.html_url }
     ];
@@ -201,7 +230,7 @@ function getGitHubActivity(account: IGitHubAccount): IContent {
     }
 }
 
-function getTetrActivity(account: ITetrAccount): IContent {
+function getTetrActivity(account: TetrAccount): IContent {
     return {
         id: `tetr:${account?._id}`,
         name: `${account?.username}`,
@@ -222,7 +251,7 @@ function getTetrActivity(account: ITetrAccount): IContent {
     };
 }
 
-function getTwitchActivity(account: ITwitchAccount): IContent {
+function getTwitchActivity(account: TwitchAccount): IContent {
     return {
         id: `twitch:${account?.id}`,
         name: `${account?.display_name} (${account?.login})`,
@@ -238,7 +267,7 @@ function getTwitchActivity(account: ITwitchAccount): IContent {
     }
 }
 
-function getOSUActivity(account: IOSUAccount): IContent {
+function getOSUActivity(account: OSUAccount): IContent {
     let buttons = [
         { label: 'Profile', icon: 'user-circle', url: `https://osu.ppy.sh/users/${account?.id}` }
     ];
@@ -265,6 +294,22 @@ function getOSUActivity(account: IOSUAccount): IContent {
         },
         type: 'default',
         buttons
+    }
+}
+
+function getTelegramActivity(account: TelegramAccount): IContent {
+    return {
+        id: `telegram:${account?.id}`,
+        name: account.username,
+        details: `${account?.first_name || ''} ${account?.last_name || ''}`,
+        largeImage: {
+            url: `${$api.domain}/files/telegram-user-${account.id}.jpg`,
+            label: 'Telegram'
+        },
+        type: 'default',
+        buttons: [
+            { label: 'Profile', icon: 'user-circle', url: `https://${account.username}.t.me` }
+        ]
     }
 }
 

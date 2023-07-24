@@ -1,5 +1,6 @@
-// * Steam
+export type TypeAccount = 'steam' | 'github' | 'tetr' | 'twitch' | 'osu' | 'telegram';
 
+// * Steam
 export interface ISteamAccountGame {
     id: string;
     name: string;
@@ -156,4 +157,20 @@ export interface IOSUAccount {
     pp: number;
     global_rank: number;
     country_rank: number;
+}
+
+
+// ! -----------------------------------------
+
+
+// * Telegram
+export interface ITelegramAccount {
+    id: number;
+    first_name: string;
+    last_name: string;
+    username: string;
+    type: 'private';
+    active_usernames: Array<string>;
+    bio: string;
+    has_private_forwards: boolean;
 }

@@ -323,7 +323,7 @@ function getDiscordActivity(account: DiscordAccount): IContent {
         getTypeFile = (hash: string) => hash ? (hash?.includes('a_') ? 'gif' : 'png') : '',
         index = Math.abs((Number(account?.id) >> 22) % 6),
         avatar = `https://cdn.discordapp.com/${account?.avatar ? '' : 'embed/'}avatars${account?.avatar ? '/' + account?.id : ''}/${account?.avatar || index}.${getTypeFile(account?.avatar || 'a')}?size=512`,
-        banner = `https://cdn.discordapp.com/banners/${account?.id}/${account?.banner}.${getTypeFile(account?.banner)}?size=512`;
+        banner = `https://cdn.discordapp.com/banners/${account?.id}/${account?.banner}.${getTypeFile(account?.banner || 'a')}?size=512`;
 
     return {
         id: `discord:${account?.id}`,

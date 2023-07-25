@@ -1,7 +1,8 @@
 <template>
     <div class="repository">
         <header>
-            <div class="avatar" :style="{ 'background-image': `url(${repository?.owner?.avatar_url})` }"></div>
+            <Image class="avatar" :src="repository?.owner?.avatar_url || ''"/>
+
             <span @click.passive.self="redirect(repository?.owner?.html_url!)">{{ repository?.owner.login }}</span>
             /
             <span @click.passive.self="redirect(repository?.html_url!)">{{ repository?.name }}</span>
@@ -25,10 +26,10 @@
                 @mouseenter="toolpics.set({ title: String(repository?.forks_count), text: 'Forks' })"
             />
 
-            <div class="lang" v-show="repository?.language"
-                :style="{ 'background-image': `url(https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/${getLangImage}.svg)` }"
+            <Image class="lang" v-if="repository?.language"
+                :src="`https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/${getLangImage}.svg`"
                 @mouseenter="toolpics.set({ title: repository?.language })"
-            ></div>
+            />
         </header>
         
         <div class="text">{{ repository?.description! }}</div>

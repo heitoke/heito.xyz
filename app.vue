@@ -223,7 +223,7 @@ onMounted(async () => {
     display: flex;
     width: 48px;
     height: 48px;
-    position: absolute;
+    position: fixed;
     right: 32px;
     bottom: 32px;
     border-radius: 50%;

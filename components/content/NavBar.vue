@@ -10,7 +10,7 @@
                 @mouseenter="hover(idx)"
                 @mouseleave="hoverId = -1"
             >
-                <img :src="btn?.img" v-if="btn?.img">
+                <Image :src="btn?.img" v-if="btn?.img"/>
                 <Icon :name="btn.icon" v-if="btn?.icon"/>
 
                 <span>{{ btn.label }}</span>
@@ -201,10 +201,12 @@ onMounted(() => {
                 }
             }
 
-            img {
+            .ui-image {
                 margin: 0 8px 0 0;
                 width: 32px;
                 height: 32px;
+                border-radius: 5px;
+                overflow: hidden;
             }
 
             .hx-icon {

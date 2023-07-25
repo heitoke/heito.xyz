@@ -36,10 +36,11 @@
 
                         <div class="l"></div>
 
-                        <div class="user" :style="{ 'background-image': `url(${config.user?.avatar || getAvatar({ nameId: config.user?._id })})` }"
+                        <Image class="user"
+                            :src="config.user?.avatar || getAvatar({ nameId: config.user?._id })"
                             @mouseenter="toolpics.set({ text: config?.user?.nickname || config?.user?.username || config?.user?._id })"
                             @click="windows.create({ component: 'UserProfile', data: config?.user?._id })"
-                        ></div>
+                        />
 
                         <div class="l"></div>
 
@@ -290,9 +291,7 @@ onMounted(() => {
                 width: 24px;
                 height: 24px;
                 border-radius: 50%;
-                background-size: cover;
-                background-position: center;
-                background-color: var(--background-secondary);
+                overflow: hidden;
             }
 
             ol {

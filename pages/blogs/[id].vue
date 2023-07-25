@@ -3,7 +3,9 @@
         <header :class="{ active: isHeaderActive }"
             :style="{ '--header-content-height': `${($refs.headerContent as Element)?.clientHeight}px` }"
         >
-            <div class="image" :style="{ '--image': `url('${blog?.image || getAvatar({ nameId: blog?._id, type: 'marble' })}')` }"></div>
+            <Image class="image"
+                :src="blog?.image || getAvatar({ nameId: blog?._id, type: 'marble' })"
+            />
 
             <div ref="headerContent">
                 <div class="date">{{ time.timeago(blog?.createdAt) }}</div>
@@ -608,22 +610,8 @@ onUnmounted(() => {
             position: absolute;
             top: 0;
             left: 0;
-            transition: .2s;
             overflow: hidden;
             z-index: -1;
-
-            &::after {
-                content: " ";
-                width: 100%;
-                height: 100%;
-                position: absolute;
-                top: 0;
-                left: 0;
-                background-size: cover;
-                background-position: center;
-                background-image: var(--image);
-                transition: .2s;
-            }
         }
 
         .date, .title, .scroll {

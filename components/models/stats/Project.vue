@@ -1,10 +1,12 @@
 <template>
     <li class="stats-project" :class="{ active: isActive }">
         <header @click="open">
-            <div class="image" :style="{
-                'background-image': `url(${getAvatar({ nameId: project?.name, size: 64, type: 'bauhaus', colors: ['0b0b0b', '171717', project?.color?.slice(1) || $local.params?.color?.slice(1) || 'FFBF34'] })})`,
-                '--color': project?.color || 'var(--background-primary)'
-            }"></div>
+            <Image class="image"
+                :src="getAvatar({ nameId: project?.name, size: 64, type: 'bauhaus', colors: ['0b0b0b', '171717', project?.color?.slice(1) || $local.params?.color?.slice(1) || 'FFBF34'] })"
+                :style="{
+                    '--color': project?.color || 'var(--background-primary)'
+                }"    
+            />
 
             <div class="name">{{ project?.name }}</div>
 
@@ -120,9 +122,7 @@ async function open() {
             width: 32px;
             height: 32px;
             border-radius: 5px;
-            background-size: cover;
-            background-position: center;
-            background-color: var(--color);
+            overflow: hidden;
         }
 
         .name {

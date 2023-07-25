@@ -2,19 +2,20 @@
     <div :class="['activity', content.type]">
         <header>
             <div class="images">
-                <div class="large" v-if="content.largeImage?.url"
-                    :style="{ '--image': `url(${content.largeImage?.url})` }"
-                    @mouseenter.prevent.stop="content.largeImage?.label ? toolpics.set({ text: content.largeImage?.label, event: ($el as Element).querySelector('large')! as any }) : null"
-                ></div>
+                <Image class="large" v-if="content.largeImage?.url"
+                    :src="content.largeImage?.url"
+                    @mouseenter.prevent.stop="content.largeImage?.label ? toolpics.set({ text: content.largeImage?.label }) : null"
+                />
                 
-                <div class="small" v-if="content.smallImage?.url || content?.smallImage?.icon"
-                    :style="{ '--image': `url(${content.smallImage?.url})` }"
-                    @mouseenter.prevent.stop="content.smallImage?.label ? toolpics.set({ text: content.smallImage?.label, event: ($el as Element).querySelector('small')! as any }) : null"
+                <Image class="small" v-if="content?.smallImage?.url || content?.smallImage?.icon"
+                    :src="content?.smallImage?.url || ''"
+                    :skeleton="false"
+                    @mouseenter.prevent.stop="content.smallImage?.label ? toolpics.set({ text: content.smallImage?.label }) : null"
                 >
                     <Icon :name="content?.smallImage?.icon" v-if="content?.smallImage?.icon"
                         :style="{ color: content?.smallImage?.color }"
                     />
-                </div>
+                </Image>
             </div>
 
             <div class="content">
@@ -137,9 +138,6 @@ function openUrl(url: string) {
             position: relative;
 
             .large, .small {
-                background-size: cover;
-                background-position: center;
-                background-image: var(--image);
                 background-color: var(--background-secondary);
                 transition: .2s;
             }
@@ -238,8 +236,10 @@ function openUrl(url: string) {
                 }
 
                 .small {
-                    min-width: 16px;
-                    min-height: 16px;
+                    max-width: 16px;
+                    max-height: 16px;
+                    min-width: 16px !important;
+                    min-height: 16px !important;
                     right: -4px;
                     bottom: -4px;
                 }

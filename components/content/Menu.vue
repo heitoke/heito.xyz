@@ -28,7 +28,7 @@
                     :style="{ '--button-color': item?.color || 'var(--text-primary)' }"
                     @click="clickButton(item, $event)"
                 >
-                    <img :src="item?.img" alt="ContextMenu ItemButton Image" v-if="item?.img">
+                    <Image :src="item?.img" v-if="item?.img"/>
                     <Icon :name="item?.icon" v-else-if="item?.icon"/>
 
                     <div class="content"
@@ -58,39 +58,6 @@
                     </component>
                 </li>
             </template>
-
-            <!-- <li v-for="btn in getMenu?.buttons?.filter((btn: IContextMenuButton) => btn?.label || btn?.separator)" :key="btn.label"
-                :class="{ separator: btn?.separator }"
-                :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
-                @click="buttonClick(btn, $event)"
-            >
-                <img :src="btn?.img" alt="ContextMenu Image" v-if="btn?.img">
-                <Icon :name="btn?.icon" v-else-if="btn?.icon"/>
-
-                <div class="content"
-                    :style="{ 'max-width': `calc(100% - ${0 + (btn.children && (btn?.children?.buttons?.length! > 0) ? 24 : 0) + (btn?.icon ? 24 : 0) + (btn?.checkbox ? 32 : 0)}px)` }"
-                >
-                    <div>{{ btn.label }}</div>
-                    <div v-show="btn?.text">{{ btn.text }}</div>
-                </div>
-
-                <Checkbox v-if="btn?.checkbox"
-                    :value="Boolean(btn?.value)"
-                    @onEvent="btn?.checkbox($event)"
-                />
-
-                <Icon class="arrow" name="arrow-right" v-if="btn?.children"/>
-            </li> -->
-
-            <!-- <div class="components" v-if="contextMenu.getMenu?.components?.length! > 0">
-                    <component v-for="component of contextMenu.getMenu?.components" :is="component.component"
-                        :style="component?.style || ''"
-                        v-bind="component.props"
-                        v-on="Object.keys(component?.events || {}).length > 0 ? component?.events : null"
-                    >
-                        <div v-html="component?.slot || ''"></div>
-                    </component>
-                </div> -->
         </ul>
     </div>
 </template>
@@ -264,11 +231,12 @@ onMounted(() => {
                 }
             }
 
-            img {
+            .ui-image {
                 margin: 0 12px 0 0;
                 min-width: 24px;
                 height: 24px;
                 border-radius: 50%;
+                overflow: hidden;
             }
 
             i.hx-icon:not(.arrow) {

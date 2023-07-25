@@ -2,7 +2,9 @@
     <div :class="['user', { hover: hovered }]"
         @click="clicked ? windows.create({ component: 'UserProfile', data: user?._id }) : null"
     >
-        <div class="avatar" :style="{ '--avatar': `url('${user?.avatar || getAvatar({ nameId: user?._id })}')` }"></div>
+        <Image class="avatar"
+            :src="user?.avatar || getAvatar({ nameId: user?._id })"
+        />
         
         <div style="max-width: 100%; width: 100%;">
             <div class="username">{{ user?.nickname || user?.username || user?._id }}</div>
@@ -51,10 +53,7 @@ const props = defineProps({
         min-width: 32px;
         height: 32px;
         border-radius: 50%;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--avatar);
-        background-color: var(--background-secondary);
+        overflow: hidden;
     
         & + div {
             .username {

@@ -1,10 +1,6 @@
 <template>
     <div class="artist">
-        <Skeleton :show="type" class="image">
-            <Transition name="image">
-                <div class="image" :style="{ '--image': `url('${artist?.image}')` }"></div>
-            </Transition>
-        </Skeleton>
+        <Image class="image" :src="artist?.image || ''"/>
 
         <Text class="name" :text="artist?.name + ` (${artist?.popularity})`"/>
 
@@ -22,29 +18,6 @@ import type { IArtist } from '~/types/api/music';
 
 const props = defineProps({
     artist: { type: Object as PropType<IArtist> }
-});
-
-const type = ref<boolean>(false);
-
-
-watch(() => props.artist?.image, newValue => {
-    show(newValue);
-});
-
-
-function show(artistImage: string = '') {
-    const image = new Image();
-
-    image.src = artistImage;
-
-    image.onload = () => {
-        type.value = true;
-    }
-}
-
-
-onMounted(() => {
-    show(props.artist?.image);
 });
 
 </script>
@@ -72,14 +45,9 @@ onMounted(() => {
         padding: 0 0 calc(100% - 48px) 0;
         width: calc(100% - 48px);
         min-height: 0;
+        height: 0;
         border-radius: 50%;
-        transition: 1s;
-
-        &:not(.ui-skeleton) {
-            background-size: cover;
-            background-position: center;
-            background-image: var(--image);
-        }
+        overflow: hidden;
     }
 
     .name {

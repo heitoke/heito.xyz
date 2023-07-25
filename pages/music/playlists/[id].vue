@@ -7,18 +7,18 @@
             <span>Go back</span>
         </div>
 
-        <header :style="{ '--banner': `url('${getBanner}')` }" v-if="!loading && playlist?.id">
-            <div class="image" :style="{ '--image': `url('${playlist?.image}')` }"></div>
-
+        <Image class="header" :src="getBanner" v-if="!loading && playlist?.id">
+            <Image class="image" :src="playlist?.image"/>
+    
             <div>
                 <Text class="name" :text="playlist.name"/>
                 <Text class="text" :text="playlist.description" v-show="playlist.description"/>
-
+    
                 <div style="margin: 12px 0 0 0;"></div>
-
+    
                 <Text class="text" :text="`Tracks: ${playlist.totalTracks}`"/>
             </div>
-
+    
             <ul class="buttons">
                 <li @pointerenter="toolpics.set({ text: 'Open playlist' })" v-show="playlist?.url"
                     @click="redirect(playlist.url)"
@@ -26,7 +26,7 @@
                     <Icon name="link"/>
                 </li>
             </ul>
-        </header>
+        </Image>
 
         <Loading v-else-if="loading && config.getStatus === 'online'"/>
         
@@ -73,7 +73,7 @@
                     >
                         <div class="index">#{{ getTracks.findIndex(t => track.id === t.id) + 1 }}</div>
 
-                        <div class="image" :style="{ '--image': `url('${track.image}')` }"></div>
+                        <Image class="image" :src="track.image"/>
 
                         <div class="name">{{ track.name }}</div>
 
@@ -201,10 +201,7 @@ const getSortTracks = computed(() => {
 
 watch(() => props?.scrollProps?.scroll?.top, (newValue) => {
     const total = tracks.value?.total;
-
-    console.log(newValue, props?.scrollProps);
     
-
     if (tracks.value.loading || (getTracks.value?.length === total && count.value >= total)) return;
 
     if ((newValue! + 35) >= props.scrollProps?.scroll.max.top!) {
@@ -414,7 +411,7 @@ onMounted(() => {
         }
     }
 
-    header {
+    .header {
         display: flex;
         padding: 24px 64px;
         width: 100%;
@@ -424,31 +421,13 @@ onMounted(() => {
         align-items: center;
         box-sizing: border-box;
         overflow: hidden;
-        
-        &::after {
-            content: " ";
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-size: cover;
-            background-position: center;
-            background-image: var(--banner);
-            // background: linear-gradient(75deg, var(--background-secondary-alt) 0%, var(--main-color-alt) 40%, var(--main-color) 60%, var(--green) 70%, var(--green-alt) 80%, #757ecb 100%);
-            opacity: .7;
-            z-index: -1;
-        }
 
         .image {
             margin: 0 32px 0 0;
             width: 196px;
             height: 196px;
             border-radius: 15px;
-            background-size: cover;
-            background-position: center;
-            background-image: var(--image);
-            background-color: var(--background-secondary-alt);
+            overflow: hidden;
         }
 
         .image + div {
@@ -513,9 +492,7 @@ onMounted(() => {
                 min-width: 48px;
                 height: 48px;
                 border-radius: 5px;
-                background-size: cover;
-                background-position: center;
-                background-image: var(--image);
+                overflow: hidden;
             }
 
             .l {

@@ -1,10 +1,6 @@
 <template>
     <div class="playlist">
-        <Skeleton :show="type" class="image">
-            <Transition name="image">
-                <div class="image" :style="{ '--image': `url('${playlist?.image}')` }"></div>
-            </Transition>
-        </Skeleton>
+        <Image class="image" :src="playlist?.image || ''"/>
 
         <div>
             <Text class="name" :text="playlist?.name"/>
@@ -74,13 +70,7 @@ onMounted(() => {
         height: 0;
         min-height: 0;
         border-radius: 10px;
-        transition: .2s;
-
-        &:not(.ui-skeleton) {
-            background-size: cover;
-            background-position: center;
-            background-image: var(--image);
-        }
+        overflow: hidden;
     }
 
     .image + div {

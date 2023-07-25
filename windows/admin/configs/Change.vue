@@ -119,22 +119,22 @@
                             <div v-if="page.users.filter(u => u.allowed)?.length > 0">
                                 <div class="subtitle">Allow</div>
                                 <ol>
-                                    <div v-for="(user, idx) of page.users.filter(u => u.allowed)" :key="idx"
-                                        :style="{ '--avatar': `url('${user.user?.avatar || getAvatar({ nameId: String(user.user) })}')` }"
-                                        @pointerenter="userToolpic(user, `${idx}:a`)"
+                                    <Image v-for="(user, idx) of page.users.filter(u => u.allowed)" :key="idx"
+                                        :src="user.user?.avatar || getAvatar({ nameId: String(user.user) })"
+                                        @pointerenter="userToolpic(user, `${idx}:d`)"
                                         @contextmenu.prevent.stop="page.users.splice(idx, 1)"
-                                    ></div>
+                                    />
                                 </ol>
                             </div>
     
                             <div v-if="page.users.filter(u => !u.allowed)?.length > 0">
                                 <div class="subtitle">Deny</div>
                                 <ol>
-                                    <div v-for="(user, idx) of page.users.filter(u => !u.allowed)" :key="idx"
-                                        :style="{ '--avatar': `url('${user.user?.avatar || getAvatar({ nameId: String(user.user) })}')` }"
+                                    <Image v-for="(user, idx) of page.users.filter(u => !u.allowed)" :key="idx"
+                                        :src="user.user?.avatar || getAvatar({ nameId: String(user.user) })"
                                         @pointerenter="userToolpic(user, `${idx}:d`)"
                                         @contextmenu.prevent.stop="page.users.splice(idx, 1)"
-                                    ></div>
+                                    />
                                 </ol>
                             </div>
                         </div>
@@ -153,6 +153,7 @@
             @click="data?.save ? data?.save(config, 'update', windowId as number) : null;"
         >Save сhanges</Button>
     </div>
+
     <Loading v-else/>
 </template>
 
@@ -488,11 +489,7 @@ onMounted(() => {
                     min-width: 24px;
                     min-height: 24px;
                     border-radius: 50%;
-                    background-size: cover;
-                    background-position: center;
-                    background-image: var(--avatar);
-                    background-color: var(--background-secondary-alt);
-                    transition: .2s;
+                    overflow: hidden;
                 }
             }
         }

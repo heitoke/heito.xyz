@@ -4,11 +4,9 @@
         @click="active = true"
     >
         <header @click="active ? windows.create({ component: 'UserProfile', data: comments[0].user._id }) : null">
-            <div class="user-avatar"
-                :style="{ 'background-image': `url('${getUserAvatar}')` }"
-            >
+            <Image class="user-avatar" :src="getUserAvatar">
                 <div v-if="comments.length > 1">+{{ comments.length - 1 }}</div>
-            </div>
+            </Image>
 
             <div :style="`max-width: calc(100% - 48px - ${getButtons.length * 28}px);`" v-if="active">
                 <Text :text="getUserNickname"/>
@@ -268,12 +266,7 @@ function deleteComment(commentId: string) {
             max-width: 36px;
             min-width: 36px;
             height: 36px;
-            position: relative;
             border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            background-color: var(--background-primary);
-            transition: .2s;
 
             div {
                 width: 16px;

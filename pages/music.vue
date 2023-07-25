@@ -57,7 +57,7 @@
 
             <section class="top artists" style="margin: 0 0 0 16px;">
                 <header>
-                    <Text class="title" text="Top artists"/>
+                    <Text class="title" :text="'Top artists'"/>
 
                     <Skeleton style="width: 169px; height: 32px;" :show="!top.artists.loading && top.artists.list.length > 0" v-if="config.getStatus === 'online'">
                         <Select label="Period" :value="top.artists.period" :menu="termMenu" @select="loadTopTracks('artists', $event.value as any)"/>
@@ -85,7 +85,7 @@
 
 
         <section class="playlists" v-else>
-            <Text class="title" text="Playlists"/>
+            <Text class="title" :text="'Playlists'"/>
 
             <ul v-if="!playlists.loading && playlists.list.length > 0">
                 <Playlist :playlist="(playlistSavedTracks as IPlaylist)"

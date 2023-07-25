@@ -1,10 +1,6 @@
 <template>
     <div class="track">
-        <Skeleton :show="type" class="image">
-            <Transition name="image">
-                <div class="image" :style="{ '--image': `url('${track?.image}')` }"></div>
-            </Transition>
-        </Skeleton>
+        <Image class="image" :src="track?.image || ''"/>
 
         <div>
             <Text class="name" :text="track?.name"/>
@@ -100,13 +96,7 @@ onMounted(() => {
         height: 48px;
         min-height: 0;
         border-radius: 10px;
-        transition: .2s;
-
-        &:not(.ui-skeleton) {
-            background-size: cover;
-            background-position: center;
-            background-image: var(--image);
-        }
+        overflow: hidden;
     }
 
     .image + div {

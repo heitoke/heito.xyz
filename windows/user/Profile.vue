@@ -1,11 +1,10 @@
 <template>
     <div class="user">
         <header>
-            <div class="banner"
+            <Image class="banner" :src="user?.banner || ''"
                 :style="{
                     height: user?.banner ? '128px' : '96px',
-                    'background-color': user?.color,
-                    'background-image': `url('${user?.banner || ''}')`
+                    'background-color': user?.color
                 }"
             >
                 <ul>
@@ -36,14 +35,12 @@
                         <span>Permissions</span>
                     </li>
                 </ul>
-            </div>
+            </Image>
             
             <div>
-                <div class="avatar" :style="{ '--avatar': `url('${user?.avatar || getAvatar({ nameId: user?._id })}')` }">
-                    <!-- <div class="status"></div> -->
-                </div>
+                <Image class="avatar" :src="user?.avatar || getAvatar({ nameId: user?._id })"/>
+
                 <Text class="username" :text="user?.nickname || user?.username || user?._id"/>
-                <!-- <div class="username">{{ user?.nickname || user?.username || user?._id }}</div> -->
             </div>
         </header>
 
@@ -548,12 +545,7 @@ onMounted(() => {
 
         .banner {
             width: 100%;
-            position: relative;
             border-radius: 5px;
-            background-size: cover;
-            background-position: 50% 50%;
-            background-color: var(--background-secondary);
-            transition: .2s;
 
             ul {
                 display: flex;
@@ -609,13 +601,8 @@ onMounted(() => {
             .avatar {
                 min-width: 64px;
                 min-height: 64px;
-                position: relative;
                 border-radius: 50%;
                 // box-shadow: 0 0 10px 5px var(--green);
-                background-size: cover;
-                background-position: center;
-                background-image: var(--avatar);
-                background-color: var(--background-secondary-alt);
                 transform: translateY(-20%);
 
                 .status {

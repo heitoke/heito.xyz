@@ -1,8 +1,6 @@
 <template>
     <div class="blog">
-        <div class="image" :style="{
-            '--image': `url('${blog?.image || getAvatar({ nameId: blog?._id, type: 'marble', size: 1 })}')`
-        }">
+        <Image class="image" :src="blog?.image || getAvatar({ nameId: blog?._id, type: 'marble', size: 1 })">
             <div class="likes blur" v-show="blog?.likes! > 0 || blog?.dislikes! > 0">
                 <Icon name="like" style="color: var(--green);"/>
                 <span>{{ blog?.likes }}</span>
@@ -12,17 +10,18 @@
             </div>
 
             <div class="date blur">{{ time.timeago(blog?.createdAt) }}</div>
-        </div>
+        </Image>
+
         <header>
             <div style="max-width: calc(100% - 32px);">
                 <div class="title">{{ blog?.title }}</div>
                 <div class="description">{{ blog?.description }}</div>
             </div>
 
-            <div class="author" :style="{ '--avatar': `url('${blog?.author?.avatar || getAvatar({ nameId: blog?.author?._id })}')` }"
+            <Image class="author" :src="blog?.author?.avatar || getAvatar({ nameId: blog?.author?._id })"
                 @mouseenter="toolpics.set({ text: blog?.author?.nickname || blog?.author?.username || blog?.author?._id })"
                 @click.prevent.stop="windows.create({ component: 'UserProfile', data: blog?.author?._id })"
-            ></div>
+            />
         </header>
     </div>
 </template>
@@ -54,26 +53,10 @@ const props = defineProps({
     overflow: hidden;
 
     .image {
+        width: 100%;
         height: 169px;
-        position: relative;
-        transition: .2s;
+        background-size: 120% auto;
         overflow: hidden;
-        
-        &::after {
-            content: " ";
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            background-size: cover;
-            background-position: center;
-            background-image: var(--image);
-            // filter: blur(5px);
-            transform: scale(1.2);
-            transition: .2s;
-            z-index: -1;
-        }
 
         .likes, .date {
             padding: 4px 8px;
@@ -104,10 +87,7 @@ const props = defineProps({
 
     &:hover {
         .image {
-            &::after {
-                transform: scale(1);
-                // filter: blur(0);
-            }
+            background-size: 100% auto;
 
             .date, .likes {
                 opacity: 1;
@@ -142,12 +122,9 @@ const props = defineProps({
         }
     
         .author {
-            width: 24px;
+            min-width: 24px;
             height: 24px;
             border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            background-image: var(--avatar);
         }
     }
 }

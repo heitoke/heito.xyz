@@ -1,8 +1,8 @@
 <template>
     <div class="stats-language">
-        <div class="image" :style="{
-            'background-image': `url(https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/${lang?.name?.split('.')[0].toLocaleLowerCase()}.svg)`
-        }"></div>
+        <Image class="image"
+            :src="`https://raw.githubusercontent.com/PKief/vscode-material-icon-theme/main/icons/${lang?.name?.split('.')[0].toLocaleLowerCase()}.svg`"
+        />
         
         <div class="name">{{ lang?.name }}</div>
 

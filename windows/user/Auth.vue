@@ -1,6 +1,6 @@
 <template>
     <div :class="['auth', type]">
-        <div class="banner" :style="{ '--image': `url('${image}')` }"></div>
+        <Image class="banner" :src="image"/>
 
         <div>
             <Text class="title" :text="$t(`user.${type === 'login' ? 'auth' : 'create'}.title[0]`)"/>
@@ -160,7 +160,9 @@ async function auth() {
     if (merge) {
         windows.create({
             component: 'UserMerge',
-            close: false,
+            close: {
+                enable: false
+            },
             data: {
                 ...(merge || {}),
                 save
@@ -209,9 +211,7 @@ onMounted(() => {
 
     .banner {
         border-radius: 5px;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
+        overflow: hidden;
     }
 
     .title {

@@ -1,9 +1,8 @@
 <template>
     <div class="project" ref="root">
-        <div class="image"
+        <Image class="image" :src="project?.banner || ''"
             :style="{
                 height: `${project?.banner ? 156 : 128}px`,
-                '--image': `url('${project?.banner}')`,
                 'background-color': project?.color
             }"
         >
@@ -21,9 +20,9 @@
                     <span>Deleted</span>
                 </li>
             </ul>
-
+    
             <div class="date" v-if="project?.createdAt">{{ time.format(`${project?.createdAt}`, 'dd MMM YYYY') }}</div>
-        </div>
+        </Image>
 
         <header>
             <div class="title">{{ project?.displayName || project?.name || project?._id }}</div>
@@ -602,10 +601,7 @@ onMounted(() => {
         top: -12px;
         left: -12px;
         border-radius: 5px;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
-        background-color: var(--background-secondary-alt);
+        overflow: hidden;
 
         &:hover {
             * {

@@ -3,9 +3,7 @@
         <header v-if="showHeader"
             @click="windows.create({ component: 'UserProfile', data: comment.user._id })"
         >
-            <div class="user-avatar"
-                :style="{ 'background-image': `url('${getUserAvatar}')` }"
-            ></div>
+            <Image class="user-avatar" :src="getUserAvatar"/>
 
             <div style="max-width: calc(100% - 48px);">
                 <Text :text="getUserNickname"/>
@@ -116,7 +114,7 @@ const getCommentButtons = computed<Array<Button>>(() => {
     return [
         {
             label: 'Like' + (countLikes > 0 ? ` (${countLikes})` : ''),
-            icon: likes.value.is ? 'like' : 'hand-thumbsup-svgrepo-com',
+            icon: likes.value.is ? 'like' : 'like-alt',
             click: () => action('like')
         },
         {
@@ -265,12 +263,7 @@ onMounted(() => {
             max-width: 36px;
             min-width: 36px;
             height: 36px;
-            position: relative;
             border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            background-color: var(--background-primary);
-            transition: .2s;
         }
 
         .user-avatar + div {

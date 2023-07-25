@@ -91,13 +91,13 @@
                         @input="setBlur(($event.target as any)?.value, $local.params?.effect)"
                     />
 
-                    <div :class="['effect-filter', $local.params?.effect]"
+                    <Image :class="['effect-filter', $local.params?.effect]"
+                        :src="effectFilter.image"
                         :style="{
-                            '--image': `url('${effectFilter.image}')`,
                             '--blur': `${$local.params?.blur}px`,
                             '--transparent': colors.addAlpha('#010101', $local.params?.transparent as number)
-                        }">
-                    </div>
+                        }"
+                    />
                 </div>
             </div>
         </div>
@@ -344,10 +344,6 @@ section.personalization {
         position: relative;
         border-radius: 5px;
         overflow: hidden;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
-        background-color: var(--background-secondary-alt);
 
         &::after {
             content: " ";

@@ -1,5 +1,7 @@
 <template>
-    <component :is="type">{{ value }}</component>
+    <span v-if="type === 'span'">{{ value }}</span>
+
+    <div v-else>{{ value }}</div>
 </template>
 
 <script lang="ts" setup>
@@ -7,7 +9,11 @@
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
 const props = defineProps({
-    text: { type: String },
+    text: {
+        type: String,
+        required: true,
+        default: ''
+    },
     type: {
         type: String as PropType<'div' | 'span'>,
         default: 'div'
@@ -20,7 +26,7 @@ const
 
 let timer: NodeJS.Timer;
 
-watch(() => props.text as any, () => {
+watch(() => props.text, () => {
     if (!props.text) return;
 
     n.value = 0;

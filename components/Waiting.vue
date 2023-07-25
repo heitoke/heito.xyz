@@ -9,10 +9,11 @@
                 <div style="display: flex; margin: 12px 0 0 0; align-items: center;">
                     <Skeleton style="margin: 0 12px 0 0; border-radius: 50%;" :show="Boolean(user.getUser?._id)">
                         <template #default>
-                            <div class="user-avatar" :style="{ 'background-image': `url('${getUserAvatar}')` }"
+                            <Image class="user-avatar" :src="getUserAvatar"
                                 @mouseenter="toolpics.set({ text: user.getUser?.nickname || user.getUser?.username || user?.getUser?._id || 'Guast' })"
-                            ></div>
+                            />
                         </template>
+
                         <template #before>
                             <Loading style="padding: 4px 4px 0 4px;"
                                 :size="'20px'"
@@ -355,12 +356,11 @@ onMounted(() => {
         }
 
         .user-avatar {
+            width: 0;
+            height: 0;
             margin: 0 12px 0 0;
             padding: 12px !important;
             border-radius: 50%;
-            background-size: cover;
-            background-position: center;
-            background-color: var(--background-secondary);
         }
 
         .sockets {

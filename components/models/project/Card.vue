@@ -1,7 +1,9 @@
 <template>
-    <div class="project" :style="{ '--image': `url('${p?.banner}')` }"
+    <div class="project"
         @click="clicked ? open() : null"
     >
+        <Image class="image" :src="p?.banner || ''" v-if="p?.banner"/>
+
         <header>
             <div class="title">{{ p?.displayName || p?.name || p?._id }}</div>
             <div class="description">{{ p?.description }}</div>
@@ -10,12 +12,11 @@
         <div>
             <ul class="members" v-if="p?.members?.length! > 0">
                 <li v-for="({ member }, idx) of p?.members?.slice(0, 5)" :key="idx"
-                    :style="{
-                        '--avatar': `url('${member?.avatar || getAvatar({ nameId: member._id })}')`
-                    }"
                     @mouseenter="toolpics.set({ title: member.nickname || member.username || member._id })"
                     @click.prevent.stop="windows.create({ component: 'UserProfile', data: member._id })"
-                ></li>
+                >
+                    <Image :src="member?.avatar || getAvatar({ nameId: member._id })"/>
+                </li>
 
                 <li v-show="p?.members?.length! > 5">
                     +{{ p?.members?.length! - 5 }}
@@ -85,28 +86,23 @@ function open() {
     box-sizing: border-box;
     transition: .2s;
     overflow: hidden;
-    
-    &::after {
-        content: " ";
+
+    &:hover {
+        .image {
+            transform: scale(1.1);
+            filter: blur(5px) grayscale(0);
+        }
+    }
+
+    .image {
         width: 100%;
         height: 100%;
         position: absolute;
         top: 0;
         left: 0;
-        background-size: cover;
-        background-position: center;
-        background-image: var(--image);
-        transition: .2s;
         transform: scale(1.3);
         filter: blur(5px) grayscale(.5);
         z-index: -1;
-    }
-
-    &:hover {
-        &::after {
-            transform: scale(1.1);
-            filter: blur(5px) grayscale(0);
-        }
     }
 
     header {
@@ -154,11 +150,12 @@ function open() {
                 text-align: center;
                 line-height: 24px;
                 border-radius: 50%;
-                background-size: cover;
-                background-position: center;
-                background-image: var(--avatar);
-                background-color: var(--background-secondary);
                 transition: .2s;
+
+                .ui-image {
+                    border-radius: 50%;
+                    overflow: hidden;
+                }
 
                 &:first-child {
                     margin: 0;

@@ -6,7 +6,8 @@ export enum EAccountType {
     Tetr = 'tetr',
     Twitch = 'twitch',
     OSU = 'osu',
-    Telegram = 'telegram'
+    Telegram = 'telegram',
+    Discord = 'discord'
 }
 export interface IAccount {
     key: string;

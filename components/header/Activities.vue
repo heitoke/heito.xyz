@@ -45,6 +45,7 @@ import type {
     ITwitchAccount,
     IOSUAccount,
     ITelegramAccount,
+    IDiscordAccount,
     TypeAccount
 } from '~/types/sockets/accounts';
 
@@ -70,8 +71,9 @@ interface TetrAccount extends TypeActivity<'tetr'>, ITetrAccount {}
 interface TwitchAccount extends TypeActivity<'twitch'>, ITwitchAccount {}
 interface OSUAccount extends TypeActivity<'osu'>, IOSUAccount {}
 interface TelegramAccount extends TypeActivity<'telegram'>, ITelegramAccount {}
+interface DiscordAccount extends TypeActivity<'discord'>, IDiscordAccount {}
 
-export type Activity = SteamAccount | GitHubAccount | TetrAccount | TwitchAccount | OSUAccount | TelegramAccount;
+export type Activity = SteamAccount | GitHubAccount | TetrAccount | TwitchAccount | OSUAccount | TelegramAccount | DiscordAccount;
 
 
 
@@ -164,6 +166,9 @@ $socket?.on('activities:list', (activities: Array<Activity>) => {
                 break;
             case 'telegram':
                 activity = getTelegramActivity(active);
+                break;
+            case 'discord':
+                activity = getDiscordActivity(active);
                 break;
         }
 
@@ -309,6 +314,32 @@ function getTelegramActivity(account: TelegramAccount): IContent {
         type: 'default',
         buttons: [
             { label: 'Profile', icon: 'user-circle', url: `https://${account.username}.t.me` }
+        ]
+    }
+}
+
+function getDiscordActivity(account: DiscordAccount): IContent {
+    const
+        getTypeFile = (hash: string) => hash ? (hash?.includes('a_') ? 'gif' : 'png') : '',
+        index = Math.abs((Number(account?.id) >> 22) % 6),
+        avatar = `https://cdn.discordapp.com/${account?.avatar ? '' : 'embed/'}avatars${account?.avatar ? '/' + account?.id : ''}/${account?.avatar || index}.${getTypeFile(account?.avatar || 'a')}?size=512`,
+        banner = `https://cdn.discordapp.com/banners/${account?.id}/${account?.banner}.${getTypeFile(account?.banner)}?size=512`;
+
+    return {
+        id: `discord:${account?.id}`,
+        name: account.username,
+        details: account?.global_name || '',
+        largeImage: account?.banner || account?.avatar ? {
+            url: account?.banner ? banner : avatar,
+            label: 'Discord'
+        } : {} as any,
+        smallImage: account?.banner && account?.avatar ? {
+            url: avatar
+        } : {},
+        type: 'default',
+        buttons: [
+            { label: 'Profile', icon: 'user-circle', url: `https://discord.com/users/${account?.id}` },
+            { label: 'Server', icon: 'link', url: `https://discord.gg/48DBJuKcEE` }
         ]
     }
 }

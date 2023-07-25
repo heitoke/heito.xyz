@@ -1,4 +1,4 @@
-export type TypeAccount = 'steam' | 'github' | 'tetr' | 'twitch' | 'osu' | 'telegram';
+export type TypeAccount = 'steam' | 'github' | 'tetr' | 'twitch' | 'osu' | 'telegram' | 'discord';
 
 // * Steam
 export interface ISteamAccountGame {
@@ -173,4 +173,23 @@ export interface ITelegramAccount {
     active_usernames: Array<string>;
     bio: string;
     has_private_forwards: boolean;
+}
+
+
+// ! -----------------------------------------
+
+
+// * Discord
+export interface IDiscordAccount {
+    id: string;
+    username: string;
+    avatar: string | null;
+    discriminator: string;
+    public_flags: number;
+    flags: number;
+    banner?: string | null;
+    accent_color: number | null;
+    global_name?: string | null;
+    avatar_decoration?: string | null,
+    banner_color: string;
 }

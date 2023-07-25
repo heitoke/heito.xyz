@@ -199,7 +199,8 @@ const listServicesAccounts = [
     { label: 'Tetr.io', icon: 'tetris-solid', value: EAccountType.Tetr, name: 'Username' },
     { label: 'Twitch', icon: 'twitch', value: EAccountType.Twitch, name: 'Login' },
     { label: 'OSU', icon: 'pacman', value: EAccountType.OSU, name: 'Username' },
-    { label: 'Telegram', icon: 'telegram', value: EAccountType.Telegram, name: 'User ID' }
+    { label: 'Telegram', icon: 'telegram', value: EAccountType.Telegram, name: 'User ID' },
+    { label: 'Discord', icon: 'discord', value: EAccountType.Discord, name: 'User ID' }
 ]
 
 

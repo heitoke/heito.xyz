@@ -121,7 +121,7 @@ $socket?.on('activities:track:playing', (data: { device: any, userId: string, tr
             isTime: true
         },
         buttons: [
-            { label: 'Profile', icon: 'user-circle', url: `https://open.spotify.com/user/${data?.userId}` },
+            { label: 'Profile', icon: 'spotify', url: `https://open.spotify.com/user/${data?.userId}` },
             { label: 'Open track', icon: 'music-note', url: data?.track?.url }
         ]
     }
@@ -191,7 +191,7 @@ function getSteamActivity(account: SteamAccount): IContent {
         status = steamStatus[account?.status];
 
     let buttons = [
-        { label: 'Profile', icon: 'user-circle', url: account?.url }
+        { label: 'Profile', icon: 'steam', url: account?.url }
     ];
 
     if (isGame) buttons = [...buttons, { label: 'Game', icon: 'brush', url: account?.game?.store! }];
@@ -216,7 +216,7 @@ function getSteamActivity(account: SteamAccount): IContent {
 
 function getGitHubActivity(account: GitHubAccount): IContent {
     let buttons = [
-        { label: 'Profile', icon: 'user-circle', url: account?.html_url }
+        { label: 'Profile', icon: 'github', url: account?.html_url }
     ];
 
     if (account?.blog) buttons = [...buttons, { label: 'WebSite', icon: 'link', url: account?.blog }];
@@ -251,7 +251,7 @@ function getTetrActivity(account: TetrAccount): IContent {
         // },
         type: 'default',
         buttons: [
-            { label: 'Profile', icon: 'user-circle', url: `https://ch.tetr.io/u/${account?.username}` }
+            { label: 'Profile', icon: 'tetris-solid', url: `https://ch.tetr.io/u/${account?.username}` }
         ]
     };
 }
@@ -267,14 +267,14 @@ function getTwitchActivity(account: TwitchAccount): IContent {
         },
         type: 'default',
         buttons: [
-            { label: 'Profile', icon: 'user-circle', url: `https://www.twitch.tv/${account?.login}` }
+            { label: 'Profile', icon: 'twitch', url: `https://www.twitch.tv/${account?.login}` }
         ]
     }
 }
 
 function getOSUActivity(account: OSUAccount): IContent {
     let buttons = [
-        { label: 'Profile', icon: 'user-circle', url: `https://osu.ppy.sh/users/${account?.id}` }
+        { label: 'Profile', icon: 'osu-alt', url: `https://osu.ppy.sh/users/${account?.id}` }
     ];
 
     if (account?.website) buttons = [...buttons, { label: 'WebSite', icon: 'link', url: account?.website }];
@@ -311,9 +311,9 @@ function getTelegramActivity(account: TelegramAccount): IContent {
             url: `${$api.domain}/files/telegram-user-${account.id}.jpg`,
             label: 'Telegram'
         },
-        type: 'default',
+        type: 'mini',
         buttons: [
-            { label: 'Profile', icon: 'user-circle', url: `https://${account.username}.t.me` }
+            { label: 'Profile', icon: 'telegram', url: `https://${account.username}.t.me` }
         ]
     }
 }
@@ -327,8 +327,10 @@ function getDiscordActivity(account: DiscordAccount): IContent {
 
     return {
         id: `discord:${account?.id}`,
+        type: account?.banner ? 'default' : 'mini',
         name: account.username,
         details: account?.global_name || '',
+        state: account?.bot ? 'Bot' : '',
         largeImage: account?.banner || account?.avatar ? {
             url: account?.banner ? banner : avatar,
             label: 'Discord'
@@ -336,9 +338,8 @@ function getDiscordActivity(account: DiscordAccount): IContent {
         smallImage: account?.banner && account?.avatar ? {
             url: avatar
         } : {},
-        type: 'default',
         buttons: [
-            { label: 'Profile', icon: 'user-circle', url: `https://discord.com/users/${account?.id}` },
+            { label: 'Profile', icon: 'discord', url: `https://discord.com/users/${account?.id}` },
             { label: 'Server', icon: 'link', url: `https://discord.gg/48DBJuKcEE` }
         ]
     }

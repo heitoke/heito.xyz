@@ -187,6 +187,7 @@ export interface IDiscordAccount {
     discriminator: string;
     public_flags: number;
     flags: number;
+    bot?: boolean;
     banner?: string | null;
     accent_color: number | null;
     global_name?: string | null;

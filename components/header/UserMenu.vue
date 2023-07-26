@@ -57,7 +57,7 @@ import type { IContextMenu, Item } from '~/types/stores/contextMenu';
 // import type { TLangName } from '../../plugins/langs';
 
 const
-    { $local, $langs, $api } = useNuxtApp(),
+    { $local, $langs, $api, $socket } = useNuxtApp(),
     user = useUserStore(),
     windows = useWindowsStore(),
     notifications = useNotificationsStore(),
@@ -150,6 +150,8 @@ const getProfileMenu = computed(() => {
                                         if (props?.token?.guast) cookies.set('HX_GUAST', props?.token?.guast, { days: 365 });
 
                                         user.set(userInfo);
+
+                                        $socket.reconnect();
 
                                         windows.close(windowId);
                                     }

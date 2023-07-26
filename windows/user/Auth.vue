@@ -53,7 +53,7 @@ type Props = {
     };
 }
 
-const { $api } = useNuxtApp();
+const { $api, $socket } = useNuxtApp();
 
 const
     user = useUserStore(),
@@ -148,6 +148,8 @@ async function auth() {
         cookies.delete(['HX_GUAST']);
 
         user.set(newUser);
+
+        $socket.reconnect();
 
         notifications.push({
             title: 'Welcome',

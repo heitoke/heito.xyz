@@ -88,7 +88,8 @@ const
     track = ref<IContent>({} as any),
     list = ref<Array<IContent>>([]);
 
-let timer: NodeJS.Timer;
+let timer: NodeJS.Timer,
+    timerTrackProgress: NodeJS.Timer;
 
 function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => {}, callbackFalse: Function = () => {}) {
     callbackTrue();
@@ -107,7 +108,7 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
 
 $socket?.on('activities:track:playing', (data: { device: any, userId: string, track: TTrack, is_playing: boolean }) => {
     if (!data?.is_playing) return;
-
+    
     track.value = {
         id: 'spotify:track',
         type: 'mini',
@@ -135,6 +136,13 @@ $socket?.on('activities:track:playing', (data: { device: any, userId: string, tr
     }
     
     clearTimeout(timer);
+    clearTimeout(timerTrackProgress);
+
+    timerTrackProgress = setInterval(() => {
+        if (!track.value.progressBar?.value) return;
+
+        track.value.progressBar.value += 1000;
+    }, 1000);
 
     timer = setTimeout(() => {
         track.value = {} as IContent;

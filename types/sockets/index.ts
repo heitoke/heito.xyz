@@ -6,11 +6,13 @@ import type { IUser } from '~/types/api/user';
 import type { IComment } from '~/types/api/comments';
 
 export interface ServerToClientEvents {
+    [key: string]: (...args: any) => void;
+
     // ? Server
     'server:cookie'(data: { name: string, value: string, days: number, options?: object }): void;
 
     // ? Users
-    'users:online'(data: { online?: number, list?: Array<IUser> }): void;
+    'users:online'(data: { count: number; results?: Array<IUser> }): void;
 
     // ? Activities
     'activities:track:playing'(data: object): void;
@@ -24,16 +26,17 @@ export interface ServerToClientEvents {
 
     // ? Comments
     'comments:upload'(comment: IComment): void;
-
-    [key: string]: (...args: any) => void;
 }
   
 export interface ClientToServerEvents {
     // ? Users
     'users:online': (type: 'count' | 'list') => void;
+
     // ? Activities
     'activities:track:playing'(): void;
     'activities:list'(): void;
 }
 
-export type TSocket = Socket<ServerToClientEvents, ClientToServerEvents>;
+export interface ISocket extends Socket<ServerToClientEvents, ClientToServerEvents> {
+    reconnect(): void;
+}

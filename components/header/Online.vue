@@ -4,6 +4,7 @@
 
         <User v-for="user of users" :key="user._id"
             :user="user"
+            @click="contextMenu.close()"
         />
     </div>
 </template>
@@ -27,8 +28,8 @@ const
 
 
 $socket.on('users:online', data => {
-    if (data?.list?.length! > 0) {
-        users.value = data?.list || [];
+    if (data?.results?.length! > 0) {
+        users.value = data?.results || [];
     }
 
     emit('update', { count: users.value.length, list: users.value });

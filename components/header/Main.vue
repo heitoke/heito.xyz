@@ -154,7 +154,7 @@ const getAdminContext = computed(() => {
 
 
 $socket.on('users:online', data => {
-    online.value = data?.online || data?.list?.length || 1;
+    online.value = data?.count || data?.results?.length || 1;
 });
 
 

@@ -71,6 +71,7 @@ onMounted(() => {
     -ms-background-size: cover;
     -o-background-size: cover;
     -webkit-background-size: cover;
+    overflow: hidden;
 
     .ui-skeleton {
         width: 100%;

@@ -12,7 +12,7 @@ export const useWindowsStore = defineStore('windows', {
         },
 
         create(window: IWindow) {
-            const data: IWindow = {
+            const data: IWindow = reactive({
                 position: 'center',
                 close: {
                     enable: true,
@@ -22,9 +22,9 @@ export const useWindowsStore = defineStore('windows', {
                 ...window,
                 id: this.list.length + 1,
                 createdAt: Date.now()
-            };
+            });
 
-            this.list.push(reactive(data));
+            this.list.push(data);
     
             return { windowId: data.id! }
         },

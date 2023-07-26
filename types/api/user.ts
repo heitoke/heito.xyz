@@ -19,7 +19,8 @@ export enum EPermissions {
     Users = 'users',
     Projects = 'projects',
     Blogs = 'blogs',
-    Site = 'site'
+    Site = 'site',
+    Lists = 'lists'
 };
 
 export interface IButtonPermission {
@@ -94,6 +95,12 @@ export const listPermissions = [
         label: 'Site',
         text: 'Allows you to manage the site',
         value: EPermissions.Site,
+        icon: 'damage-void'
+    },
+    {
+        label: 'Lists',
+        text: 'Allows you to manage the lists',
+        value: EPermissions.Lists,
         icon: 'damage-void'
     }
 ] as Array<IButtonPermission>;

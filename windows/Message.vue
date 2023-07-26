@@ -32,7 +32,7 @@
 import { PropType } from 'nuxt/dist/app/compat/capi';
 
 import type { IButton } from '~/components/content/NavBar.vue';
-import type { IComponent } from '~/types/stores/contextMenu';
+import type { ItemComponent } from '~/types/stores/contextMenu';
 
 export interface IMessageButton extends Omit<IButton, 'click'> {
     click(event: MouseEvent, data: IMessage, windowId: number): void;
@@ -43,7 +43,7 @@ export interface IMessage {
     icon?: string;
     text?: string;
     buttons?: Array<IMessageButton>;
-    components?: Array<IComponent>;
+    components?: Array<Omit<ItemComponent, 'type'>>;
 }
 
 const props = defineProps({

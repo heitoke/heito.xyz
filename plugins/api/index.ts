@@ -10,6 +10,7 @@ import Music from './routes/music';
 import Projects from './routes/projects';
 import Users from './routes/users';
 import Comments from './routes/comments';
+import Lists from './routes/lists';
 
 type TE = Promise<[any, number, object]>;
 
@@ -35,6 +36,7 @@ export interface IAPI {
     projects: Projects;
     users: Users;
     comments: Comments;
+    lists: Lists;
 }
 
 
@@ -52,6 +54,7 @@ export class API implements IAPI {
     projects: Projects = new Projects(this);
     users: Users = new Users(this);
     comments: Comments = new Comments(this);
+    lists: Lists = new Lists(this);
 
     constructor(domain: string, accessToken: string) {
         this.domain = domain;

@@ -1,9 +1,9 @@
 <template>
-    <div class="ui-image"
+    <div :class="['ui-image', { error }]"
         :style="{ 'background-image': `url('${image}')` }"
     >
         <Transition name="load">
-            <Skeleton v-if="!image && skeleton"/>
+            <Skeleton v-if="!image && skeleton && !error"/>
         </Transition>
 
         <slot/>
@@ -40,8 +40,6 @@ function renderImage() {
     }
 
     img.onerror = () => {
-        console.log(`Error loading image - ${props.src}`);
-
         error.value = true;
     }
 }
@@ -72,6 +70,10 @@ onMounted(() => {
     -o-background-size: cover;
     -webkit-background-size: cover;
     overflow: hidden;
+
+    &.error {
+        background-color: var(--background-secondary);
+    }
 
     .ui-skeleton {
         width: 100%;

@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
-import type { IWindow, IButton } from 'types/stores/windows';
+import type { IWindow, IButton, IWindowInfo } from 'types/stores/windows';
 
 export const useWindowsStore = defineStore('windows', {
     state: () => ({
@@ -36,6 +36,14 @@ export const useWindowsStore = defineStore('windows', {
             this.list.splice(windowIndex, 1);
         },
 
+        setInfo(windowId: number, info: IWindowInfo) {
+            const windowIndex = this.getWindowIndex(windowId);
+    
+            if (windowIndex < 0) return;
+    
+            this.list[windowIndex].info = info;
+        },
+
         hide(windowId: number) {
             const windowIndex = this.getWindowIndex(windowId);
     
@@ -50,7 +58,15 @@ export const useWindowsStore = defineStore('windows', {
     
             this.list[windowIndex] = reactive({ ...this.list[windowIndex], ...newWindow });
         },
-        addButtons(windowId: number, buttons: Array<IButton>): void {
+
+        setButtons(windowId: number, buttons: Array<IButton>) {
+            const windowIndex = this.getWindowIndex(windowId);
+    
+            if (windowIndex < 0) return;
+
+            this.list[windowIndex].buttons = buttons;
+        },
+        addButtons(windowId: number, buttons: Array<IButton>) {
             const windowIndex = this.getWindowIndex(windowId);
     
             if (windowIndex < 0) return;
@@ -59,7 +75,7 @@ export const useWindowsStore = defineStore('windows', {
                 this.list[windowIndex].buttons?.push(button);
             }
         },
-        removeButtons(windowId: number, ids: Array<number> | number): void {
+        removeButtons(windowId: number, ids: Array<number> | number) {
             const windowIndex = this.getWindowIndex(windowId);
     
             if (windowIndex < 0 && (!ids || (ids as Array<number>).length < 1)) return;

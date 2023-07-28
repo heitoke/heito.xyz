@@ -47,11 +47,7 @@
 
 <script lang="ts" setup>
 
-import { type IUser, EPermissions } from '~/types/api/user';
 import type { IConfigDefault } from '~/types/api/config';
-
-import type { IMessage } from '~/windows/Message.vue';
-import { config } from 'process';
 
 
 const { $api, $socket } = useNuxtApp();
@@ -255,7 +251,7 @@ async function initUser() {
                         }
                     }
                 ]
-            } as IMessage
+            }
         });
         return;
     }

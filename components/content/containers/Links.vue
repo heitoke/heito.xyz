@@ -43,8 +43,6 @@ import SelectIcon from '~/components/content/SelectIcon.vue';
 
 import type { ILink } from '~/types/api/user';
 
-import type { IMessage } from '~/windows/Message.vue';
-
 const root = ref<HTMLElement | null>(null);
 
 const emit = defineEmits(['add', 'update']);
@@ -185,7 +183,7 @@ function addNewLink(link?: ILink, id: number = -1) {
                     }
                 }
             ]
-        } as IMessage
+        }
     });
 }
 

@@ -96,7 +96,6 @@ import { IBlog, TBlogUserLike, categories } from '~/types/api/blog';
 import { EPermissions } from '~/types/api/user';
 
 import type { IContextMenu, ItemButton } from '~/types/stores/contextMenu';
-import type { IMessage } from '~/windows/Message.vue';
 
 type Block = 'comments' | 'likes' | 'dislikes';
 
@@ -314,7 +313,7 @@ function blogSettings(): ItemButton {
                         }
                     }
                 ]
-            } as IMessage
+            }
         });
     }
 
@@ -429,7 +428,7 @@ function blogSettings(): ItemButton {
                                                     }
                                                 }
                                             ]
-                                        } as IMessage
+                                        }
                                     })
                                 }
                             },
@@ -460,7 +459,7 @@ function blogSettings(): ItemButton {
                                                     }
                                                 }
                                             ]
-                                        } as IMessage
+                                        }
                                     });
                                 }
                             }

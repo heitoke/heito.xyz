@@ -83,7 +83,6 @@ import type { IProject, IRepository } from '~/types/api/project';
 import { EPermissions } from '~/types/api/user';
 
 import type { IScrollBar } from '~/components/content/ScrollBar.vue';
-import type { IMessage } from '~/windows/Message.vue';
 
 type Type = 'projects' | 'repos';
 
@@ -301,7 +300,7 @@ async function createProject() {
                     }
                 }
             ]
-        } as IMessage
+        }
     })
 }
 

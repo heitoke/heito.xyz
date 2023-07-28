@@ -82,7 +82,6 @@ import NavBar from '~/components/content/NavBar.vue';
 import { EPermissions } from '~/types/api/user';
 import { type IBlog, categories as listCategories } from '~/types/api/blog';
 
-import type { IMessage } from '~/windows/Message.vue';
 
 const { $api, $win } = useNuxtApp();
 
@@ -181,7 +180,7 @@ function createNewBlog() {
                     }
                 }
             ]
-        } as IMessage
+        }
     });
 }
 

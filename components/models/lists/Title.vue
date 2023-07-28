@@ -1,5 +1,7 @@
 <template>
-    <div class="list-title">
+    <div class="list-title"
+        @click="openWindow"
+    >
         <Image :src="title?.image || ''"/>
 
         <Text class="title" :text="title?.title || title?.name"/>
@@ -12,19 +14,43 @@ import { PropType } from 'nuxt/dist/app/compat/capi';
 
 import type { IListTitle } from 'types/api/lists/title';
 
+const windows = useWindowsStore();
 
 const props = defineProps({
-    title: { type: Object as PropType<IListTitle> }
+    listId: { type: String },
+    title: {
+        type: Object as PropType<IListTitle>,
+        required: true
+    }
 });
+
+
+function openWindow() {
+    windows.create({
+        component: 'ListsTitle',
+        data: {
+            listId: props.listId,
+            titleId: props.title.name
+        }
+    });
+}
 
 </script>
 
 <style lang="scss" scoped>
 
 .list-title {
+    cursor: pointer;
     width: 100%;
     position: relative;
     border-radius: 5px;
+
+    &:active {
+        .ui-image {
+            background-size: 100% auto;
+            transform: scale(.8);
+        }
+    }
 
     &:hover {
         .ui-image {

@@ -169,8 +169,6 @@ import { type IConfig, EAccountType, EPageStatus, IAccount } from '~/types/api/c
 
 import type { IContextMenu } from '~/types/stores/contextMenu';
 
-import type { IMessage } from '~/windows/Message.vue';
-
 const { $api, $router } = useNuxtApp();
 
 const
@@ -238,38 +236,39 @@ function addAccount(type: EAccountType, account?: IAccount) {
 
     if (account?.key) newAccount = account;
 
-    const data: IMessage = {
-        title: `${account?.key ? 'Change' : 'Create'} ${btn.label} account`,
-        icon: btn.icon,
-        components: [
-            {
-                component: 'Textbox',
-                name: 'key',
-                props: {
-                    label: btn?.name,
-                    value: newAccount?.key || ''
-                },
-                events: {
-                    input: (e: InputEvent) => {
-                        newAccount.key = (e.target as any)?.value;
+    windows.create({
+        component: 'Message',
+        data: {
+            title: `${account?.key ? 'Change' : 'Create'} ${btn.label} account`,
+            icon: btn.icon,
+            components: [
+                {
+                    component: 'Textbox',
+                    name: 'key',
+                    props: {
+                        label: btn?.name,
+                        value: newAccount?.key || ''
+                    },
+                    events: {
+                        input: (e: InputEvent) => {
+                            newAccount.key = (e.target as any)?.value;
+                        }
                     }
                 }
-            }
-        ],
-        buttons: [
-            {
-                label: 'Add account',
-                color: 'var(--green)',
-                click: (e: MouseEvent, data: IMessage, windowId: number) => {
-                    config.value.accounts = [...config.value.accounts || [], newAccount];
+            ],
+            buttons: [
+                {
+                    label: 'Add account',
+                    color: 'var(--green)',
+                    click: (e, data, windowId) => {
+                        config.value.accounts = [...config.value.accounts || [], newAccount];
 
-                    windows.close(windowId);
+                        windows.close(windowId);
+                    }
                 }
-            }
-        ]
-    };
-
-    windows.create({ component: 'Message', data });
+            ]
+        }
+    });
 }
 
 function syncPages() {

@@ -70,8 +70,6 @@ import ScrollBar from '~/components/content/ScrollBar.vue';
 
 import type { IConfig } from '~/types/api/config';
 
-import type { IMessage } from '~/windows/Message.vue';
-
 const { $api } = useNuxtApp();
 
 const
@@ -112,46 +110,44 @@ async function loadListConfigs() {
 async function create() {
     const body = {} as IConfig;
 
-    const data: IMessage = {
-        title: 'Create new config',
-        components: [
-            {
-                component: 'Textbox',
-                name: 'name',
-                props: {
-                    label: 'Config name'
-                },
-                events: {
-                    input(e: InputEvent) {
-                        body.name = (e.target as any)?.value;
-                    }
-                }
-            }
-        ],
-        buttons: [
-            {
-                label: 'Create a miracle',
-                color: 'var(--green)',
-                click: async (e: MouseEvent, data: any, windowId: number) => {
-                    const [newConfig, status] = await $api.configs.create(<IConfig>{ name: body.name });
-
-                    if (status !== 200) return notifications.error({
-                        title: 'creating config',
-                        message: (newConfig as any)?.message,
-                        status
-                    });
-
-                    configs.value = [...configs.value || [], newConfig];
-
-                    windows.close(windowId);
-                }
-            }
-        ]
-    };
-
     windows.create({
         component: 'Message',
-        data
+        data: {
+            title: 'Create new config',
+            components: [
+                {
+                    component: 'Textbox',
+                    name: 'name',
+                    props: {
+                        label: 'Config name'
+                    },
+                    events: {
+                        input(e: InputEvent) {
+                            body.name = (e.target as any)?.value;
+                        }
+                    }
+                }
+            ],
+            buttons: [
+                {
+                    label: 'Create a miracle',
+                    color: 'var(--green)',
+                    click: async (e: MouseEvent, data: any, windowId: number) => {
+                        const [newConfig, status] = await $api.configs.create(<IConfig>{ name: body.name });
+
+                        if (status !== 200) return notifications.error({
+                            title: 'creating config',
+                            message: (newConfig as any)?.message,
+                            status
+                        });
+
+                        configs.value = [...configs.value || [], newConfig];
+
+                        windows.close(windowId);
+                    }
+                }
+            ]
+        }
     });
 }
 

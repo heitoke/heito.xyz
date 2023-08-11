@@ -7,4 +7,4 @@ RUN npm install
 
 COPY . .
 
-ENTRYPOINT ["npm", "run", "preview"]
+ENTRYPOINT ["npm", "run", "prod"]

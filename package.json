@@ -1,0 +1,35 @@
+{
+  "name": "heito.xyz",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "build-vercel": "NITRO_PRESET=vercel-edge nuxt build",
+    "build": "nuxt build",
+    "dev": "nuxt dev --host",
+    "generate": "nuxt generate",
+    "preview": "nuxt preview",
+    "postinstall": "nuxt prepare",
+    "prod": "npx nuxi build && npx nuxi start"
+  },
+  "author": {
+    "name": "heito",
+    "email": "me@heito.xyz",
+    "url": "https://heito.xyz"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/heitoke/heito.xyz"
+  },
+  "devDependencies": {
+    "@nuxt/devtools": "latest",
+    "@pinia/nuxt": "^0.5.1",
+    "nuxt": "^3.8.2",
+    "sass": "^1.69.5",
+    "vue": "^3.3.10",
+    "vue-router": "^4.2.5"
+  },
+  "dependencies": {
+    "pinia": "^2.1.7"
+  }
+}

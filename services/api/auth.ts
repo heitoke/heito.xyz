@@ -1,4 +1,4 @@
-import type { API } from '~/plugins/api';
+import type { API } from '.';
 import type { Response } from '~/types/api';
 
 // * Types
@@ -18,50 +18,45 @@ export default class Route {
         this.api = api;
     }
 
-    register(username: string, email: string, password: string): Response<{
-        200: SuccessAuthAccount;
-        400: string;
-    }> {
-        return this.api.post('/auth/register', {
+    register(username: string, email: string, password: string) {
+        return this.api.fetch<SuccessAuthAccount>('/auth/register', {
             body: {
                 username,
                 email,
                 password
-            }
+            },
+            method: 'POST'
         });
     }
 
-    login(login: string, password: string): Response<{
-        200: SuccessAuthAccount;
-        401: string;
-    }> {
-        return this.api.post('/auth/login', {
+    login(login: string, password: string) {
+        return this.api.fetch<SuccessAuthAccount>('/auth/login', {
             body: {
                 login,
                 password
-            }
+            },
+            method: 'POST'
         });
     }
 
-    logout(): Response<{
-        200: string;
-    }> {
-        return this.api.post('/auth/logout');
+    logout() {
+        return this.api.fetch<string>('/auth/logout', {
+            method: 'POST'
+        });
     }
 
-    refresh(token: string): Response<{
-        200: { access: string }
-    }> {
-        return this.api.post(`/auth/refresh`, {
+    refresh(token: string) {
+        return this.api.fetch<{ access: string }>(`/auth/refresh`, {
             body: {
                 token
-            }
+            },
+            method: 'POST'
         });
     }
 
-    guast(): Response<{
-        200: SuccessAuthAccount;
-    }> {
-        return this.api.post('/auth/guast');
+    guast() {
+        return this.api.fetch<SuccessAuthAccount>('/auth/guast', {
+            method: 'POST'
+        });
     }
 }

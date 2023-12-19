@@ -1,4 +1,6 @@
-interface HeaderOptions {
+interface HeaderOptions {}
+
+interface PageOptions {
     padding?: string;
 }
 
@@ -8,6 +10,7 @@ declare module 'nuxt/dist/pages/runtime/composables' {
     interface PageMeta {
         title?: string;
         header?: HeaderOptions;
+        pageOptions?: PageOptions;
         flags?: Array<Flag>;
     }
 }

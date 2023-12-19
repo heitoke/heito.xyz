@@ -1,0 +1,55 @@
+import type { Component } from 'vue';
+
+export type Position = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'corner' | 'fixed';
+
+export type ItemType = 'button' | 'separator' | 'component' | 'radio' | 'checkbox' | 'children';
+
+interface ItemTemplate<Type = ItemType> {
+    type: Type;
+    label: string;
+    text?: string;
+    color?: string;
+    icon?: string;
+    image?: string;
+}
+
+export interface ItemButton extends ItemTemplate<'button'> {
+    click?(event: MouseEvent): void;
+}
+
+export interface ItemSeparator extends Omit<ItemTemplate<'separator'>, 'label' | 'text' | 'icon' | 'image'> {}
+
+export interface ItemComponent extends ItemTemplate<'component'> {
+    name: string;
+    component: string | Component;
+}
+
+export interface ItemRadio extends ItemTemplate<'radio'> {
+    name?: string;
+}
+
+export interface ItemCheckbox extends ItemTemplate<'checkbox'> {
+    name?: string;
+}
+
+export interface ItemChildren extends ItemTemplate<'children'> {
+    items: Array<Item>;
+}
+
+export type Item = ItemButton
+| ItemSeparator
+| ItemComponent
+| ItemRadio
+| ItemCheckbox
+| ItemChildren;
+
+export interface ContextMenu {
+    name: string;
+    title?: string;
+    text?: string;
+    event?: Event | MouseEvent | Element | HTMLElement;
+    position?: Array<Position>;
+    x?: number;
+    y?: number;
+    items: Array<Item>;
+}

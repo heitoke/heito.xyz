@@ -1,3 +1,5 @@
+import type { UseFetchOptions } from "nuxt/app";
+
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
 export type Type = 'json';
@@ -39,10 +41,12 @@ export type ResponseList<TypeResult = any> = Response<{
 }>;
 
 
-export type TemplateAPI = {
+export interface TemplateAPI {
     readonly domain: string;
     readonly token: {
         access: string;
         refresh: string;
     };
-} & Record<'fetch' | 'get' | 'post' | 'patch' | 'put' | 'delete', (uri: string, options: FetchOptions) => Response<{ [key: string]: any }>>;
+
+    fetch<ResultType = any, ErrorType = any>(uri: string, options: UseFetchOptions<ResultType>): Promise<any>;
+}

@@ -1,4 +1,4 @@
-import type { API } from '~/plugins/api';
+import type { API } from '.';
 import type { Response } from '~/types/api';
 
 // * Types
@@ -12,9 +12,7 @@ export default class Route {
         this.api = api;
     }
 
-    me(): Response<{
-        200: User;
-    }> {
-        return this.api.get(`/users/me`);
+    me() {
+        return this.api.fetch<User>(`/users/me`);
     }
 }

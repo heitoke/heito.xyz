@@ -9,10 +9,20 @@ export const useUserStore = defineStore('user', () => {
 
     const isAuth = computed(() => Boolean(user?.value?._id));
 
+    const getAvatar = computed(() => {
+        return 'https://avatars.githubusercontent.com/u/39241501?v=4';
+    });
+
+    const getBanner = computed(() => {
+        return 'https://avatars.githubusercontent.com/u/39241501?v=4';
+    });
+
     return {
         // * Getters
         user,
         isAuth,
+        getAvatar,
+        getBanner,
 
         // * Actions
         set(user: User) {

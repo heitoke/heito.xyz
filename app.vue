@@ -1,14 +1,24 @@
 <template>
+    <Header/>
+
     <NuxtLayout class="layout">
-        <NuxtPage class="page"/>
+        <NuxtPage class="page"
+            :style="{ padding: $route.meta?.pageOptions?.padding || '0 32px' }"
+        />
+
+        <ContextMenu/>
     </NuxtLayout>
 </template>
 
 <script lang="ts" setup>
 
+import Header from '~/components/models/header/Main.vue';
+import ContextMenu from '~/components/models/context-menu/Main.vue';
+
+
 const
-    route = useRoute(),
-    request = useRequestURL();
+    $route = useRoute(),
+    $request = useRequestURL();
 
 
 // * Meta
@@ -18,7 +28,7 @@ useHead({
     },
     meta: [
         { name: 'og:type', content: 'website' },
-        { name: 'og:url', content: request.origin + route.fullPath },
+        { name: 'og:url', content: $request.origin + $route.fullPath },
         { name: 'refresh', content: '5' }
     ],
     link: [

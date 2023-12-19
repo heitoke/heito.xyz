@@ -10,11 +10,11 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
         refreshToken = cookies.get('HX_RT');
 
     async function authGuast() {
-        const { result, status } = await $api.auth.guast();
+        const { data, status } = await $api.auth.guast();
 
-        if (status !== 200) return;
+        if (status.value !== 'success') return;
 
-        const { user, tokens: { access, refresh } } = result;
+        const { user, tokens: { access, refresh } } = data;
 
         cookies.set('HX_AT', access!, { days: 7 });
         cookies.set('HX_RT', refresh!, { days: 365 });
@@ -29,20 +29,20 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
     if ($user.isAuth) return;
 
     async function regenerateAccessToken() {
-        const { result, status } = await $api.auth.refresh(refreshToken!);
+        const { data, status } = await $api.auth.refresh(refreshToken!);
 
-        if (status !== 200) return false;
+        if (status.value !== 'success') return false;
 
-        await cookies.set('HX_AT', result.access, { days: 7 });
-        await $api.api.setAccessToken(result.access);
+        await cookies.set('HX_AT', data.access, { days: 7 });
+        await $api.api.setAccessToken(data.access);
     
         return true;
     }
 
     async function authUser() {
-        const { result, status } = await $api.users.me();
+        const { data, status } = await $api.users.me();
 
-        if (status !== 200) {
+        if (status.value !== 'success') {
             if (!refreshToken) return;
 
             const r = await regenerateAccessToken();
@@ -52,7 +52,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
             return await authUser();
         }
 
-        $user.set(result);
+        $user.set(data);
     }
 
     if (accessToken) {

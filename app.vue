@@ -1,5 +1,6 @@
 <template>
     <Header/>
+    <Notifications/>
 
     <NuxtLayout class="layout">
         <NuxtPage class="page"
@@ -13,6 +14,7 @@
 <script lang="ts" setup>
 
 import Header from '~/components/models/header/Main.vue';
+import Notifications from '~/components/models/notifications/Main.vue';
 import ContextMenu from '~/components/models/context-menu/Main.vue';
 
 

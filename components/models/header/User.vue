@@ -23,11 +23,22 @@
                     <div :style="{ 'background-image': `url('${$user.getAvatar}')` }" v-if="$user.user?._id"></div>
                 </div>
             </div>
+
+            <Menu v-if="isOpen"
+                style="margin-top: 12px;"
+
+                :items="getUserMenuItems"
+            />
         </div>
     </div>
 </template>
 
 <script lang="ts" setup>
+
+import Menu from '~/components/models/content/Menu.vue';
+
+import type { Item } from '~/types/stores/contextMenu';
+
 
 const { $local, $langs, $api, $socket, $router } = useNuxtApp();
 
@@ -36,11 +47,55 @@ const $user = useUserStore()
 
 const root = ref<HTMLElement | null>(null);
 
-const isOpen = ref<boolean>(false);
+
+const
+    isOpen = ref<boolean>(false),
+    darkMode = ref(true),
+    lang = ref('English');
 
 
 const getDisplayName = computed(() => {
     return $user.user?.displayName || $user.user?.username;
+});
+
+
+const getUserMenuItems = computed<Array<Item>>(() => {
+    return [
+        {
+            type: 'button',
+            label: 'Settings',
+            icon: 'settings'
+        },
+        {
+            type: 'checkbox',
+            label: 'Dark mode',
+            icon: 'sun-moon',
+            value: darkMode,
+            click: value => darkMode.value = value
+        },
+        {
+            type: 'children',
+            label: 'Language',
+            icon: 'translate',
+            text: `${lang.value} (Beta)`,
+            items: ['English', 'Russian'].map(l => ({
+                type: 'radio',
+                label: l,
+                icon: 'translate',
+                name: 'language',
+                value: l,
+                ref: lang,
+                click: () => lang.value = l
+            }))
+        },
+        { type: 'separator' },
+        {
+            type: 'button',
+            label: 'Sessions',
+            icon: 'users'
+        },
+        // { type: 'separator' },
+    ];
 });
 
 
@@ -110,6 +165,7 @@ function openProfile() {}
         border-radius: 5px;
         border-color: var(--background-secondary);
         top: -24px;
+        right: -8px;
 
         &::before {
             content: "";

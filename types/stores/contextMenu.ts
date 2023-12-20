@@ -24,12 +24,18 @@ export interface ItemComponent extends ItemTemplate<'component'> {
     component: string | Component;
 }
 
-export interface ItemRadio extends ItemTemplate<'radio'> {
-    name?: string;
+export interface ItemRadio<T = string | number> extends ItemTemplate<'radio'> {
+    name: string;
+    value: T;
+    ref: T | Ref<T>;
+    click?(value: T, event: MouseEvent): void;
 }
 
 export interface ItemCheckbox extends ItemTemplate<'checkbox'> {
     name?: string;
+    value?: boolean | Ref<boolean>;
+
+    click?(value: boolean, event: MouseEvent): void;
 }
 
 export interface ItemChildren extends ItemTemplate<'children'> {

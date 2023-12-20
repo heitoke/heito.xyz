@@ -1,7 +1,19 @@
 <template>
-    <div class="menu">
+    <div class="menu" ref="root">
+        <header v-if="getCurrentChildren"
+            @click="goToBack"
+        >
+            <Icon name="arrow-left"/>
+
+            <div>
+                <div>{{ getCurrentChildren?.label }}</div>
+
+                <div>{{ getCurrentChildren?.text }}</div>
+            </div>
+        </header>
+        
         <ul>
-            <li v-for="(item, idx) of items" :key="idx"
+            <li v-for="(item, idx) of getItems" :key="idx"
                 :class="[item.type]"
 
                 @click="item.type !== 'separator' ? onClick(idx, $event) : null"
@@ -25,7 +37,19 @@
                 </template>
 
                 <template v-if="item.type === 'checkbox'">
-                    <Checkbox :value="true"/>
+                    <Checkbox
+                        :disabled="'only-click'"
+                        :name="item?.name"
+                        :value="(typeof item?.value) === 'boolean' ? item?.value : (item?.value as Ref)?.value"
+                    />
+                </template>
+
+                <template v-if="item.type === 'radio'">
+                    <Radio
+                        :name="item?.name"
+                        :value="item.value"
+                        :checked="item?.ref === item.value"
+                    />
                 </template>
 
                 <template v-if="item.type === 'children'">
@@ -38,7 +62,10 @@
 
 <script lang="ts" setup>
 
-import type { Item } from '~/types/stores/contextMenu';
+import type { Item, ItemChildren } from '~/types/stores/contextMenu';
+
+
+const root = ref<HTMLElement | null>(null);
 
 
 const props = defineProps<{
@@ -46,13 +73,50 @@ const props = defineProps<{
 }>();
 
 
-function onClick(idx: number, $event: MouseEvent) {
-    const item = props.items[idx];
+const childrens = ref<Array<ItemChildren>>([]);
+
+
+const getCurrentChildren = computed<ItemChildren | null>(() => {
+    if (!childrens.value.length) return null;
+
+    return childrens.value[childrens.value.length - 1];
+});
+
+const getItems = computed(() => {
+    if (!getCurrentChildren.value) return props.items;
+
+    return getCurrentChildren.value.items;
+});
+
+
+function onClick(idx: number, event: MouseEvent) {
+    const item = getItems.value[idx];
     
     if (!item) return;
 
-    console.log(item);
-    
+    switch(item.type) {
+        case 'button':
+            if (item?.click) item.click(event);
+            break;
+
+        case 'children':
+            childrens.value.push(item as any);
+            break;
+
+        case 'checkbox':
+            if (item?.click) {
+                item.click(!(typeof item.value === 'string' ? item.value : (item.value as Ref<boolean>).value), event);
+            }
+            break;
+
+        case 'radio':
+            if (item?.click) item.click(item.value!, event);
+            break;
+    }
+}
+
+function goToBack() {
+    childrens.value.splice(childrens.value.length - 1, 1);
 }
 
 </script>
@@ -61,6 +125,48 @@ function onClick(idx: number, $event: MouseEvent) {
 
 .menu {
     user-select: none;
+
+    header {
+        cursor: pointer;
+        display: flex;
+        margin-bottom: 8px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--background-secondary);
+        align-items: center;
+
+        &:hover {
+            .ui-icon {
+                opacity: 1;
+            }
+        }
+
+        .ui-icon {
+            margin-right: 8px;
+            opacity: .5;
+        }
+
+        .ui-icon + div {
+            max-width: 100%;
+            min-width: 0;
+            flex: 1;
+
+            div {
+                max-width: 100%;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+
+                &:nth-child(1) {
+                    font-size: 14px;
+                }
+
+                &:nth-child(2) {
+                    color: var(--text-secondary);
+                    font-size: 12px;
+                }
+            }
+        }
+    }
 
     ul {
         li {
@@ -101,7 +207,7 @@ function onClick(idx: number, $event: MouseEvent) {
                 }
 
                 .content {
-                    width: 100%;
+                    max-width: 100%;
                     min-width: 0;
                     flex: 1;
                     

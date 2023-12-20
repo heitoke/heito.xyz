@@ -1,7 +1,9 @@
 <template>
     <div class="menu">
         <ul>
-            <li v-for="btn of getButtons" :key="btn.icon">
+            <li v-for="btn of getButtons" :key="btn.icon"
+                @click="btn.click"
+            >
                 <Icon :name="btn.icon"/>
             </li>
         </ul>
@@ -15,6 +17,9 @@ interface ButtonIcon {
     icon: string;
     click(event: MouseEvent): void;
 }
+
+
+const $notifications = useNotificationsStore();
 
 
 const getButtons = computed<Array<ButtonIcon>>(() => {
@@ -32,7 +37,9 @@ const getButtons = computed<Array<ButtonIcon>>(() => {
         {
             label: 'Notifications',
             icon: 'notification',
-            click: () => {}
+            click: () => {
+                $notifications.setActive(true);
+            }
         }
     ];
 });

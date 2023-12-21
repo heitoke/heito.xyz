@@ -65,7 +65,7 @@ const getNotHides = computed(() => {
 });
 
 
-watch(() => $user.user!._id, (newValue: string) => {
+watch(() => $user.user?._id || '', (newValue: string) => {
     if (!newValue) return;
 
     fetchUserNotifications();

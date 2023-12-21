@@ -2,6 +2,77 @@
     <div class="home">
         <h1>Hello world</h1>
 
+        <div class="te">
+            <Activity
+                :content="{
+                    type: 'default',
+                    name: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    details: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    state: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    largePreview: {
+                        type: 'icon',
+                        icon: 'notification',
+                        color: 'var(--green)'
+                    },
+                    smallPreview: {
+                        type: 'icon',
+                        icon: 'search-alt',
+                        color: 'var(--red)'
+                    },
+                    progress: {
+                        type: 'time',
+                        value: 1000,
+                        end: 3600
+                    }
+                }"
+            />
+        </div>
+
+        <div class="te">
+            <Activity
+                :content="{
+                    type: 'mini',
+                    name: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    details: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    state: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    largePreview: {
+                        type: 'image',
+                        url: $user.getAvatar
+                    },
+                    smallPreview: {
+                        type: 'icon',
+                        icon: 'notification',
+                        color: 'var(--green)'
+                    },
+                    progress: {
+                        type: 'numbers',
+                        value: 1000,
+                        end: 3600
+                    }
+                }"
+            />
+        </div>
+
+        <div class="te">
+            <Activity
+                :content="{
+                    type: 'default',
+                    name: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    details: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    state: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
+                    largePreview: {
+                        type: 'image',
+                        url: $user.getAvatar
+                    },
+                    progress: {
+                        type: 'numbers',
+                        value: 1000,
+                        end: 3600
+                    }
+                }"
+            />
+        </div>
+
         <Button label="ClickClickClickClickClickClickClickClickClickClickClickClickClickClickClickClick"
             text="Testdj kl"
             @contextmenu.prevent="c('test2')"
@@ -28,6 +99,8 @@
 </template>
 
 <script lang="ts" setup>
+
+import Activity from '~/components/models/header/Activity.vue';
 
 const
     $user = useUserStore(),
@@ -156,6 +229,14 @@ function c(name: string) {
 
 .page.home {
     height: 10000px;
+
+    .te {
+        margin: 12px 0;
+        padding: 12px;
+        max-width: 315px;
+        border-radius: 5px;
+        border: 1px solid var(--background-secondary);
+    }
 }
 
 </style>

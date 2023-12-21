@@ -3,12 +3,12 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import type { Window, WindowOptions, WindowTemplate } from '~/types/stores/windows';
 
 export const useWindowsStore = defineStore('windows', () => {
-    const _windows = ref<Array<WindowTemplate>>([]);
+    const _list = ref<Array<WindowTemplate>>([]);
 
 
     // * Functions
     const getWindowIndex = (windowId: number) => {
-        return _windows.value.findIndex(window => window.id === windowId);
+        return _list.value.findIndex(window => window.id === windowId);
     }
 
     function create<T extends string>(componentName: T, data?: Window<T>, options?: WindowOptions): WindowTemplate {
@@ -20,14 +20,14 @@ export const useWindowsStore = defineStore('windows', () => {
         }
 
         const newWindow = {
-            id: _windows.value.length + 1,
+            id: _list.value.length + 1,
             component: componentName,
             ...defaultOptions,
             data,
             createdAt: Date.now()
         }
 
-        _windows.value.push(newWindow);
+        _list.value.push(newWindow);
 
         return newWindow;
     }
@@ -37,7 +37,7 @@ export const useWindowsStore = defineStore('windows', () => {
 
         if (windowIndex < 0) return;
 
-        _windows.value.splice(windowIndex, 1);
+        _list.value.splice(windowIndex, 1);
     }
 
     function hide(windowId: number) {
@@ -45,18 +45,18 @@ export const useWindowsStore = defineStore('windows', () => {
 
         if (windowIndex < 0) return;
 
-        _windows.value[windowIndex].hide = true;
+        _list.value[windowIndex].hide = true;
     }
 
 
     // * Getters
-    const windows = computed(() => {
-        return _windows.value;
+    const list = computed(() => {
+        return _list.value;
     });
 
 
     return {
-        windows,
+        list,
 
         create,
         close,

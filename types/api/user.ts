@@ -57,4 +57,7 @@ export interface User {
     updatedAt: string;
     createdAt: string;
     expireAt?: string;
+
+    // * Virtuals
+    isGuast?: boolean;
 }

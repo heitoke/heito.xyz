@@ -2,32 +2,52 @@
     <div class="home">
         <h1>Hello world</h1>
 
-        {{ $user.user?.displayName }}
+        <Button label="ClickClickClickClickClickClickClickClickClickClickClickClickClickClickClickClick"
+            text="Testdj kl"
+            @contextmenu.prevent="c('test2')"
+            style="max-width: 256px;"
+            icon="pacman"
+        />
 
-        <button @contextmenu.self.prevent="c('test')">Click</button>
+        <Textbox style="margin-top: 12px;"
+            label="Test"
+            icon="pacman"
 
-        <br>
-        {{ a }}
+            @update="y = $event"
+        />
 
-        <button @contextmenu.self.prevent="c('test2')">Click</button>
+        <Select style="margin-top: 12px;"
+            label="d"
+
+            :options="[
+                { value: 'das' },
+                { value: 'asd' }
+            ]"
+        />
     </div>
 </template>
 
 <script lang="ts" setup>
 
-const $user = useUserStore();
-
-const $menu = useContextMenuStore();
-
-const $notifications = useNotificationsStore();
-
+const
+    $user = useUserStore(),
+    $menu = useContextMenuStore(),
+    $notifications = useNotificationsStore(),
+    $windows = useWindowsStore();
 
 const t = ref(false);
-
+const y = ref('')
 const a = ref('r1');
 
+function e() {
+    $windows.create('Message', {
+        title: 'asd'
+    });
+}
 
 function c(name: string) {
+    console.log(123);
+    
     $menu.create({
         name,
         items: [
@@ -132,4 +152,10 @@ function c(name: string) {
 
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+
+.page.home {
+    height: 10000px;
+}
+
+</style>

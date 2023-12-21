@@ -4,7 +4,7 @@
             <div class="header"
                 @click="isOpen ? openProfile() : false"
                 :style="{
-                    padding: isOpen ? `${false ? 20 : 16}px 8px` : undefined,
+                    padding: isOpen ? `${false ? 20 : 12}px 8px` : undefined,
                     '--color': $user.user?.color || 'var(--main-color)',
                     '--image': `url('${$user.getBanner || null}')`,
                 }"
@@ -40,9 +40,12 @@ import Menu from '~/components/models/content/Menu.vue';
 import type { Item } from '~/types/stores/contextMenu';
 
 
-const { $local, $langs, $api, $socket, $router } = useNuxtApp();
+const { $api } = useNuxtApp();
 
-const $user = useUserStore()
+const
+    $user = useUserStore(),
+    $windows = useWindowsStore(),
+    $notifications = useNotificationsStore();
 
 
 const root = ref<HTMLElement | null>(null);
@@ -50,7 +53,7 @@ const root = ref<HTMLElement | null>(null);
 
 const
     isOpen = ref<boolean>(false),
-    darkMode = ref(true),
+    darkMode = ref(cookies.get('theme') !== 'light'),
     lang = ref('English');
 
 
@@ -64,20 +67,27 @@ const getUserMenuItems = computed<Array<Item>>(() => {
         {
             type: 'button',
             label: 'Settings',
-            icon: 'settings'
+            icon: 'settings',
         },
         {
             type: 'checkbox',
             label: 'Dark mode',
             icon: 'sun-moon',
             value: darkMode,
-            click: value => darkMode.value = value
+            click(value) {
+                darkMode.value = value;
+
+                cookies.set('theme', value ? 'dark' : 'light');
+
+                document.querySelector('html')!.classList[value ? 'add' : 'remove']('dark')
+                document.querySelector('html')!.classList[value ? 'remove' : 'add']('light')
+            }
         },
         {
             type: 'children',
             label: 'Language',
             icon: 'translate',
-            text: `${lang.value} (Beta)`,
+            text: `Don't work`,
             items: ['English', 'Russian'].map(l => ({
                 type: 'radio',
                 label: l,
@@ -92,9 +102,25 @@ const getUserMenuItems = computed<Array<Item>>(() => {
         {
             type: 'button',
             label: 'Sessions',
-            icon: 'users'
+            icon: 'users',
         },
-        // { type: 'separator' },
+        { type: 'separator' },
+        $user.user?.isGuast ? {
+            type: 'button',
+            label: 'Sign in',
+            icon: 'hand-alt',
+            click: () => {
+                $windows.create('UserAuth', {
+                    type: 'login'
+                });
+            }
+        } : {
+            type: 'button',
+            label: 'Exit',
+            color: 'var(--red)',
+            icon: 'exit',
+            click: () => logoutAccount()
+        }
     ];
 });
 
@@ -116,6 +142,42 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
 }
 
 function openProfile() {}
+
+async function authGuast() {
+    const { data, status } = await $api.auth.guast();
+
+    if (status.value !== 'success') return false;
+
+    const { user, tokens: { access, refresh } } = data;
+
+    cookies.set('HX_AT', access!, { days: 7 });
+    cookies.set('HX_RT', refresh!, { days: 365 });
+    $api.api.setAccessToken(access!);
+    $api.api.setRefreshToken(refresh!);
+
+    $user.set(user);
+
+    return true;
+}
+
+async function logoutAccount() {
+    const { data, status } = await $api.auth.logout();
+
+    if (status.value !== 'success') return;
+
+    cookies.delete('HX_AT', 'HX_RT');
+
+    const guast = await authGuast();
+
+    if (!guast) return;
+
+    $notifications.push({
+        title: 'Bye Bye',
+        text: 'You have successfully logged out. You have switched to a guest account.',
+        icon: 'exit',
+        color: 'var(--red)'
+    });
+}
 
 </script>
 
@@ -218,7 +280,6 @@ function openProfile() {}
             background-image: var(--image);
             transform: scale(1.2);
             transition: .2s;
-            filter: blur(2px) grayscale(1);
             z-index: -1;
         }
 

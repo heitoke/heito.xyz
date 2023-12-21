@@ -1,3 +1,5 @@
+import type { Message } from '~/windows/Message.vue';
+
 export type Position = 'center' | 'top' | 'right' | 'bottom' | 'left';
 
 export interface Button {
@@ -29,4 +31,14 @@ export interface WindowTemplate extends WindowOptions {
     createdAt: number;
 }
 
-export type Window<T = string> = WindowTemplate;
+
+
+type IsAValue<Obj, Str extends string> = {
+    [Prop in keyof Obj]: Str extends Obj[Prop] ? Str : any
+}[keyof Obj];
+
+interface WindowTypes {
+    Message: Message;
+}
+
+export type Window<T extends string> = IsAValue<WindowTypes, T>;

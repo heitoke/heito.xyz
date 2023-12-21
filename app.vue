@@ -1,6 +1,7 @@
 <template>
     <Header/>
     <Notifications/>
+    <Windows/>
 
     <NuxtLayout class="layout">
         <NuxtPage class="page"
@@ -15,12 +16,31 @@
 
 import Header from '~/components/models/header/Main.vue';
 import Notifications from '~/components/models/notifications/Main.vue';
+import Windows from '~/components/models/windows/Main.vue';
 import ContextMenu from '~/components/models/context-menu/Main.vue';
 
 
 const
     $route = useRoute(),
     $request = useRequestURL();
+
+
+function init() {
+    const html = document.querySelector('html')! as HTMLElement;
+
+    if (!html) return;
+
+    const theme = cookies.get('theme');
+
+    if (theme) {
+        html.className = theme;
+    }
+}
+
+
+onMounted(() => {
+    init();
+});
 
 
 // * Meta

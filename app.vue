@@ -2,13 +2,14 @@
     <Header/>
     <Notifications/>
     <Windows/>
+    <ContextMenu/>
+    <Toolpic/>
 
-    <NuxtLayout class="layout">
+    <NuxtLayout class="layout" :name="'super-vertical'">
         <NuxtPage class="page"
             :style="{ padding: $route.meta?.pageOptions?.padding || '0 32px' }"
         />
 
-        <ContextMenu/>
     </NuxtLayout>
 </template>
 
@@ -18,6 +19,7 @@ import Header from '~/components/models/header/Main.vue';
 import Notifications from '~/components/models/notifications/Main.vue';
 import Windows from '~/components/models/windows/Main.vue';
 import ContextMenu from '~/components/models/context-menu/Main.vue';
+import Toolpic from '~/components/models/toolpic/Main.vue';
 
 
 const
@@ -67,3 +69,13 @@ useHead({
 });
 
 </script>
+
+<style lang="scss">
+
+.layout {
+    max-height: calc(100dvh - 64px) !important;
+    height: calc(100dvh - 64px) !important;
+    min-height: calc(100dvh - 64px) !important;
+}
+
+</style>

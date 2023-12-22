@@ -54,7 +54,7 @@ function getPosition(event: MouseEvent) {
         y = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
     }
 
-    return { x, y}
+    return { x, y }
 }
 
 function listenClick(menuElement: HTMLElement) {
@@ -67,6 +67,16 @@ function listenClick(menuElement: HTMLElement) {
 
         show.value = false;
     }, {
+        once: true,
+        capture: true
+    });
+
+    window.addEventListener('scroll', () => {
+        $contextMenu.close();
+
+        show.value = false;
+    }, {
+        capture: true,
         once: true
     });
 }
@@ -74,7 +84,7 @@ function listenClick(menuElement: HTMLElement) {
 function showContextMenu(menuElement: HTMLElement) {
     if (!menu.value) return;
 
-    let { x, y } = getPosition(menu.value.event as MouseEvent);
+    const { x, y } = getPosition(menu.value.event as MouseEvent);
 
     let width = menuElement.offsetWidth + 4,
         height = menuElement.offsetHeight + 4;

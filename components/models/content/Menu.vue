@@ -1,16 +1,18 @@
 <template>
     <div class="menu" ref="root">
-        <header v-if="getCurrentChildren"
-            @click="goToBack"
-        >
-            <Icon name="arrow-left"/>
+        <Height :show="Boolean(getCurrentChildren)">
+            <header
+                @click="goToBack"
+            >
+                <Icon name="arrow-left"/>
 
-            <div>
-                <div>{{ getCurrentChildren?.label }}</div>
+                <div>
+                    <div>{{ getCurrentChildren?.label }}</div>
 
-                <div>{{ getCurrentChildren?.text }}</div>
-            </div>
-        </header>
+                    <div>{{ getCurrentChildren?.text }}</div>
+                </div>
+            </header>
+        </Height>
         
         <ul>
             <li v-for="(item, idx) of getItems" :key="idx"

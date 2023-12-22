@@ -20,7 +20,9 @@
 
         <User/>
 
-        <div class="super">
+        <div :class="['super', { active: $super.isActive }]"
+            @click="$super.set(!$super.isActive)"
+        >
             <div></div>
             <div></div>
             <div></div>
@@ -33,6 +35,9 @@
 import Activities from './Activities.vue';
 import User from './User.vue';
 import Menu from './Menu.vue';
+
+
+const $super = useSuperStore();
 
 </script>
 
@@ -87,6 +92,12 @@ header {
         &:hover {
             div {
                 background-color: var(--text-primary);
+            }
+        }
+
+        &.active {
+            div {
+                background-color: var(--main-color);
             }
         }
 

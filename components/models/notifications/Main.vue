@@ -6,7 +6,7 @@
             ></div>
         </Transition>
 
-        <div :class="['panel', ...$notifications.position, { active: $notifications.isActive }]">
+        <div :class="['panel', ...$notifications.position, $notifications.isActive ? 'active blur' : '']">
             <header v-if="$notifications.isActive">
                 <span>Notifications</span>
 
@@ -191,8 +191,8 @@ async function fetchUserNotifications() {
         &.active {
             pointer-events: all;
             min-height: 100vh;
-            border-radius: 7px 0 0 7px;
-            background-color: var(--background-primary);
+            border-left: 1px solid var(--background-secondary);
+            // background-color: ;
 
             ul.list {
                 margin: 12px 12px 0 12px;

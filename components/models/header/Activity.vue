@@ -3,27 +3,27 @@
         <div class="header">
             <div class="previews">
                 <div :class="['large', largePreview.type, { s: smallPreview !== null }]" v-if="largePreview">
-                    <template v-if="largePreview.type === 'image'">
-                        <img :src="largePreview.url" alt="Large Activity Image">
-                    </template>
+                    <img v-if="largePreview.type === 'image'"
+                        :src="largePreview.url"
+                        alt="Large Activity Image"
+                    >
 
-                    <template v-else-if="largePreview.type === 'icon'">
-                        <Icon :name="largePreview.icon"
-                            :style="{ '--color': largePreview?.color || 'var(--main-color)' }"
-                        />
-                    </template>
+                    <Icon v-else-if="largePreview.type === 'icon'"
+                        :name="largePreview.icon"
+                        :style="{ '--color': largePreview?.color || 'var(--main-color)' }"
+                    />
                 </div>
             
                 <div :class="['small', smallPreview.type]" v-if="smallPreview">
-                    <template v-if="smallPreview.type === 'image'">
-                        <img :src="smallPreview.url" alt="Small Activity Image">
-                    </template>
+                    <img v-if="smallPreview.type === 'image'"
+                        :src="smallPreview.url"
+                        alt="Large Activity Image"
+                    >
 
-                    <template v-else-if="smallPreview.type === 'icon'">
-                        <Icon :name="smallPreview.icon"
-                            :style="{ '--color': smallPreview?.color || 'var(--main-color)' }"
-                        />
-                    </template>
+                    <Icon v-else-if="smallPreview.type === 'icon'"
+                        :name="smallPreview.icon"
+                        :style="{ '--color': smallPreview?.color || 'var(--main-color)' }"
+                    />
                 </div>
             </div>
 
@@ -33,23 +33,27 @@
                 <div class="details">{{ content.details }}</div>
 
                 <div class="state" v-if="content.type !== 'mini'">{{ content.state }}</div>
-
+            
+                <ComponentProgressBar v-if="getProgressBar.position === 'content'"/>
             </div>
         </div>
 
-        <div class="progress" v-if="content.progress">
-            <span>{{ getProgressBar.start }}</span>
+        <ComponentProgressBar v-if="getProgressBar.position === 'full'"
+            style="margin-top: 4px;"
+        />
 
-            <div class="bar">
-                <div :style="{ width: `${getProgressBar.width}%` }"></div>
-            </div>
-
-            <span>{{ getProgressBar.end }}</span>
-        </div>
+        <Height :show="showButtons && content?.buttons && content?.buttons?.length > 0">
+            <NavBar style="margin-top: 4px;"
+                :items="content.buttons!"
+            />
+        </Height>
     </div>
 </template>
 
 <script lang="ts" setup>
+
+import NavBar, { type Item } from '~/components/models/content/NavBar.vue';
+
 
 type TypeActivity = 'default' | 'mini';
 
@@ -72,10 +76,10 @@ interface IconPreview extends PreviewTemplate<'icon'> {
 }
 
 type Preview = ImagePreview | IconPreview;
-
 interface Button {}
 
 interface Progress {
+    position?: 'content' | 'full';
     type?: TypeProgress;
     value?: number;
     end?: number;
@@ -89,7 +93,7 @@ export interface Activity {
     state?: string;
     largePreview?: Preview;
     smallPreview?: Preview;
-    buttons?: Array<Button>;
+    buttons?: Array<Item>;
     progress?: Progress;
 }
 
@@ -102,9 +106,10 @@ const props = defineProps<{
 
 
 const getProgressBar = computed(() => {
-    const { type, value, end } = props.content.progress!;
+    const { type, value, end, position } = props.content.progress!;
 
     return {
+        position: position || 'full',
         start: progressValue(type!, value!),
         width: per(value!, end!),
         end: progressValue(type!, end!)
@@ -122,6 +127,27 @@ const smallPreview = computed(() => {
 
     return props.content.smallPreview;
 });
+
+
+const ComponentProgressBar = () => {
+    const { start, width, end } = getProgressBar.value;
+
+    return h('div', {
+        class: ['progress']
+    }, [
+        h('span', start),
+        h('div', {
+            class: ['bar']
+        }, [
+            h('div', {
+                style: {
+                    width: `${width}%`
+                }
+            })
+        ]),
+        h('span', end)
+    ])
+}
 
 
 function per(a: number, b: number) {
@@ -174,6 +200,7 @@ function msInMin(ms: number) {
 
                     .ui-icon {
                         height: 42px;
+                        font-size: 20px;
                     }
                 }
 
@@ -203,6 +230,7 @@ function msInMin(ms: number) {
             .large,
             .small {
                 position: relative;
+                transition: .2s;
                 overflow: hidden;
             }
 
@@ -247,7 +275,7 @@ function msInMin(ms: number) {
 
             img {
                 background-color: var(--background-secondary);
-                transition: .2s;
+                transition: all .2s;
             }
 
             .ui-icon {
@@ -334,9 +362,8 @@ function msInMin(ms: number) {
         }
     }
 
-    .progress {
+    :deep(.progress) {
         display: flex;
-        margin-top: 4px;
         align-items: center;
 
         span {

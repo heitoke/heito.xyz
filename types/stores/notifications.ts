@@ -1,3 +1,5 @@
+import type { Item } from "~/components/models/content/NavBar.vue";
+
 export type Position = 'top' | 'right' | 'bottom' | 'left' | 'center';
 
 export type Type = 'default';
@@ -9,7 +11,7 @@ export interface NotificationTemplate {
     icon?: string;
     image?: string;
     color?: string;
-    buttons?: Array<any>;
+    buttons?: Array<Item>;
     type?: Type;
 }
 

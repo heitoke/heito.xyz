@@ -3,6 +3,8 @@
 
 * {
     font-family: var(--font-family);
+    scrollbar-color: var(--main-color) transparent;
+    scrollbar-width: thin;
 }
 
 body {
@@ -36,5 +38,23 @@ ul, ol, li {
 
     .light .blur {
         background-color: transparent;
+    }
+}
+
+
+::-webkit-scrollbar {
+    width: 4px;
+}
+::-webkit-scrollbar-track {
+    background-color: transparent;
+}
+::-webkit-scrollbar-thumb {
+    cursor: pointer;
+    border-radius: 5px;
+    background-color: var(--main-color-alt);
+    transition: all .2s;
+
+    &:hover {
+        background-color: var(--main-color);
     }
 }

@@ -18,10 +18,18 @@
                 <div>{{ notification.text }}</div>
             </div>
         </header>
+
+        <Height :show="showButtons && notification?.buttons && notification.buttons.length > 0">
+            <NavBar style="margin-top: 8px;"
+                :items="notification.buttons!"
+            />
+        </Height>
     </div>
 </template>
 
 <script lang="ts" setup>
+
+import NavBar from '~/components/models/content/NavBar.vue';
 
 import type { Notification } from '~/types/stores/notifications';
 

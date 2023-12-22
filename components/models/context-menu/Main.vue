@@ -1,7 +1,7 @@
 <template>
     <Transition name="context-menu" @after-enter="showContextMenu($event as HTMLElement)">
         <div v-if="menu?.name" ref="root"
-            :class="['context-menu', menu?.position, { show }]"
+            :class="['context-menu blur', menu?.position, { show }]"
             :style="{
                 top: `${position.y}px`,
                 left: `${position.x}px`,

@@ -2,76 +2,59 @@
     <div class="home">
         <h1>Hello world</h1>
 
-        <div class="te">
-            <Activity
-                :content="{
-                    type: 'default',
-                    name: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    details: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    state: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    largePreview: {
-                        type: 'icon',
-                        icon: 'notification',
-                        color: 'var(--green)'
-                    },
-                    smallPreview: {
-                        type: 'icon',
-                        icon: 'search-alt',
-                        color: 'var(--red)'
-                    },
-                    progress: {
-                        type: 'time',
-                        value: 1000,
-                        end: 3600
-                    }
-                }"
-            />
-        </div>
+        {{ u }}
+        <br>
+        <br>
+        <NavBar
+            :value="u"
+            :items="[
+                { value: '1' },
+                { value: '2', icon: 'comments-alt', disabled: true },
+                { value: '3', icon: 'search-alt' },
+                { value: '4' },
+                { value: '5', icon: 'pacman', color: 'var(--green)' },
+                { value: '6', icon: 'brush', clear: true },
+                { value: '7', icon: 'notification', color: 'var(--red)' },
+                { value: '8' }
+            ]"
 
-        <div class="te">
-            <Activity
-                :content="{
-                    type: 'mini',
-                    name: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    details: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    state: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    largePreview: {
-                        type: 'image',
-                        url: $user.getAvatar
-                    },
-                    smallPreview: {
-                        type: 'icon',
-                        icon: 'notification',
-                        color: 'var(--green)'
-                    },
-                    progress: {
-                        type: 'numbers',
-                        value: 1000,
-                        end: 3600
-                    }
-                }"
-            />
-        </div>
+            @select="u = $event.value"
+        />
 
-        <div class="te">
-            <Activity
-                :content="{
-                    type: 'default',
-                    name: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    details: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    state: 'HelloHelloHelloHelloHelloHelloHelloHelloHelloHello',
-                    largePreview: {
-                        type: 'image',
-                        url: $user.getAvatar
-                    },
-                    progress: {
-                        type: 'numbers',
-                        value: 1000,
-                        end: 3600
-                    }
-                }"
-            />
-        </div>
+        <NavBar
+            :value="u2"
+            :multi="true"
+            :items="[
+                { value: '1' },
+                { value: '2', icon: 'comments-alt', disabled: true },
+                { value: '3', icon: 'search-alt' },
+                { value: '4' },
+                { value: '5', icon: 'pacman', color: 'var(--green)' },
+                { value: '6', icon: 'brush', clear: true },
+                { value: '7', icon: 'notification', color: 'var(--red)' },
+                { value: '8' }
+            ]"
+
+            @select-multi="u2 = $event.map(i => i.value)"
+        />
+
+        <NavBar style="width: 169px; margin: 12px 0;"
+            :value="u2"
+            :multi="true"
+            :orientation="'vertical'"
+            :items="[
+                { value: '1', onlyClick: true },
+                { value: '2' },
+                { value: '3' },
+                { value: '4', icon: 'logo', disabled: true },
+                { value: '5', icon: 'pacman', color: 'var(--green)' },
+                { label: 'Comments', value: '6', icon: 'comments-alt', color: 'var(--blue)' },
+                { value: '7', icon: 'notification', color: 'var(--red)' },
+                { value: '8', label: 'jsa djsakl djsalk d jsalkdjsa kljask' }
+            ]"
+
+            @select-multi="u2 = $event.map(i => i.value)"
+        />
 
         <Button label="ClickClickClickClickClickClickClickClickClickClickClickClickClickClickClickClick"
             text="Testdj kl"
@@ -100,7 +83,7 @@
 
 <script lang="ts" setup>
 
-import Activity from '~/components/models/header/Activity.vue';
+import NavBar from '~/components/models/content/NavBar.vue';
 
 const
     $user = useUserStore(),
@@ -112,11 +95,9 @@ const t = ref(false);
 const y = ref('')
 const a = ref('r1');
 
-function e() {
-    $windows.create('Message', {
-        title: 'asd'
-    });
-}
+const u = ref('0');
+const u2 = ref<Array<string>>([]);
+
 
 function c(name: string) {
     console.log(123);
@@ -147,7 +128,12 @@ function c(name: string) {
                         icon: 'notification',
                         image: $user.getAvatar,
                         title: 'asdsadsad asdsa dsa dsad sad sada sdas das dasd asd sadas dasd asd asd',
-                        text: `salkdjsalkdjaslkjdaslkjdalksdjaskljdklasjdklasjdklasjdklasjdaskljdaskljdsalkdjsakldajsdlkasjdklasjdlkasjdaskldjsalkdjaskldjsakldjas`
+                        text: `salkdjsalkdjaslkjdaslkjdalksdjaskljdklasjdklasjdklasjdklasjdaskljdaskljdsalkdjsakldajsdlkasjdklasjdlkasjdaskldjsalkdjaskldjsakldjas`,
+                        buttons: [
+                            {
+                                value: 'das'
+                            }
+                        ]
                     })
                 }
             },

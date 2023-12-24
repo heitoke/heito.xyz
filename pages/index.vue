@@ -11,7 +11,7 @@
 <style lang="scss" scoped>
 
 .page.home {
-    height: 10000px;
+    // height: 10000px;
 
     .te {
         margin: 12px 0;

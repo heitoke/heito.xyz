@@ -7,7 +7,7 @@
                 <NuxtLink to="/">heito.xyz</NuxtLink>
 
                 <div class="online">
-                    <span>Online:</span> 1
+                    <span>{{ $t('online') }}:</span> 1
                 </div>
             </div>
         </div>

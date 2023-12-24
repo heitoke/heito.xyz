@@ -35,12 +35,16 @@
 
 <script lang="ts" setup>
 
+import { useI18n } from 'vue-i18n';
+
 import Menu from '~/components/models/content/Menu.vue';
 
 import type { Item } from '~/types/stores/contextMenu';
 
 
-const { $api } = useNuxtApp();
+const { $api, $langs } = useNuxtApp();
+
+const { t: $t, locale } = useI18n();
 
 const
     $user = useUserStore(),
@@ -53,8 +57,7 @@ const root = ref<HTMLElement | null>(null);
 
 const
     isOpen = ref<boolean>(false),
-    darkMode = ref(cookies.get('theme') !== 'light'),
-    lang = ref('English');
+    darkMode = ref(cookies.get('HX_THEME') !== 'light');
 
 
 const getDisplayName = computed(() => {
@@ -66,18 +69,18 @@ const getUserMenuItems = computed<Array<Item>>(() => {
     return [
         {
             type: 'button',
-            label: 'Settings',
+            label: $t('settings'),
             icon: 'settings',
         },
         {
             type: 'checkbox',
-            label: 'Dark mode',
+            label: $t('darkMode'),
             icon: 'sun-moon',
             value: darkMode,
             click(value) {
                 darkMode.value = value;
 
-                cookies.set('theme', value ? 'dark' : 'light');
+                cookies.set('HX_THEME', value ? 'dark' : 'light');
 
                 document.querySelector('html')!.classList[value ? 'add' : 'remove']('dark')
                 document.querySelector('html')!.classList[value ? 'remove' : 'add']('light')
@@ -85,29 +88,28 @@ const getUserMenuItems = computed<Array<Item>>(() => {
         },
         {
             type: 'children',
-            label: 'Language',
+            label: $t('language'),
             icon: 'translate',
-            text: `Don't work`,
-            items: ['English', 'Russian'].map(l => ({
+            items: $langs.codes.map(l => ({
                 type: 'radio',
-                label: l,
+                label: $t(`languages.${l}`),
                 icon: 'translate',
                 name: 'language',
                 value: l,
-                ref: lang,
-                click: () => lang.value = l
+                ref: locale,
+                click: () => $langs.set(l)
             }))
         },
         { type: 'separator' },
         {
             type: 'button',
-            label: 'Sessions',
+            label: $t('sessions'),
             icon: 'users',
         },
         { type: 'separator' },
         $user.user?.isGuast ? {
             type: 'button',
-            label: 'Sign in',
+            label: $t('signIn'),
             icon: 'hand-alt',
             click: () => {
                 $windows.create('UserAuth', {
@@ -116,7 +118,7 @@ const getUserMenuItems = computed<Array<Item>>(() => {
             }
         } : {
             type: 'button',
-            label: 'Exit',
+            label: $t('exit'),
             color: 'var(--red)',
             icon: 'exit',
             click: () => logoutAccount()

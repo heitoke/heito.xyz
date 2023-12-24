@@ -129,8 +129,6 @@ async function showMenu(event: Event) {
 }
 
 function listenWheel(event: Event) {
-    console.log(event);
-    
     setMenuPositionY();
 }
 

@@ -5,12 +5,14 @@
     <ContextMenu/>
     <Toolpic/>
 
-    <NuxtLayout class="layout" :name="'super-vertical'">
+    <NuxtLayout class="layout" :name="'super-vertical'"
+        :routes="getListRoutes"
+    >
         <NuxtPage class="page"
             :style="{ padding: $route.meta?.pageOptions?.padding || '0 32px' }"
         />
 
-        <Footer/>
+        <Footer v-if="!$route.meta?.flags?.includes('hide-footer')"/>
     </NuxtLayout>
 </template>
 
@@ -25,14 +27,44 @@ import ContextMenu from '~/components/models/context-menu/Main.vue';
 import Toolpic from '~/components/models/toolpic/Main.vue';
 import Footer from '~/components/models/footer/Main.vue';
 
+import type { RoutePage } from '~/types/page';
 
-const { $langs } = useNuxtApp();
 
-const { locale } = useI18n();
+const { $router, $langs } = useNuxtApp();
+
+const { tm: $tm } = useI18n();
 
 const
     $route = useRoute(),
     $request = useRequestURL();
+
+
+const getListRoutes = computed<Array<RoutePage>>(() => {
+    console.log($router.options.routes);
+    
+    const routes = $router.options.routes.filter(({ meta }) => Boolean(meta?.pageOptions?.name));
+
+    console.log(routes);
+    
+
+    return routes
+        .sort((a, b) => {
+            return (a.meta?.pageOptions?.index || 0) > (b.meta?.pageOptions?.index || 0) ? 1 : 0;
+        })
+        .map(({ path, meta }) => {
+            const { pageOptions } = meta!;
+
+            const { title, description } = $tm(`pages.${pageOptions?.name}`) as { title: string, description?: string };
+
+            return {
+                name: pageOptions?.name || '',
+                icon: pageOptions?.icon || 'pacman',
+                title,
+                description,
+                path
+            }
+        });
+});
 
 
 function init() {

@@ -1,4 +1,4 @@
-import type { Component } from 'vue';
+import type { Component, StyleValue } from 'vue';
 
 export type Position = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'corner' | 'fixed';
 
@@ -22,6 +22,13 @@ export interface ItemSeparator extends Omit<ItemTemplate<'separator'>, 'label' |
 export interface ItemComponent extends ItemTemplate<'component'> {
     name: string;
     component: string | Component;
+    style?: StyleValue;
+    props?: {
+        [key: string]: any;
+    };
+    events?: {
+        [key: string]: (...args: Array<any>) => void;
+    }
 }
 
 export interface ItemRadio<T = string | number> extends ItemTemplate<'radio'> {

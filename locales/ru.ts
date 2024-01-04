@@ -14,6 +14,13 @@ export default {
     signIn: 'Войти',
     exit: 'Выйти',
 
+    pages: {
+        home: {
+            title: 'Главная',
+            description: ''
+        }
+    },
+
     footer: {
         thanks: 'Спасибо за все'
     }

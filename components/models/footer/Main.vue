@@ -25,8 +25,7 @@
             <div class="group" v-for="(group, idx) of groups" :key="idx">
                 <div class="title">{{ group.title }}</div>
                 <ul>
-                    <li v-for="(children, id) of group.childrens" :key="id"
-                    >
+                    <li v-for="(children, id) of group.childrens" :key="id">
                         <span>{{ children.label }}</span>
                     </li>
                 </ul>

@@ -1,6 +1,7 @@
 <template>
     <div ref="root"
         :class="['nav-bar', orientation, {
+            reverse,
             left: isMask[0],
             right: isMask[1]
         }]"
@@ -60,9 +61,11 @@ const props = withDefaults(defineProps<{
     value?: string | Array<string>;
     items: Array<Item>;
     orientation?: 'vertical' | 'horizontal';
+    reverse?: boolean;
     multi?: boolean;
 }>(), {
     orientation: 'horizontal',
+    reverse: false,
     multi: false
 });
 
@@ -200,6 +203,7 @@ function clearHover() {
         width: 100%;
 
         ul {
+            width: 100%;
             align-items: flex-start;
             flex-direction: column;
 
@@ -211,6 +215,18 @@ function clearHover() {
 
                 div {
                     width: 100% !important;
+                }
+            }
+        }
+    }
+
+    &.reverse {
+        ul {
+            li {
+                flex-direction: row-reverse;
+
+                .ui-icon {
+                    margin: 0 0 0 8px;
                 }
             }
         }

@@ -31,14 +31,4 @@ export interface WindowTemplate extends WindowOptions {
     createdAt: number;
 }
 
-
-
-type IsAValue<Obj, Str extends string> = {
-    [Prop in keyof Obj]: Str extends Obj[Prop] ? Str : any
-}[keyof Obj];
-
-interface WindowTypes {
-    Message: Message;
-}
-
-export type Window<T extends string> = IsAValue<WindowTypes, T>;
+export type Window<T extends string> = T extends 'Message' ? Message : any;

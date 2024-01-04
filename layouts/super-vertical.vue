@@ -6,7 +6,34 @@
 
         <Transition name="menu">
             <div class="menu" v-if="$super.isActive">
-                Menu
+                <div class="subtitle">Pages</div>
+
+                <NavBar style="width: 100%;"
+                    :orientation="'vertical'"
+                    :reverse="true"
+                    :value="$route.meta?.pageOptions?.name"
+
+                    :items="routes.map(r => ({
+                        label: r.title,
+                        icon: r.icon,
+                        value: r.name,
+                        color: 'var(--main-color)'
+                    }))"
+
+                    @select="onSelectPage($event.value)"
+                />
+
+                <!-- <ul class="pages">
+                    <li v-for="route of routes" :key="route.path"
+                        :class="{}"
+
+                        @click="$router.push(route.path)"
+                    >
+                        <span>{{ route.title }}</span>
+
+                        <Icon :name="route.icon"/>
+                    </li>
+                </ul> -->
             </div>
         </Transition>
     </div>
@@ -14,7 +41,29 @@
 
 <script lang="ts" setup>
 
+import NavBar from '~/components/models/content/NavBar.vue';
+
+import type { RoutePage } from '~/types/page';
+
+
+const { $router } = useNuxtApp();
+
+
 const $super = useSuperStore();
+
+
+const props = defineProps<{
+    routes: Array<RoutePage>;
+}>();
+
+
+function onSelectPage(name: string) {
+    const route = props.routes.find(r => r.name === name);
+    
+    if (!route) return;
+
+    $router.push(route.path);
+}
 
 </script>
 
@@ -61,6 +110,7 @@ const $super = useSuperStore();
     &.active {
         & > div:nth-child(1) {
             margin: 12px;
+            padding: 12px;
             border-radius: 15px;
             box-shadow: 0 0 0 3px var(--background-secondary);
         }
@@ -73,12 +123,36 @@ const $super = useSuperStore();
         overflow-x: hidden;
     }
 
+    :deep(.page) {
+        min-height: calc(100dvh - 64px);
+    }
+
     .menu {
         display: flex;
-        margin: 0 0 12px 12px;
+        padding: 0 12px 12px 0;
+        max-width: 256px;
         min-width: 256px;
+        align-items: flex-end;
         flex-direction: column;
+        box-sizing: border-box;
         transition: all .2s;
+
+        .subtitle {
+            margin: 8px 0;
+            color: var(--text-secondary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            white-space: nowrap;
+        }
+
+        :deep(.nav-bar) {
+            ul {
+                li {
+                    padding: 8px 16px;
+                }
+            }
+        }
     }
 }
 

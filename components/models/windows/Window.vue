@@ -2,7 +2,7 @@
     <div :class="['window', ...window.position]">
         <div class="background" @click="close"></div>
 
-        <main class="blur">
+        <main class="blur-after">
             <component class="block"
                 :is="windowComponent(window.component)"
                 :windowId="window.id"
@@ -104,6 +104,7 @@ function close() {
 
     main {
         padding: 12px;
+        max-width: 90%;
         max-height: 90%;
         position: absolute;
         border-radius: 5px;
@@ -111,6 +112,14 @@ function close() {
         transition: .2s;
         // overflow-x: hidden;
         z-index: 2;
+
+        &::after {
+            border-radius: 5px;
+        }
+
+        .block {
+            max-width: 100%;
+        }
 
         ul.buttons {
             position: absolute;

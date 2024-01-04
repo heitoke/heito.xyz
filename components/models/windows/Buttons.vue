@@ -4,6 +4,7 @@
             :style="{ '--button-color': btn?.color || 'var(--text-primary)' }"
 
             @click="btn?.click && btn.click($event)"
+            @mouseenter="$toolpic.show(btn?.label || 'Click me?', { position: ['left'] })"
         >
             <Icon :name="btn.icon"/>
         </li>
@@ -13,6 +14,9 @@
 <script lang="ts" setup>
 
 import type { Button } from '~/types/stores/windows';
+
+
+const $toolpic = useToolpicStore();
 
 
 const props = defineProps<{

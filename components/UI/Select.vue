@@ -20,8 +20,11 @@
     </div>
 </template>
 
-<script lang="ts" setup>
+<script lang="tsx" setup>
 
+import { render } from 'vue';
+import { Transition } from 'vue';
+import { createVNode } from 'vue';
 import SelectOption, { type Option } from '~/components/models/ui/SelectOption.vue';
 
 
@@ -93,12 +96,18 @@ watch(() => isActive.value, newValue => {
     }
 });
 
+watch(() => props.value, newValue => {
+    if (newValue) setValue(newValue);
+});
 
 
 function setMenuPositionY() {
     const
-        { width, top, bottom } = header.getBoundingClientRect(),
+        { width, top, bottom, y, x } = header.getBoundingClientRect(),
         { height } = menu.getBoundingClientRect();
+        
+    console.log(top, bottom, header.getBoundingClientRect());
+    
 
     const isTop = height + bottom > window.innerHeight;
 
@@ -106,6 +115,8 @@ function setMenuPositionY() {
 
     menu.style.width = `${width}px`;
     menu.style.top = `${isTop ? top - height : bottom}px`;
+
+    // setMenu(width, x, isTop ? top - height : bottom);
 }
 
 async function showMenu(event: Event) {
@@ -152,6 +163,12 @@ function selectOption(option: Option) {
     $emit('select-multi', options);
 }
 
+function setValue(newValue: string | Array<string>) {
+    if (!props.options.find(({ value }) => props?.multi ? newValue?.includes(value) : value === newValue)) return;
+
+    selected.value = props?.multi ? newValue as Array<string> : [newValue as string];
+}
+
 
 onMounted(() => {
     if (!root.value) return;
@@ -159,16 +176,26 @@ onMounted(() => {
     header = root.value.querySelector('header')!;
     menu = root.value.querySelector('ul')!;
 
-    if (props.options.find(({ value }) => props?.multi ? props?.value?.includes(value) : value === props?.value)) {
-        if (props?.multi) {
-            selected.value.push(...props.value!);
-        } else {
-            selected.value.push(props.value!);
-        }
-    }
+    if (props?.value) setValue(props.value);
 });
 
 </script>
+
+<style lang="scss">
+
+.ui-select-menu {
+    position: fixed;
+    max-height: clamp(32px, 50vh, 512px);
+    border-radius: 0 0 5px 5px;
+    border: 1px solid var(--background-secondary);
+    background-color: var(--background-primary);
+    box-sizing: border-box;
+    transition: .2s, top 0s, border 0s;
+    overflow-x: hidden;
+    z-index: 999;
+}
+
+</style>
 
 <style lang="scss" scoped>
 
@@ -201,7 +228,7 @@ onMounted(() => {
 
                 ul {
                     border-radius: 5px 5px 0 0;
-                    border-bottom-color: transparent;
+                    border-bottom: none;
                 }
             }
 
@@ -211,7 +238,7 @@ onMounted(() => {
                 }
 
                 ul {
-                    border-top-color: transparent;
+                    border-top: none;
                 }
             }
         }
@@ -251,9 +278,9 @@ onMounted(() => {
         border: 1px solid var(--background-secondary);
         background-color: var(--background-primary);
         box-sizing: border-box;
-        transition: .2s, top 0s;
+        transition: .2s, top 0s, border 0s;
         overflow-x: hidden;
-        z-index: 99;
+        z-index: 999;
     }
 }
 

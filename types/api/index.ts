@@ -1,4 +1,4 @@
-import type { UseFetchOptions } from "nuxt/app";
+import type { UseFetchOptions } from 'nuxt/app';
 
 export type Method = 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
 
@@ -31,14 +31,12 @@ type A<T = object> = Array<PropUnion<T>> extends (infer T)[] ? T : never;
 
 export type Response<T extends { [status: number]: any }> = Promise<A<T> | TemplateResponse<501, string>>;
 
-export type ResponseList<TypeResult = any> = Response<{
-    200: {
-        total: number;
-        pages: number;
-        page: number;
-        results: Array<TypeResult>;
-    }
-}>;
+export interface ResponseList<TypeResult = any> {
+    total: number;
+    pages: number;
+    page: number;
+    results: Array<TypeResult>;
+}
 
 
 export interface TemplateAPI {

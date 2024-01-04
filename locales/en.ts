@@ -14,6 +14,13 @@ export default {
     signIn: 'Sign In',
     exit: 'Exit',
 
+    pages: {
+        home: {
+            title: 'Home',
+            description: ''
+        }
+    },
+
     footer: {
         thanks: 'Thanks for everything'
     }

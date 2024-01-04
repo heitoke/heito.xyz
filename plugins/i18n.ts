@@ -14,7 +14,7 @@ export default defineNuxtPlugin(({ vueApp }) => {
     const i18n = createI18n({
         legacy: false,
         globalInjection: true,
-        locale: 'en',
+        locale: cookies.get('HX_LANG') || 'en',
         availableLocales: [
             {
                 code: 'en'

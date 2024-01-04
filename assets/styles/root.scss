@@ -32,13 +32,40 @@ ul, ol, li {
 
 @supports ((-webkit-backdrop-filter: none) or (backdrop-filter: none)) {
     .blur {
-        background-color: #01010125;
-        backdrop-filter: blur(5px);
-        -webkit-backdrop-filter: blur(5px);
+        &:not(-after) {
+            background-color: #01010125;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        &-after {
+            position: relative;
+            
+            &::after {
+                content: "";
+                width: 100%;
+                height: 100%;
+                position: absolute;
+                top: 0;
+                left: 0;
+                background-color: #01010125;
+                backdrop-filter: blur(5px);
+                -webkit-backdrop-filter: blur(5px);
+                z-index: -1;
+            }
+        }
     }
 
     .light .blur {
-        background-color: transparent;
+        &:not(-after) {
+            background-color: transparent;
+        }
+
+        &-after {
+            &::after {
+                background-color: transparent;
+            }
+        }
     }
 }
 

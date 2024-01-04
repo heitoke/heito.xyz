@@ -1,7 +1,7 @@
 <template>
     <div class="windows">
         <TransitionGroup name="window">
-            <Window v-for="window of $windows.list" :key="window.id"
+            <Window v-for="(window, idx) of $windows.list" :key="window.id"
                 :window="window"
             />
         </TransitionGroup>

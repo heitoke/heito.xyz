@@ -1,5 +1,7 @@
 <template>
     <div :class="['option', { disabled: option.disabled }]">
+        <Icon :name="option.icon" v-if="Boolean(option?.icon)"/>
+
         <div class="content">
             <div>{{ option?.label || option?.value }}</div>
 
@@ -60,8 +62,14 @@ const props = defineProps<{
         opacity: .5;
     }
 
+    .ui-icon {
+        margin-right: 8px;
+    }
+
     .content {
         max-width: 100%;
+        min-width: 0;
+        flex: 1;
 
         div {
             max-width: 100%;

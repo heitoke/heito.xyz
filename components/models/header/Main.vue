@@ -51,6 +51,7 @@ header {
     align-items: center;
     justify-content: space-between;
     box-sizing: border-box;
+    transition: .3s;
     z-index: 100;
 
     .logo {

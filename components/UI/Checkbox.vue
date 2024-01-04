@@ -9,6 +9,8 @@
         >
         
         <div></div>
+
+        <slot/>
     </label>
 </template>
 

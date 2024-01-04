@@ -14,6 +14,12 @@ export interface Locale {
     signIn: string;
     exit: string;
 
+    pages: {
+        [key: string]: {
+            title: string;
+            description: string;
+        }
+    }
 
     footer: {
         thanks: string;

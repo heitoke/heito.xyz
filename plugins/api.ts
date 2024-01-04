@@ -1,10 +1,8 @@
-import type { FetchOptions, TemplateAPI } from '~/types/api';
-import type { AsyncData, UseFetchOptions } from 'nuxt/app';
-
 // * Routes
 import { API } from '~/services/api';
 import Auth from '~/services/api/auth';
 import Users from '~/services/api/users';
+import Configs from '~/services/api/configs';
 
 
 export default defineNuxtPlugin(nuxtApp => {
@@ -14,14 +12,16 @@ export default defineNuxtPlugin(nuxtApp => {
 
     const
         auth = new Auth(api),
-        users = new Users(api);
+        users = new Users(api),
+        configs = new Configs(api);
 
     return {
         provide: {
             api: {
                 api,
                 auth,
-                users
+                users,
+                configs
             }
         }
     }

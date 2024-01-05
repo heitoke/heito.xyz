@@ -22,6 +22,24 @@ export default defineNuxtConfig({
         ]
     },
 
+    hooks: {
+        'pages:extend'(pages) {
+            pages.push({
+                name: 'repositories',
+                path: '/repos',
+                file: '~/pages/projects.vue',
+                meta: {
+                    pageOptions: {
+                        padding: '0 10%',
+                        name: 'repos',
+                        icon: 'fork',
+                        index: 2
+                    }
+                }
+            });
+        }
+    },
+
     modules: [
         '@pinia/nuxt'
     ],

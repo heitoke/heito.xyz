@@ -24,16 +24,16 @@ const $notifications = useNotificationsStore();
 
 const getButtons = computed<Array<ButtonIcon>>(() => {
     return [
-        {
-            label: 'Search',
-            icon: 'search-alt',
-            click: () => {}
-        },
-        {
-            label: 'Comments',
-            icon: 'comments-alt',
-            click: () => {}
-        },
+        // {
+        //     label: 'Search',
+        //     icon: 'search-alt',
+        //     click: () => {}
+        // },
+        // {
+        //     label: 'Comments',
+        //     icon: 'comments-alt',
+        //     click: () => {}
+        // },
         {
             label: 'Notifications',
             icon: 'notification',

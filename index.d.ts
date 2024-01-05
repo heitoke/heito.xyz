@@ -6,7 +6,7 @@ interface PageOptions {
     
     padding?: string;
 
-    index?: string;
+    index?: number;
 }
 
 type Flag = 'hide-footer' | 'hide-header';

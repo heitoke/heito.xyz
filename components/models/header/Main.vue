@@ -4,7 +4,9 @@
             <img src="/favicon.ico" alt="Logo">
 
             <div>
-                <NuxtLink to="/">heito.xyz</NuxtLink>
+                <NuxtLink to="/"
+                    @contextmenu.stop.prevent="showAdminContextMenu"
+                >heito.xyz</NuxtLink>
 
                 <div class="online">
                     <span>{{ $t('online') }}:</span> 1
@@ -37,7 +39,28 @@ import User from './User.vue';
 import Menu from './Menu.vue';
 
 
-const $super = useSuperStore();
+const
+    $super = useSuperStore(),
+    $windows = useWindowsStore(),
+    $contextMenu = useContextMenuStore();
+
+
+function showAdminContextMenu(event: Event) {
+    $contextMenu.create({
+        name: 'site:admin',
+        event,
+        items: [
+            {
+                type: 'button',
+                label: 'Configs',
+                icon: 'chat-message',
+                click: () => {
+                    $windows.create('AdminConfigsList');
+                }
+            }
+        ]
+    });
+}
 
 </script>
 

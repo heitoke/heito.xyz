@@ -7,9 +7,13 @@
 
     <NuxtLayout class="layout" :name="'super-vertical'"
         :routes="getListRoutes"
+
+        v-slot="{ scroll }"
     >
         <NuxtPage class="page"
             :style="{ padding: $route.meta?.pageOptions?.padding || '0 32px' }"
+
+            :scroll="scroll"
         />
 
         <Footer v-if="!$route.meta?.flags?.includes('hide-footer')"/>
@@ -40,12 +44,7 @@ const
 
 
 const getListRoutes = computed<Array<RoutePage>>(() => {
-    console.log($router.options.routes);
-    
     const routes = $router.options.routes.filter(({ meta }) => Boolean(meta?.pageOptions?.name));
-
-    console.log(routes);
-    
 
     return routes
         .sort((a, b) => {

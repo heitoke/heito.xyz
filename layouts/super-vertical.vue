@@ -1,7 +1,7 @@
 <template>
     <div :class="['super vertical', { active: $super.isActive }]">
-        <div>
-            <slot/>
+        <div ref="container">
+            <slot :scroll="scroll"/>
         </div>
 
         <Transition name="menu">
@@ -52,9 +52,18 @@ const { $router } = useNuxtApp();
 const $super = useSuperStore();
 
 
+const container = ref<HTMLElement | null>(null);
+
+
 const props = defineProps<{
     routes: Array<RoutePage>;
 }>();
+
+
+const scroll = ref({
+    value: 0,
+    max: 0
+});
 
 
 function onSelectPage(name: string) {
@@ -64,6 +73,22 @@ function onSelectPage(name: string) {
 
     $router.push(route.path);
 }
+
+
+onMounted(() => {
+    if (process.server) return;
+
+    if (!container.value) return;
+
+    container.value.addEventListener('scroll', event => {
+        const target = event.target as HTMLElement;
+
+        scroll.value = {
+            value: target.scrollTop,
+            max: target.scrollHeight - target.clientHeight
+        }
+    });
+});
 
 </script>
 
@@ -124,6 +149,7 @@ function onSelectPage(name: string) {
     }
 
     :deep(.page) {
+        padding-top: 12px !important;
         min-height: calc(100dvh - 64px);
     }
 

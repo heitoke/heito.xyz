@@ -105,9 +105,6 @@ function setMenuPositionY() {
     const
         { width, top, bottom, y, x } = header.getBoundingClientRect(),
         { height } = menu.getBoundingClientRect();
-        
-    console.log(top, bottom, header.getBoundingClientRect());
-    
 
     const isTop = height + bottom > window.innerHeight;
 

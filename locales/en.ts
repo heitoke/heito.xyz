@@ -1,6 +1,6 @@
 import type { Locale } from '~/types/locale';
 
-export default {
+const lang: Locale = {
     language: 'Language',
     languages: {
         en: 'English',
@@ -18,10 +18,20 @@ export default {
         home: {
             title: 'Home',
             description: ''
+        },
+        projects: {
+            title: 'Projects',
+            description: ''
+        },
+        repos: {
+            title: 'Repositories',
+            description: ''
         }
     },
 
     footer: {
         thanks: 'Thanks for everything'
     }
-} as Locale;
+};
+
+export default lang;

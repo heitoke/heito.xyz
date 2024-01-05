@@ -1,6 +1,6 @@
 <template>
     <div class="home">
-        <h1 @click="$windows.create('AdminConfigsList')">Hello world</h1>
+        <h1>Hello world</h1>
 
         <Select label="das"
             :options="[{value: 'ads'}]"
@@ -10,13 +10,11 @@
 
 <script lang="ts" setup>
 
-const $windows = useWindowsStore();
-
-
 definePageMeta({
     pageOptions: {
         name: 'home',
-        icon: 'earth'
+        icon: 'earth',
+        index: 0
     },
     flags: ['hide-footer']
 });

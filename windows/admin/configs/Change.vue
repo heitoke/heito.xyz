@@ -144,7 +144,11 @@ async function fetchConfig(configId: string) {
 async function updateConfig() {
     if (!config.value) return;
 
-    const { data, ok } = await $api.configs.update(config.value?._id, config.value);
+    const { _id, name, accounts, pages, playingTrack } = config.value;
+
+    const { data, ok } = await $api.configs.update(_id, {
+        name, accounts, pages, playingTrack
+    } as any);
 
     if (!ok) return;
 

@@ -1,3 +1,47 @@
+import type { User, Link } from './user';
+
+export enum LogCodes {
+    Update = 0
+}
+
+export enum NotficationCodes {}
+
+
+export enum MemberPermission {
+    Invited = 'invited',
+    Member = 'member',
+    Owner = 'owner'
+}
+
+export interface Member {
+    member: User;
+    permissions: number; // MemberPermission
+
+    updatedAt: Date;
+    joinedAt: Date;
+}
+
+export interface Project {
+    _id: string;
+
+    private?: boolean;
+
+    name?: string;
+    displayName: string;
+
+    description?: string;
+
+    links: Array<Link>;
+    members: {
+        total: number;
+        list: Array<Member>;
+    };
+
+    updatedAt: string;
+    createdAt: string;
+}
+
+
 // * Repositories
 export interface RepositoryOwner {
     login: string;

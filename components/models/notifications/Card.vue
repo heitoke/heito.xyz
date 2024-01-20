@@ -79,6 +79,8 @@ const props = defineProps<{
                 img {
                     mask-image: radial-gradient(circle 12px at center, transparent 100%, green 0%);
                     mask-size: 84px 84px, 100%;
+                    -webkit-mask-image: radial-gradient(circle 12px at center, transparent 100%, green 0%);
+                    -webkit-mask-size: 84px 84px, 100%;
                 }
                 
                 .ui-icon {

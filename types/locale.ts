@@ -1,5 +1,5 @@
 export interface Locale {
-    language: string;
+    language: [string, string];
 
     languages: {
         en: string;
@@ -9,10 +9,10 @@ export interface Locale {
     online: string;
     settings: string;
     darkMode: string;
-    session: string;
-    sessions: string;
+    session: [string, string];
     signIn: string;
     exit: string;
+    project: [string, string];
 
     pages: {
         [key: string]: {

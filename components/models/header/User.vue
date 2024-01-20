@@ -88,7 +88,7 @@ const getUserMenuItems = computed<Array<Item>>(() => {
         },
         {
             type: 'children',
-            label: $t('language'),
+            label: $t('language[0]'),
             icon: 'translate',
             items: $langs.codes.map(l => ({
                 type: 'radio',
@@ -103,7 +103,7 @@ const getUserMenuItems = computed<Array<Item>>(() => {
         { type: 'separator' },
         {
             type: 'button',
-            label: $t('sessions'),
+            label: $t('session[1]'),
             icon: 'users',
         },
         { type: 'separator' },
@@ -146,9 +146,9 @@ function open(e: Event, ref: HTMLElement | null, callbackTrue: Function = () => 
 function openProfile() {}
 
 async function authGuast() {
-    const { data, status } = await $api.auth.guast();
+    const { ok, data } = await $api.auth.guast();
 
-    if (status.value !== 'success') return false;
+    if (!ok) return false;
 
     const { user, tokens: { access, refresh } } = data;
 
@@ -163,9 +163,9 @@ async function authGuast() {
 }
 
 async function logoutAccount() {
-    const { data, status } = await $api.auth.logout();
+    const { ok, data } = await $api.auth.logout();
 
-    if (status.value !== 'success') return;
+    if (!ok) return;
 
     cookies.delete('HX_AT', 'HX_RT');
 
@@ -325,7 +325,7 @@ async function logoutAccount() {
 
             .data {
                 min-width: 196px;
-                right: -64px;
+                // right: -64px;
             }
         }
 

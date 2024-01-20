@@ -1,6 +1,6 @@
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
-import type { User } from '~/types/api/user';
+import { type User, type UserPermission, userPermissions } from '~/types/api/user';
 
 
 export interface Account {
@@ -110,9 +110,9 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function authGuast() {
-        const { data, status } = await $api.auth.guast();
+        const { ok, data } = await $api.auth.guast();
 
-        if (status.value !== 'success') return;
+        if (!ok) return;
 
         const { user, tokens: { access, refresh } } = data;
 
@@ -122,9 +122,9 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function regenerateAccessToken() {
-        const { data, status } = await $api.auth.refresh($api.api.token.refresh);
+        const { ok, data } = await $api.auth.refresh($api.api.token.refresh);
 
-        if (status.value !== 'success') return false;
+        if (!ok) return false;
 
         await setTokens(data.access);
     
@@ -132,9 +132,9 @@ export const useUserStore = defineStore('user', () => {
     }
 
     async function fetchMe() {
-        const { data, status } = await $api.users.me();
+        const { ok, data } = await $api.users.me();
 
-        if (status.value !== 'success') {
+        if (!ok) {
             if (!$api.api.token.refresh) return;
 
             const refresh = await regenerateAccessToken();
@@ -145,6 +145,24 @@ export const useUserStore = defineStore('user', () => {
         }
 
         set(data);
+    }
+
+    // * Permissions
+    function has(permissions: Array<UserPermission>, options: { all?: boolean } = {}) {
+        if (!user.value) return false;
+
+        const { all = true } = options;
+
+        for (const permission of permissions) {
+            const index = userPermissions.indexOf(permission);
+
+            if ((user.value?.permissions & (1 << index)) !== 1 << index) {
+                if (all) return false;
+                else continue;
+            }
+        }
+
+        return true;
     }
 
 
@@ -162,7 +180,9 @@ export const useUserStore = defineStore('user', () => {
         authGuast,
         initAccounts,
         addAccount,
-        switchAccount
+        switchAccount,
+
+        has
     };
 });
 

@@ -12,7 +12,7 @@
                     <span>heito.xyz</span>
                 </div>
 
-                <Select :label="$t('language')" style="width: 215px;"
+                <Select :label="$t('language[0]')" style="width: 215px;"
                     :value="locale"
                     :options="getLanguages"
 

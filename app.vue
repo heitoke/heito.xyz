@@ -34,7 +34,7 @@ import Footer from '~/components/models/footer/Main.vue';
 import type { RoutePage } from '~/types/page';
 
 
-const { $router, $langs } = useNuxtApp();
+const { $router, $langs, $socket } = useNuxtApp();
 
 const { tm: $tm } = useI18n();
 
@@ -86,7 +86,11 @@ function init() {
 
 
 onMounted(() => {
+    if (process.server) return;
+
     init();
+
+    $socket.connect();
 });
 
 
@@ -116,6 +120,19 @@ useHead({
 </script>
 
 <style lang="scss">
+
+
+.transition {
+    &-fade {
+        &-enter-active,
+        &-leave-active {
+            transition: .2s;
+            opacity: 0;
+        }
+    }
+}
+
+
 
 .layout {
     max-height: calc(100dvh - 64px) !important;

@@ -27,7 +27,10 @@ export default defineNuxtConfig({
             pages.push({
                 name: 'repositories',
                 path: '/repos',
-                file: '~/pages/projects.vue',
+                file: '~/pages/projects/index.vue',
+                alias: [
+                    '/repositories'
+                ],
                 meta: {
                     pageOptions: {
                         padding: '0 10%',
@@ -50,7 +53,8 @@ export default defineNuxtConfig({
 
     runtimeConfig: {
         public: {
-            apiURL: process.env.API_URL
+            apiUrl: process.env.API_URL,
+            socketUrl: process.env.SOCKET_URL
         }
     }
 });

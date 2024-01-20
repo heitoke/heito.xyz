@@ -87,9 +87,9 @@ const listAccounts = [
 
 
 async function fetchConfig(configId: string) {
-    const { data, status } = await $api.configs.get(configId);
+    const { ok, data } = await $api.configs.get(configId);
 
-    if (status.value !== 'success') return;
+    if (!ok) return;
 
     config.value = data;
 }

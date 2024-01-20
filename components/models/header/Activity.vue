@@ -2,7 +2,9 @@
     <div :class="['activity', content.type]">
         <div class="header">
             <div class="previews">
-                <div :class="['large', largePreview.type, { s: smallPreview !== null }]" v-if="largePreview">
+                <div :class="['large', largePreview.type, { s: smallPreview !== null }]" v-if="largePreview"
+                    @mouseenter="largePreview.label ? $toolpic.show(largePreview.label) : null"
+                >
                     <img v-if="largePreview.type === 'image'"
                         :src="largePreview.url"
                         alt="Large Activity Image"
@@ -14,7 +16,9 @@
                     />
                 </div>
             
-                <div :class="['small', smallPreview.type]" v-if="smallPreview">
+                <div :class="['small', smallPreview.type]" v-if="smallPreview"
+                    @mouseenter="smallPreview.label ? $toolpic.show(smallPreview.label) : null"
+                >
                     <img v-if="smallPreview.type === 'image'"
                         :src="smallPreview.url"
                         alt="Large Activity Image"
@@ -34,11 +38,11 @@
 
                 <div class="state" v-if="content.type !== 'mini'">{{ content.state }}</div>
             
-                <ComponentProgressBar v-if="getProgressBar.position === 'content'"/>
+                <ComponentProgressBar v-if="getProgressBar && getProgressBar.position === 'content'"/>
             </div>
         </div>
 
-        <ComponentProgressBar v-if="getProgressBar.position === 'full'"
+        <ComponentProgressBar v-if="getProgressBar && getProgressBar.position === 'full'"
             style="margin-top: 4px;"
         />
 
@@ -98,6 +102,9 @@ export interface Activity {
 }
 
 
+const $toolpic = useToolpicStore();
+
+
 const props = defineProps<{
     content: Activity;
     showButtons?: boolean;
@@ -106,7 +113,9 @@ const props = defineProps<{
 
 
 const getProgressBar = computed(() => {
-    const { type, value, end, position } = props.content.progress!;
+    if (!props.content?.progress) return null;
+
+    const { type, value, end, position } = props.content.progress;
 
     return {
         position: position || 'full',
@@ -130,6 +139,8 @@ const smallPreview = computed(() => {
 
 
 const ComponentProgressBar = () => {
+    if (!getProgressBar.value) return;
+    
     const { start, width, end } = getProgressBar.value;
 
     return h('div', {

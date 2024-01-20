@@ -1,4 +1,4 @@
-import type { FetchOptions, TemplateAPI } from '~/types/api';
+import type { FetchOptions, TemplateAPI, Response } from '~/types/api';
 import type { UseFetchOptions } from 'nuxt/app';
 
 
@@ -52,44 +52,65 @@ export class API implements TemplateAPI {
     setRefreshToken(token: string) {
         this._refreshToken = token;
     }
+    
 
+    getQuery(object: { [key: string | number]: string | number | boolean | Array<string | number | boolean> }) {
+        const query = new URLSearchParams();
 
-    async fetch<ResultType = any, ErrorType = string>(uri: string, options: UseFetchOptions<ResultType> & { token?: string | null } = {}) {
+        if (Object.keys(object).length < 1) return '';
+
+        for (const key in object) {
+            if (Array.isArray(object[key])) {
+                for (const item of object[key] as Array<any>) {
+                    query.append(key, String(item));
+                }
+
+                continue;
+            }
+
+            query.append(key, String(object[key]));
+        }
+
+        return String(query);
+    }
+
+    async fetch<ResultType = any, ErrorType = string>(uri: string, option: FetchOptions = {}): Promise<Response<ResultType, ErrorType>> {
         const {
-            method = 'get',
-            token = `Bearer ${this.token.access}`
-        } = options;        
+            body = {},
+            query = {},
+            headers = {
+                // 'Content-Type': 'application/json'
+            },
+            type = 'json',
+            method = 'GET',
+            token = this.token.access
+        } = option;
 
-        const response = await useFetch<ResultType>(uri, {
-            baseURL: this.domain,
+        const url = this.domain + (uri[0] === '/' ? '' : '/') + uri;
+
+        if (token) headers['Authorization'] = `Bearer ${token}`;
+
+        return fetch(url + '?' + this.getQuery(query), {
+            body: method === 'GET' ? undefined : (type === 'json' ? JSON.stringify(body) : body) as any,
+            headers,
             mode: 'cors',
-            ...options as any,
+            method
+        }).then(async res => {
+            const result = await res.json();
 
-            onRequest({ options }) {
-                options.headers = [];
-
-                if (token) options.headers.push(['Authorization', token]);
-            },
-            onRequestError(ctx) {
-                // console.log(2, ctx);
-            },
-            onResponse(ctx) {
-                // console.log(3, ctx);
-            },
-            onResponseError(ctx) {
-                // console.log(4, ctx);
+            return {
+                ok: res.ok,
+                status: res.status,
+                data: result?.message || result?.result
+            }
+        }).catch(reason => {
+            console.error(`FETCH ERROR:`, reason);
+            
+            return {
+                ok: false,
+                status: 501,
+                data: 'Server Error' as any
             }
         });
-
-        const data = response.data.value as FetchResult<ResultType>;
-
-        return {
-            ...response,
-            data: data?.message || data?.result,
-            error: {
-                ...response.error.value,
-                data: response.error.value?.data as ErrorType
-            }
-        }
     }
 }

@@ -1,7 +1,7 @@
 import type { Locale } from '~/types/locale';
 
 const lang: Locale = {
-    language: 'Язык',
+    language: ['Язык', 'Языки'],
     languages: {
         en: 'Английский',
         ru: 'Русский'
@@ -9,10 +9,10 @@ const lang: Locale = {
     online: 'Онлайн',
     settings: 'Настройки',
     darkMode: 'Темный режим',
-    session: 'Сессия',
-    sessions: 'Сессии',
+    session: ['Сессия', 'Сессии'],
     signIn: 'Войти',
     exit: 'Выйти',
+    project: ['Проект', 'Проекты'],
     
     pages: {
         home: {
@@ -25,6 +25,10 @@ const lang: Locale = {
         },
         repos: {
             title: 'Репозитории',
+            description: ''
+        },
+        stats: {
+            title: 'Статистика',
             description: ''
         }
     },

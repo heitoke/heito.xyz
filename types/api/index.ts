@@ -8,6 +8,9 @@ export type Type = 'json';
 export interface FetchOptions {
     baseUrl?: string;
     body?: any;
+    query?: {
+        [key: string | number]: string | number | boolean | Array<string | number | boolean>;
+    };
     method?: Method;
     type?: Type;
     headers?: {
@@ -17,19 +20,20 @@ export interface FetchOptions {
 }
 
 
-export interface TemplateResponse<TypeStatus, TypeResult = any> {
-    name?: string;
-    result: TypeResult;
-    status: TypeStatus;
+interface TemplateResponse<TypeOK = boolean> {
+    ok: TypeOK;
+    status: number;
 }
 
-type PropUnion<T> = {
-    [K in keyof T]: TemplateResponse<K, T[K]>
-}[keyof T];
+interface SuccessResponse<ResultType = any> extends TemplateResponse<true> {
+    data: ResultType;
+}
 
-type A<T = object> = Array<PropUnion<T>> extends (infer T)[] ? T : never;
+interface ErrorResponse<ErrorType = string> extends TemplateResponse<false> {
+    data: ErrorType;
+}
 
-export type Response<T extends { [status: number]: any }> = Promise<A<T> | TemplateResponse<501, string>>;
+export type Response<ResultType = any, ErrorType = string> = SuccessResponse<ResultType> | ErrorResponse<ErrorType>;
 
 export interface ResponseList<TypeResult = any> {
     total: number;
@@ -46,5 +50,5 @@ export interface TemplateAPI {
         refresh: string;
     };
 
-    fetch<ResultType = any, ErrorType = any>(uri: string, options: UseFetchOptions<ResultType>): Promise<any>;
+    fetch<ResultType = any, ErrorType = any>(uri: string, options: FetchOptions): Promise<Response>;
 }

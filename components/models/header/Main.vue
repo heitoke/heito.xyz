@@ -135,4 +135,15 @@ header {
     }
 }
 
+@media (max-width: 640px) {
+    header {
+        padding-left: 16px !important;
+        padding-right: 16px !important;
+
+        .activities {
+            display: none;
+        }
+    }
+}
+
 </style>

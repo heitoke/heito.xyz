@@ -22,12 +22,14 @@
         
             <Textbox label="Password"
                 type="password"
+                :value="password"
 
                 @update="password = $event"
             />
             
             <Textbox label="Repeat password" v-if="type === 'register'"
                 type="password"
+                :value="repeatPassword"
 
                 @update="repeatPassword = $event"
             />
@@ -159,13 +161,13 @@ function setImage() {
 async function onClickAuth() {
     const isLogin = type.value === 'login';
 
-    const { data, error, status } = await $api.auth[type.value](...[
+    const { ok, data } = await $api.auth[type.value](...[
         login.value,
         isLogin ? password.value : email.value,
         password.value
     ]);
 
-    if (status.value !== 'success') return;
+    if (!ok) return;
 
     const { user, tokens: { access, refresh } } = data;
 

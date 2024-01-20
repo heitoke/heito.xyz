@@ -4,7 +4,7 @@
             <span>{{ getHeaderLabel }}</span>
         </header>
 
-        <Transition name="fade">
+        <Transition name="transition-fade">
             <ul v-show="isActive">
                 <SelectOption v-for="option of options" :key="option.value"
                     :class="{
@@ -79,7 +79,7 @@ const getHeaderLabel = computed(() => {
     const options = getCurrentOptions.value;
 
     if (options.length < 1) {
-        return props?.label || 'Нажми на меня';
+        return props?.label || '';
     } else if (options.length === 1) {
         return options[0]?.label || options[0].value;
     } else {
@@ -196,13 +196,6 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 
-.fade {
-    &-enter-active,
-    &-leave-active {
-        opacity: 0;
-    }
-}
-
 .ui-select {
     max-width: 100%;
     width: 100%;
@@ -277,7 +270,7 @@ onMounted(() => {
         box-sizing: border-box;
         transition: .2s, top 0s, border 0s;
         overflow-x: hidden;
-        z-index: 999;
+        z-index: 99;
     }
 }
 

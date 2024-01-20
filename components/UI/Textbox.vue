@@ -2,7 +2,6 @@
     <label ref="root"
         :class="['ui-textbox', { active: isActive, icon: Boolean(icon) }]"
         :style="{ '--left': `${isActive ? labelWidth + 18 : 0}px` }"
-        @click="($event.target as any).focus()"
     >
         <Icon :name="icon" v-if="Boolean(icon)"/>
 
@@ -11,10 +10,11 @@
             :readonly="readonly"
             :disabled="disabled"
             :required="true"
+            :value="value"
 
             @input="onInput($event)"
-            @focus="emit('focus', $event); focus = true"    
-            @blur="emit('blur', $event); focus = false"
+            @focus="$emit('focus', $event); focus = true"    
+            @blur="$emit('blur', $event); focus = false"
         />
         
         <div class="label">{{ label }}</div>
@@ -34,7 +34,8 @@ interface InputEvent extends Event {
 
 const root = ref<HTMLElement | null>(null);
 
-const emit = defineEmits({
+
+const $emit = defineEmits({
     input: (input: InputEvent) => input,
     update: (value: string) => value,
     focus: (event: InputEvent) => event,
@@ -61,7 +62,6 @@ const props = withDefaults(defineProps<{
 
 const
     focus = ref<boolean>(false),
-    modelValue = ref<string>(''),
     labelWidth = ref<number>(0);
 
 
@@ -69,7 +69,7 @@ let input: HTMLInputElement;
 
 
 const isActive = computed(() => {
-    const is = modelValue.value.length > 0 || focus.value;
+    const is = (props.value || '').length > 0 || focus.value;
 
     if (is) setLabelWidth();
 
@@ -85,8 +85,6 @@ watch(() => props.label, (newValue: string, oldValue: string) => {
 
 watch(() => props.value, value => {
     if (!input) return;
-
-    input.value = value || '';
 });
 
 
@@ -101,10 +99,8 @@ function setLabelWidth() {
 function onInput(event: InputEvent) {
     const value = event.target.value;
 
-    modelValue.value = value;
-
-    emit('input', event);
-    emit('update', value);
+    $emit('input', event);
+    $emit('update', value);
 }
 
 
@@ -112,10 +108,6 @@ onMounted(() => {
     if (!root.value) return;
 
     input = root.value?.querySelector('input, textarea')! as HTMLInputElement;
-
-    if (props?.value) {
-        modelValue.value = input.value = props?.value;
-    }
 
     if (props.autofocus) input?.focus();
 });

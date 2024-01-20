@@ -114,12 +114,6 @@ onMounted(() => {
     animation: MenuWidth .2s linear reverse;
 }
 
-.fade-enter-active,
-.fade-leave-active {
-    transition: .2s;
-    opacity: 0;
-}
-
 .layout.super.vertical {
     // max-height: calc(100dvh - 64px);
     // overflow-x: hidden;
@@ -178,6 +172,15 @@ onMounted(() => {
                     padding: 8px 16px;
                 }
             }
+        }
+    }
+}
+
+
+@media (max-width: 640px) {
+    .layout.super.vertical {
+        :deep(.page) {
+            padding: 12px 16px 0 16px !important;
         }
     }
 }

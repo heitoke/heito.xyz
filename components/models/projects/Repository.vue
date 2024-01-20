@@ -112,7 +112,7 @@ const getLangImage = computed(() => {
 
 .repository-card {
     display: flex;
-    min-width: 100%;
+    // min-width: 100%;
     min-height: 196px;
     border-radius: 5px;
     border: 1px solid var(--background-secondary);

@@ -83,11 +83,11 @@ const buttons = {
 async function fetchListConfigs() {
     loading.value = true;
 
-    const { data, status } = await $api.configs.list();
+    const { ok, data } = await $api.configs.list();
 
     loading.value = false;
 
-    if (status.value !== 'success') return;
+    if (!ok) return;
 
     list.value = data.results;
 }
@@ -125,9 +125,9 @@ function createNewConfig() {
                 },
                 events: {
                     click: async () => {
-                        const { data, status } = await $api.configs.create(name);
+                        const { ok, data } = await $api.configs.create(name);
                     
-                        if (status.value !== 'success') return;
+                        if (!ok) return;
 
                         list.value.push(data);
 
@@ -140,9 +140,9 @@ function createNewConfig() {
 }
 
 async function switchConfig(configId: string) {
-    const { data, status } = await $api.configs.switch(configId);
+    const { ok, data } = await $api.configs.switch(configId);
 
-    if (status.value !== 'success') return;
+    if (!ok) return;
 
     for (const config of list.value) {
         config.enabled = config._id === configId;
@@ -179,9 +179,9 @@ async function deleteConfig(configId: string) {
                 },
                 events: {
                     click: async () => {
-                        const { status } = await $api.configs.delete(config._id);
+                        const { ok, data } = await $api.configs.delete(config._id);
 
-                        if (status.value !== 'success') return;
+                        if (!ok) return;
 
                         list.value.splice(index, 1);
 

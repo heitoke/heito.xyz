@@ -1,8 +1,6 @@
 export default defineNuxtRouteMiddleware(async (to, from) => {
     if (process.server) return;
 
-    const { $api } = useNuxtApp();
-
     const $user = useUserStore();
 
     const

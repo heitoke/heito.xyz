@@ -78,9 +78,7 @@ export class API implements TemplateAPI {
         const {
             body = {},
             query = {},
-            headers = {
-                // 'Content-Type': 'application/json'
-            },
+            headers = {},
             type = 'json',
             method = 'GET',
             token = this.token.access
@@ -92,7 +90,9 @@ export class API implements TemplateAPI {
 
         return fetch(url + '?' + this.getQuery(query), {
             body: method === 'GET' ? undefined : (type === 'json' ? JSON.stringify(body) : body) as any,
-            headers,
+            headers: Object.assign(method === 'GET' ? {} : {
+                'Content-Type': 'application/json'
+            }, headers),
             mode: 'cors',
             method
         }).then(async res => {

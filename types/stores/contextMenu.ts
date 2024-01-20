@@ -4,7 +4,7 @@ export type Position = 'center' | 'top' | 'right' | 'bottom' | 'left' | 'corner'
 
 export type ItemType = 'button' | 'separator' | 'component' | 'radio' | 'checkbox' | 'children';
 
-interface ItemTemplate<Type = ItemType> {
+interface ItemTemplate<Type extends ItemType> {
     type: Type;
     label: string;
     text?: string;
@@ -17,7 +17,7 @@ export interface ItemButton extends ItemTemplate<'button'> {
     click?(event: MouseEvent): void;
 }
 
-export interface ItemSeparator extends Omit<ItemTemplate<'separator'>, 'label' | 'text' | 'icon' | 'image'> {}
+export interface ItemSeparator extends Pick<ItemTemplate<'separator'>, 'type'> {}
 
 export interface ItemComponent extends ItemTemplate<'component'> {
     name: string;

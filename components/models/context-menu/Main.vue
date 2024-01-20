@@ -7,7 +7,15 @@
                 left: `${position.x}px`,
             }"
         >
-            <Menu :items="menu.items"/>
+            <Menu :items="menu.items"
+                :events="{
+                    click: {
+                        button: () => {
+                            $menu.close();
+                        }
+                    }
+                }"
+            />
         </div>
     </Transition>
 </template>
@@ -17,11 +25,9 @@
 import Menu from '../content/Menu.vue';
 
 
-const $contextMenu = useContextMenuStore();
-
+const $menu = useContextMenuStore();
 
 const root = ref<HTMLElement | null>(null);
-
 
 const show = ref<boolean>(false);
 const position = ref<{ x: number, y: number }>({
@@ -30,10 +36,10 @@ const position = ref<{ x: number, y: number }>({
 });
 
 
-const menu = computed(() => $contextMenu.menu);
+const menu = computed(() => $menu.menu);
 
 
-watch(() => $contextMenu.count, () => {
+watch(() => $menu.count, () => {
     if (!root.value) return;
 
     showContextMenu(root.value);
@@ -63,7 +69,7 @@ function listenClick(menuElement: HTMLElement) {
         
         if (path && (path.includes(menuElement) || path.includes(menu.value?.event))) return listenClick(menuElement);
 
-        $contextMenu.close();
+        $menu.close();
 
         show.value = false;
     }, {
@@ -72,7 +78,7 @@ function listenClick(menuElement: HTMLElement) {
     });
 
     window.addEventListener('scroll', () => {
-        $contextMenu.close();
+        $menu.close();
 
         show.value = false;
     }, {

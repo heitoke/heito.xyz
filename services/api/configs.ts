@@ -39,6 +39,14 @@ export default class Route {
     }
 
 
+    update(configId: string, body: Config) {
+        return this.api.fetch<Config>(`/configs/${configId}`, {
+            body,
+            method: 'PATCH'
+        });
+    }
+
+
     switch(configId: string) {
         return this.api.fetch<string>(`/configs/${configId}`, {
             method: 'PUT'

@@ -12,7 +12,8 @@ export enum AccountType {
     Twitch = 'twitch',
     OSU = 'osu',
     Telegram = 'telegram',
-    Discord = 'discord'
+    Discord = 'discord',
+    Reddit = 'reddit'
 }
 
 export interface Account {

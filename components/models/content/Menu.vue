@@ -64,7 +64,7 @@
 
 <script lang="ts" setup>
 
-import type { Item, ItemChildren } from '~/types/stores/contextMenu';
+import type { Item, ItemChildren, ItemType } from '~/types/stores/contextMenu';
 
 
 const root = ref<HTMLElement | null>(null);
@@ -72,6 +72,14 @@ const root = ref<HTMLElement | null>(null);
 
 const props = defineProps<{
     items: Array<Item>;
+
+    // у меня есть таоке
+
+    events?: {
+        click?: {
+            [K in ItemType]?: (item: Extract<Item, { type: K }>) => void;
+        }
+    }
 }>();
 
 
@@ -115,6 +123,10 @@ function onClick(idx: number, event: MouseEvent) {
             if (item?.click) item.click(item.value!, event);
             break;
     }
+
+    const eventClick = props?.events?.click![item.type];
+
+    if (eventClick) eventClick(item);
 }
 
 function goToBack() {

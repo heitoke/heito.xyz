@@ -11,7 +11,7 @@
 
                 <Height :show="isActive">
                     <Transition name="transition-fade">
-                        <div class="list">
+                        <div class="list" v-if="list.length > (track ? 0 : 1)">
                             <div>
                                 <Activity v-for="(activity, idx) of list.slice(track?.id ? 0 : 1)" :key="idx"
                                     :content="activity"
